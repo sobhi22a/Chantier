@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 et plus (API 31+) : RIEN n'est sauvegarde dans le cloud ni copie vers un autre
+     telephone. La base locale (chantiers, montant du marche, noms des affectes, file d'envoi) n'est
+     pas chiffree au socle : elle ne doit jamais quitter le telephone (R1-04, MASVS-STORAGE-2).
+     Les jetons sont dans le Keystore, non sauvegarde. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

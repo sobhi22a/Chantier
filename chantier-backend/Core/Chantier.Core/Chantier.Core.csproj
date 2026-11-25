@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Les commentaires XML des reponses alimentent le document OpenAPI ; CS1591 et CS1573 (commentaires manquants) ne sont pas exiges : on ne documente que les champs utiles aux clients. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591;CS1573</NoWarn>
+  </PropertyGroup>
+
+  <!-- Domaine : aucune reference EF Core, SQL ni ASP.NET (ADR 0001). Un test d'architecture le verifie. -->
+  <ItemGroup>
+    <PackageReference Include="Ardalis.Specification" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,80 @@
+{
+  "app": {
+    "title": "Chantier",
+    "tagline": "Suivi de chantier",
+    "home": {
+      "title": "Back-office Chantier",
+      "intro": "Gestion des chantiers, des zones et des équipes."
+    }
+  },
+  "language": {
+    "label": "Langue",
+    "fr": "Français",
+    "ar": "العربية"
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "create": "Créer",
+    "edit": "Modifier",
+    "archive": "Archiver",
+    "restore": "Restaurer",
+    "retry": "Réessayer",
+    "refresh": "Actualiser",
+    "search": "Rechercher",
+    "close": "Fermer",
+    "back": "Retour",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "reload": "Recharger"
+  },
+  "state": {
+    "loading": "Chargement en cours…",
+    "empty": "Aucun élément à afficher.",
+    "noResults": "Aucun résultat.",
+    "error": "Une erreur est survenue."
+  },
+  "pagination": {
+    "page": "Page {{page}} sur {{total}}",
+    "total_one": "{{count}} élément",
+    "total_other": "{{count}} éléments"
+  },
+  "nav": {
+    "sites": "Chantiers",
+    "mySites": "Mes chantiers",
+    "menu": "Menu principal",
+    "skipToContent": "Aller au contenu"
+  },
+  "roles": {
+    "Admin": "Administrateur",
+    "Direction": "Direction",
+    "ConducteurTravaux": "Conducteur de travaux",
+    "Achats": "Achats",
+    "ChefChantier": "Chef de chantier",
+    "ChefEquipe": "Chef d'équipe"
+  },
+  "notifications": {
+    "info": "Information",
+    "success": "Succès",
+    "warning": "Avertissement",
+    "error": "Erreur"
+  },
+  "units": {
+    "meter": "m",
+    "currency": "DZD",
+    "day_one": "{{count}} jour",
+    "day_other": "{{count}} jours"
+  },
+  "unauthorized": {
+    "title": "Accès non autorisé",
+    "message": "Votre rôle ne permet pas d'ouvrir cette page.",
+    "backHome": "Retour à l'accueil"
+  },
+  "errorBoundary": {
+    "title": "Erreur de l'application",
+    "message": "Une erreur inattendue est survenue. Rechargez l'application ; si le problème continue, contactez votre administrateur.",
+    "reload": "Recharger l'application",
+    "reference": "Type d'erreur"
+  }
+}

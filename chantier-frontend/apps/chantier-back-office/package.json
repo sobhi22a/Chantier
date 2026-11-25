@@ -1,0 +1,8 @@
+{
+  "name": "@chantier-frontend/chantier-back-office",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "chantier-back-office"
+  }
+}

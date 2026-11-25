@@ -1,0 +1,24 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    # Helpers produits par `drift_dev schema generate` : jamais modifies a la main.
+    - test/generated_migrations/**
+    # Client produit par swagger_parser + retrofit (8 avertissements de style connus, ADR 0006).
+    # Les erreurs de compilation restent detectees par les tests, qui l'importent.
+    - lib/core/api/generated/**
+  language:
+    strict-casts: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    # ADR 0008 : qualite
+    always_use_package_imports: true
+    avoid_print: true
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    unawaited_futures: true
+    use_build_context_synchronously: true
+    prefer_const_constructors: true
+    prefer_const_declarations: true

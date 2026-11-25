@@ -1,0 +1,10 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          # Schema versionne et exporte (`dart run drift_dev schema dump ...`) : sert au test de migration.
+          databases:
+            app_database: lib/database/app_database.dart
+          schema_dir: drift_schemas/
+          test_dir: test/generated_migrations/

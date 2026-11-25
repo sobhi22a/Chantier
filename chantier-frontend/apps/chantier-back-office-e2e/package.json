@@ -1,0 +1,11 @@
+{
+  "name": "@chantier-frontend/chantier-back-office-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "implicitDependencies": [
+      "chantier-back-office"
+    ],
+    "name": "chantier-back-office-e2e"
+  }
+}

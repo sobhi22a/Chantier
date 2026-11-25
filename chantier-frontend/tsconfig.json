@@ -1,0 +1,31 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/chantier-back-office-e2e"
+    },
+    {
+      "path": "./apps/chantier-back-office"
+    },
+    {
+      "path": "./libs/api-core"
+    },
+    {
+      "path": "./libs/authentication"
+    },
+    {
+      "path": "./libs/state-store"
+    },
+    {
+      "path": "./libs/user-interface"
+    },
+    {
+      "path": "./libs/i18n"
+    },
+    {
+      "path": "./libs/testing"
+    }
+  ]
+}

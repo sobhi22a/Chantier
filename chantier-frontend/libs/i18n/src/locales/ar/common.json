@@ -1,0 +1,88 @@
+{
+  "app": {
+    "title": "ورشة",
+    "tagline": "متابعة الورشات",
+    "home": {
+      "title": "لوحة إدارة الورشات",
+      "intro": "تسيير الورشات والمناطق والفرق."
+    }
+  },
+  "language": {
+    "label": "اللغة",
+    "fr": "Français",
+    "ar": "العربية"
+  },
+  "actions": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "create": "إنشاء",
+    "edit": "تعديل",
+    "archive": "أرشفة",
+    "restore": "استعادة",
+    "retry": "إعادة المحاولة",
+    "refresh": "تحديث",
+    "search": "بحث",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "previous": "السابق",
+    "next": "التالي",
+    "reload": "إعادة التحميل"
+  },
+  "state": {
+    "loading": "جارٍ التحميل…",
+    "empty": "لا توجد عناصر للعرض.",
+    "noResults": "لا توجد نتائج.",
+    "error": "حدث خطأ."
+  },
+  "pagination": {
+    "page": "الصفحة {{page}} من {{total}}",
+    "total_zero": "لا توجد عناصر",
+    "total_one": "عنصر واحد",
+    "total_two": "عنصران",
+    "total_few": "{{count}} عناصر",
+    "total_many": "{{count}} عنصرًا",
+    "total_other": "{{count}} عنصر"
+  },
+  "nav": {
+    "sites": "الورشات",
+    "mySites": "ورشاتي",
+    "menu": "القائمة الرئيسية",
+    "skipToContent": "الانتقال إلى المحتوى"
+  },
+  "roles": {
+    "Admin": "المسؤول",
+    "Direction": "الإدارة",
+    "ConducteurTravaux": "مسؤول متابعة الأشغال",
+    "Achats": "المشتريات",
+    "ChefChantier": "رئيس الورشة",
+    "ChefEquipe": "رئيس الفريق"
+  },
+  "notifications": {
+    "info": "معلومة",
+    "success": "نجاح",
+    "warning": "تنبيه",
+    "error": "خطأ"
+  },
+  "units": {
+    "meter": "m",
+    "currency": "DZD",
+    "day_zero": "{{count}} يوم",
+    "day_one": "يوم واحد",
+    "day_two": "يومان",
+    "day_few": "{{count}} أيام",
+    "day_many": "{{count}} يومًا",
+    "day_other": "{{count}} يوم"
+  },
+  "unauthorized": {
+    "title": "الدخول غير مسموح",
+    "message": "دورك لا يسمح بفتح هذه الصفحة.",
+    "backHome": "العودة إلى الصفحة الرئيسية"
+  },
+  "errorBoundary": {
+    "title": "خطأ في التطبيق",
+    "message": "حدث خطأ غير متوقع. أعد تحميل التطبيق، وإذا استمر المشكل فاتصل بالمسؤول.",
+    "reload": "إعادة تحميل التطبيق",
+    "reference": "نوع الخطأ"
+  }
+}

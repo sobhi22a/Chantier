@@ -1,0 +1,31 @@
+# Client d'API genere depuis le contrat `docs/api/openapi.json` (ADR 0006, tache M4).
+# Regenerer (3 etapes, dans cet ordre ; la CI les rejoue puis fait `git diff --exit-code`) :
+#   dart run swagger_parser
+#   dart run build_runner build --delete-conflicting-outputs
+#   dart format lib
+# (swagger_parser ecrit du code non formate : sans la derniere etape, le diff differe.)
+# Les fichiers de `lib/core/api/generated/` sont commites et JAMAIS modifies a la main ;
+# la CI regenere et echoue si `git diff --exit-code` n'est pas vide.
+#
+# Versions obligatoires (ADR 0006, verifiees par le backend) : swagger_parser 1.46.0 (la 2.x exige
+# Dart >= 3.13), retrofit 4.4.2 + retrofit_generator 9.1.9 (les versions plus recentes ne generent plus
+# avec analyzer 7.7.1).
+swagger_parser:
+  schema_path: ../docs/api/openapi.json
+  output_directory: lib/core/api/generated
+  language: dart
+  json_serializer: freezed
+  # freezed 3.x refuse les classes produites sans cette option.
+  use_freezed3: true
+  # Pas de client racine : chaque client (AuthClient, SitesClient...) recoit le Dio du DioClient.
+  root_client: false
+  export_file: true
+  put_in_folder: false
+  put_clients_in_folder: false
+  client_postfix: Client
+  # Les noms des methodes viennent des operationId stables du backend (Sites_List -> sitesList).
+  path_method_name: false
+  enums_to_json: true
+  # Un nouveau type de local cote serveur ne casse pas un ancien mobile (valeur $unknown).
+  unknown_enum_value: true
+  mark_files_as_generated: true

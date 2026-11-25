@@ -1,0 +1,310 @@
+{
+  "@@locale": "fr",
+  "appName": "Chantier",
+  "@appName": {
+    "description": "Nom de l'application"
+  },
+  "sitesTitle": "Mes chantiers",
+  "languageLabel": "Langue",
+  "languageFrench": "Français",
+  "languageArabic": "العربية",
+  "actionRetry": "Réessayer",
+  "errorValidation": "Certaines informations sont invalides. Vérifiez les champs.",
+  "@errorValidation": {
+    "description": "Code serveur VALIDATION"
+  },
+  "errorDateInvalide": "Date invalide : le jour, le mois et l'année sont obligatoires.",
+  "errorQuantiteInvalide": "La quantité doit être supérieure à zéro.",
+  "errorCurseurInvalide": "La synchronisation doit repartir de zéro. Vos saisies en attente sont conservées.",
+  "errorNonAuthentifie": "Session expirée. Reconnectez-vous.",
+  "errorIdentifiantsInvalides": "Identifiant ou mot de passe incorrect, ou compte inactif. Contactez votre administrateur.",
+  "errorRefreshInvalide": "Votre session n'est plus valide. Reconnectez-vous : vos saisies en attente sont conservées.",
+  "errorAccesRetire": "Accès retiré, contactez votre administrateur.",
+  "errorInterdit": "Vous n'avez pas le droit de faire cette action.",
+  "errorIntrouvable": "Élément introuvable.",
+  "errorConflitVersion": "Cet élément a été modifié entre-temps. Rechargez-le.",
+  "errorLotTropGrand": "Envoi trop volumineux.",
+  "errorCodeChantierExistant": "Ce code de chantier existe déjà.",
+  "errorZoneExistante": "Cette zone existe déjà sur ce chantier.",
+  "errorChantierArchive": "Ce chantier est archivé : plus aucune saisie n'est possible.",
+  "errorCompteDesactive": "Ce compte est désactivé.",
+  "errorMotDePasseFaible": "Mot de passe trop faible. Choisissez-en un plus long et plus varié.",
+  "errorMotDePasseAChanger": "Mot de passe provisoire : choisissez votre mot de passe avant de continuer.",
+  "errorEntiteNonSynchronisable": "Ce type de saisie ne peut pas encore être envoyé.",
+  "errorTropDEssais": "Trop d'essais, réessayez plus tard.",
+  "errorTropDeRequetes": "Trop de requêtes, patientez un instant.",
+  "errorErreurInterne": "Erreur du serveur. Réessayez plus tard.",
+  "errorUniteObligatoire": "L'unité est obligatoire.",
+  "errorUnitesIncompatibles": "Unités incompatibles : impossible de les additionner.",
+  "errorExpressionInvalide": "Expression de métré invalide.",
+  "errorTransitionInterdite": "Ce changement de statut n'est pas autorisé.",
+  "errorNetwork": "Pas de réseau. Vos saisies sont conservées et partiront au retour du réseau.",
+  "errorTimeout": "Le serveur met trop de temps à répondre. Réessayez.",
+  "errorUnknown": "Une erreur est survenue. Réessayez.",
+  "actionCancel": "Annuler",
+  "actionConfirm": "Confirmer",
+  "actionRefresh": "Actualiser",
+  "loginTitle": "Connexion",
+  "loginUserName": "Identifiant",
+  "loginPassword": "Mot de passe",
+  "loginShowPassword": "Afficher le mot de passe",
+  "loginHidePassword": "Masquer le mot de passe",
+  "loginSubmit": "Se connecter",
+  "loginSubmitting": "Connexion en cours…",
+  "loginFieldRequired": "Champ obligatoire",
+  "loginFirstConnectionTitle": "Première connexion : réseau nécessaire",
+  "loginFirstConnectionBody": "Connectez-vous à internet pour ouvrir votre session. Vos chantiers seront ensuite disponibles sans réseau.",
+  "noticeSessionExpired": "Votre session a expiré. Reconnectez-vous : vos saisies en attente sont conservées.",
+  "passwordChangeTitle": "Nouveau mot de passe",
+  "passwordChangeIntro": "Votre mot de passe est provisoire. Choisissez-en un nouveau avant de continuer.",
+  "passwordCurrent": "Mot de passe provisoire",
+  "passwordNew": "Nouveau mot de passe",
+  "passwordConfirm": "Confirmer le nouveau mot de passe",
+  "passwordMismatch": "Les deux mots de passe sont différents.",
+  "passwordChangeSubmit": "Enregistrer le mot de passe",
+  "logoutTitle": "Se déconnecter",
+  "logoutConfirmBody": "Vous allez fermer votre session. Les données chantier seront effacées de ce téléphone.",
+  "logoutConfirm": "Se déconnecter",
+  "logoutPendingTitle": "{count, plural, =1{1 saisie n'est pas encore envoyée} other{{count} saisies ne sont pas encore envoyées}}",
+  "@logoutPendingTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "logoutSendFirst": "Envoyer d'abord",
+  "logoutStay": "Rester connecté",
+  "logoutAnyway": "Se déconnecter quand même",
+  "logoutAnywayTitle": "Se déconnecter avec des saisies en attente ?",
+  "logoutAnywayBody": "Elles restent sur ce téléphone, mais ne partiront qu'après votre reconnexion avec ce même compte.",
+  "logoutSending": "Envoi en cours…",
+  "logoutSendFailed": "L'envoi n'a pas abouti. Vos saisies sont conservées.",
+  "syncUpToDate": "À jour",
+  "syncUpToDateAt": "À jour · {when}",
+  "@syncUpToDateAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "syncOffline": "Hors ligne",
+  "syncPending": "{count} à envoyer",
+  "@syncPending": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncSyncing": "Synchronisation…",
+  "syncProblem": "{count} à vérifier",
+  "@syncProblem": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncProblemServer": "Problème de synchronisation",
+  "syncAuthRequired": "Reconnexion nécessaire",
+  "syncWhenToday": "aujourd'hui {time}",
+  "@syncWhenToday": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncStaleBanner": "Données du {when}",
+  "@syncStaleBanner": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNow": "Synchroniser maintenant",
+  "syncDetailsHint": "Voir les envois en attente",
+  "sitesEmpty": "Aucun chantier ne vous est affecté. Contactez votre administrateur.",
+  "sitesPreparing": "Préparation de vos chantiers…",
+  "sitesPreparingCount": "{count, plural, =0{Aucun élément reçu pour l'instant} =1{1 élément reçu} other{{count} éléments reçus}}",
+  "@sitesPreparingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sitesFirstSyncOffline": "Pas de réseau : vos chantiers n'ont pas encore été reçus. Connectez-vous à internet pour les préparer.",
+  "sitesSearchHint": "Rechercher un chantier",
+  "sitesShowArchived": "Afficher les archivés",
+  "sitesNoResult": "Aucun chantier ne correspond.",
+  "sitesCurrentBadge": "Chantier courant",
+  "sitesArchivedBadge": "Archivé",
+  "sitesDataFrom": "Données du {when}",
+  "@sitesDataFrom": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "sitesChooseTitle": "Choisir un chantier",
+  "sitesChooseRequired": "Choisissez votre chantier avant de faire une saisie.",
+  "sitesCurrentRemoved": "Votre chantier courant ne vous est plus affecté. Choisissez-en un autre.",
+  "siteInfoTitle": "Informations",
+  "siteType": "Type d'ouvrage",
+  "siteTypeSchool": "École",
+  "siteTypeHousing": "Logements",
+  "siteTypePublicFacility": "Équipement public",
+  "siteTypeOther": "Autre",
+  "siteWilaya": "Wilaya",
+  "siteCommune": "Commune",
+  "siteCoordinates": "Coordonnées GPS",
+  "siteOwner": "Maître d'ouvrage",
+  "siteContractNumber": "N° de marché",
+  "siteContractAmount": "Montant",
+  "siteDelay": "Délai",
+  "siteDelayDays": "{count, plural, =1{1 jour} other{{count} jours}}",
+  "@siteDelayDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "siteOds": "ODS de démarrage",
+  "siteEndDate": "Fin contractuelle",
+  "siteToDefine": "À définir",
+  "siteZonesTitle": "Zones",
+  "siteNoZones": "Aucune zone pour ce chantier.",
+  "siteMembersTitle": "Personnes affectées",
+  "siteCreatedBy": "Créé par {name} le {when}",
+  "@siteCreatedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "siteUpdatedBy": "Modifié par {name} le {when}",
+  "@siteUpdatedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "siteNotFound": "Chantier introuvable.",
+  "roleAdmin": "Admin",
+  "roleDirection": "Direction",
+  "roleConducteurTravaux": "Conducteur de travaux",
+  "roleAchats": "Achats",
+  "roleChefChantier": "Chef de chantier",
+  "roleChefEquipe": "Chef d'équipe",
+  "roomTypeClassroom": "Classe",
+  "roomTypeCorridor": "Couloir",
+  "roomTypeCanteen": "Cantine",
+  "roomTypeRefectory": "Réfectoire",
+  "roomTypeKitchen": "Cuisine",
+  "roomTypeOffice": "Bureau",
+  "roomTypeSanitary": "Sanitaires",
+  "roomTypeTechnicalRoom": "Local technique",
+  "roomTypeFacade": "Façade",
+  "roomTypeOther": "Autre",
+  "zonePendingBadge": "En attente d'envoi",
+  "settingsTitle": "Réglages",
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsAccount": "Compte",
+  "zoneAddButton": "+ Zone",
+  "zoneAddTitle": "Ajouter une zone",
+  "zoneBlock": "Bloc",
+  "zoneBlockNew": "Nouveau bloc",
+  "zoneBlockNewLabel": "Nom du bloc",
+  "zoneElevation": "Cote",
+  "zoneElevationOther": "Autre cote",
+  "zoneElevationNone": "Sans cote",
+  "zoneElevationUnit": "en mètres",
+  "zoneElevationLabel": "Cote (m)",
+  "zoneElevationHelp": "En mètres, de {min} à {max}.",
+  "@zoneElevationHelp": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "zoneElevationInvalid": "Cote invalide : chiffres seulement (par exemple 3,4).",
+  "zoneElevationOutOfRange": "La cote doit être comprise entre {min} et {max} m.",
+  "@zoneElevationOutOfRange": {
+    "placeholders": {
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "zoneRoomType": "Type de local",
+  "zoneRoomNone": "Aucun local",
+  "zoneRoomNumber": "Numéro",
+  "zoneRoomNumberMore": "Numéro suivant",
+  "zoneRoomNumberLess": "Numéro précédent",
+  "zoneRoomLabel": "Libellé du local",
+  "zoneRoomLabelRequired": "Précisez le local.",
+  "zoneBlockRequired": "Choisissez ou créez un bloc.",
+  "zoneSave": "Enregistrer",
+  "zoneSavedPending": "Zone enregistrée. En attente d'envoi.",
+  "zoneExists": "Cette zone existe déjà.",
+  "zoneSearchHint": "Rechercher (par exemple « cl 02 »)",
+  "zonePickerTitle": "Choisir une zone",
+  "zonePickerConfirm": "Valider",
+  "zonePickerNone": "Non précisée",
+  "zonePickerNoResult": "Aucune zone ne correspond.",
+  "pendingTitle": "Envois en attente",
+  "pendingEmpty": "Rien à envoyer. Tout est à jour.",
+  "pendingSavedAt": "Saisi le {when}",
+  "@pendingSavedAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingStatusPending": "En attente d'envoi",
+  "pendingStatusSending": "Envoi en cours",
+  "pendingStatusToCheck": "À vérifier",
+  "pendingEntityZone": "Zone",
+  "pendingCorrect": "Corriger",
+  "pendingAbandon": "Abandonner",
+  "pendingAbandonTitle": "Abandonner cette saisie ?",
+  "pendingAbandonBody": "Elle sera supprimée de ce téléphone. Cette action est définitive.",
+  "pendingReason": "Motif : {reason}",
+  "@pendingReason": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingSyncFailed": "La synchronisation n'a pas abouti. Vos saisies sont conservées."
+}

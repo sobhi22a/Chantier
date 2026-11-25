@@ -1,0 +1,27 @@
+# Base SQL Server 2022 de DEVELOPPEMENT uniquement (ADR 0003). Jamais pour la production.
+# Demarrage : docker compose -f docker-compose.dev.yml up -d   (ou scripts/dev.ps1)
+# Le mot de passe SA est lu dans .env (copie de .env.example) ; il n'est jamais ecrit ici.
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: chantier-dev-db
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:?Definir MSSQL_SA_PASSWORD dans .env (voir .env.example)}
+      MSSQL_MEMORY_LIMIT_MB: ${MSSQL_MEMORY_LIMIT_MB:-2048}
+    ports:
+      # Boucle locale seulement : la base de developpement (compte sa) n'est pas joignable depuis le reseau local (revue R1-18).
+      - "127.0.0.1:${MSSQL_PORT:-14335}:1433"
+    volumes:
+      - chantier-dev-mssql:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" -b -o /dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+volumes:
+  chantier-dev-mssql:

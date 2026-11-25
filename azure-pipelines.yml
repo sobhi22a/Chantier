@@ -1,0 +1,457 @@
+# D1 (plan socle) : integration continue, ADR 0010 (tests et CI) et ADR 0006 (clients generes).
+# Trois jobs paralleles (backend, web, mobile) + un controle transversal des paquets interdits.
+# Aucun secret reel : la cle JWT de test est generee a chaque execution. Aucun deploiement ici (lot exploitation).
+# Procedure et durees mesurees : docs/exploitation/ci.md
+
+trigger:
+  branches:
+    include:
+      - master
+
+pr:
+  branches:
+    include:
+      - master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  # Caches (Cache@2) : tout sous Pipeline.Workspace, restaure avant les commandes.
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+  NPM_CACHE_DIR: $(Pipeline.Workspace)/.npm
+  PUB_CACHE: $(Pipeline.Workspace)/.pub-cache
+  GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
+  FLUTTER_VERSION: 3.35.7 # epingle : ne pas monter sans ADR (ADR 0008, 0010)
+  FLUTTER_HOME: $(Pipeline.Workspace)/flutter
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: 1
+  DOTNET_CLI_UI_LANGUAGE: en
+  NX_NO_CLOUD: true # pas de Nx Cloud (ADR 0010)
+  NX_DAEMON: false
+  CI: true
+
+jobs:
+  # ---------------------------------------------------------------------------------------------
+  # Controle transversal : paquets interdits sans ADR (ADR 0001 regle 7, ADR 0010). Rapide, echoue en premier.
+  # ---------------------------------------------------------------------------------------------
+  - job: paquets_interdits
+    displayName: Paquets interdits
+    timeoutInMinutes: 10
+    steps:
+      - checkout: self
+        fetchDepth: 1
+      - script: pwsh -NoProfile -File scripts/ci/check-banned-packages.ps1
+        displayName: AutoMapper, MediatR, FluentAssertions, MassTransit, SixLabors, Oracle
+
+  # ---------------------------------------------------------------------------------------------
+  # Backend .NET 10
+  # ---------------------------------------------------------------------------------------------
+  - job: backend
+    displayName: Backend .NET 10
+    timeoutInMinutes: 30
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: UseDotNet@2
+        displayName: 'SDK .NET 10 (global.json 10.0.100, rollForward latestFeature)'
+        inputs:
+          packageType: sdk
+          version: 10.0.x
+
+      - task: Cache@2
+        displayName: Cache NuGet
+        inputs:
+          key: 'nuget | "$(Agent.OS)" | chantier-backend/Directory.Packages.props | chantier-backend/**/*.csproj'
+          restoreKeys: |
+            nuget | "$(Agent.OS)"
+          path: $(NUGET_PACKAGES)
+
+      - script: dotnet restore chantier-backend/Chantier.sln
+        displayName: dotnet restore
+
+      # Transitifs .NET : project.assets.json n'existe qu'apres la restauration.
+      - script: pwsh -NoProfile -File scripts/ci/check-banned-packages.ps1 -IncludeRestoredAssets
+        displayName: Paquets interdits (transitifs .NET)
+
+      - script: dotnet build chantier-backend/Chantier.sln -c Release --no-restore -warnaserror
+        displayName: dotnet build -c Release -warnaserror
+
+      - script: dotnet format chantier-backend/Chantier.sln --verify-no-changes --no-restore
+        displayName: dotnet format --verify-no-changes
+
+      - script: |
+          set -euo pipefail
+          out="$(Agent.TempDirectory)/vulnerable.txt"
+          dotnet list chantier-backend/Chantier.sln package --vulnerable --include-transitive --no-restore 2>&1 | tee "$out"
+          # Lignes de resultat : "> Paquet  Demande  Resolu  Gravite  URL". Echec si gravite High ou Critical.
+          if grep -Eq '^[[:space:]]*>.*[[:space:]](High|Critical)[[:space:]]' "$out"; then
+            echo "##vso[task.logissue type=error]Paquet NuGet vulnerable (gravite High ou Critical)."
+            exit 1
+          fi
+        displayName: Paquets NuGet vulnerables (High, Critical)
+
+      # Contrat OpenAPI (CT-10, ADR 0006) : le build du projet WebApi regenere docs/api/openapi.json,
+      # puis le fichier doit etre identique a celui versionne (modifie, supprime ou non suivi : echec).
+      - script: |
+          set -euo pipefail
+          if [ -f docs/api/openapi.json ]; then echo "##vso[task.setvariable variable=openapiExists]true"; fi
+          bash scripts/ci/check-generated-drift.sh "Contrat OpenAPI" docs/api/openapi.json
+        displayName: Contrat OpenAPI identique au fichier versionne
+
+      - script: |
+          set -euo pipefail
+          docker info --format 'Docker {{.ServerVersion}}'
+          docker pull mcr.microsoft.com/mssql/server:2022-latest
+        displayName: Docker pour Testcontainers (image SQL Server)
+
+      # Cle JWT de test : generee a chaque execution, masquee dans les journaux, jamais stockee.
+      # Sans CHANTIER_TEST_SQL, les tests d'integration lancent un conteneur Testcontainers.
+      - script: |
+          set -euo pipefail
+          key="$(head -c 48 /dev/urandom | base64 | tr -d '\n')"
+          echo "##vso[task.setsecret]$key"
+          export JwtSettings__Key="$key"
+          dotnet test chantier-backend/Chantier.sln -c Release --no-build \
+            --logger "trx" --collect:"XPlat Code Coverage" \
+            --results-directory "$(Build.ArtifactStagingDirectory)/backend-tests"
+        displayName: dotnet test (unitaires et integration)
+
+      - task: PublishTestResults@2
+        displayName: Rapports de tests .NET
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFormat: VSTest
+          testResultsFiles: '**/*.trx'
+          searchFolder: $(Build.ArtifactStagingDirectory)/backend-tests
+          testRunTitle: Backend
+          failTaskOnFailedTests: true
+
+      - task: PublishPipelineArtifact@1
+        displayName: Artefact couverture backend
+        condition: succeededOrFailed()
+        inputs:
+          targetPath: $(Build.ArtifactStagingDirectory)/backend-tests
+          artifact: backend-tests
+
+      - task: PublishPipelineArtifact@1
+        displayName: Artefact OpenAPI genere
+        condition: and(succeededOrFailed(), eq(variables.openapiExists, 'true'))
+        inputs:
+          targetPath: docs/api/openapi.json
+          artifact: openapi
+
+  # ---------------------------------------------------------------------------------------------
+  # Web : React 19, Nx
+  # ---------------------------------------------------------------------------------------------
+  - job: web
+    displayName: Web React (Nx)
+    timeoutInMinutes: 20
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: NodeTool@0
+        displayName: Node 22
+        inputs:
+          versionSpec: 22.x
+
+      - task: Cache@2
+        displayName: Cache npm
+        inputs:
+          key: 'npm | "$(Agent.OS)" | chantier-frontend/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(NPM_CACHE_DIR)
+
+      # Cache local Nx : valide par empreinte des entrees, donc sans risque de resultat perime.
+      - task: Cache@2
+        displayName: Cache Nx
+        inputs:
+          key: 'nx | "$(Agent.OS)" | chantier-frontend/package-lock.json | "$(Build.SourceVersion)"'
+          restoreKeys: |
+            nx | "$(Agent.OS)" | chantier-frontend/package-lock.json
+          path: chantier-frontend/.nx/cache
+
+      # Installation figee par le lockfile, sans --legacy-peer-deps (decision frontend-react).
+      - script: npm ci --cache "$(NPM_CACHE_DIR)" --prefer-offline --no-audit --no-fund
+        workingDirectory: chantier-frontend
+        displayName: npm ci
+
+      - script: npx nx run-many -t lint test build typecheck --parallel=3
+        workingDirectory: chantier-frontend
+        displayName: nx run-many lint test build typecheck
+
+      # Client d'API genere (W3, ADR 0006) : regenere depuis docs/api/openapi.json puis compare au fichier commite.
+      - script: npm run generate:api
+        workingDirectory: chantier-frontend
+        displayName: npm run generate:api
+
+      - script: bash scripts/ci/check-generated-drift.sh "Client d'API web genere" chantier-frontend/libs/api-core/src/generated
+        displayName: Client d'API web identique au fichier versionne
+
+      - task: PublishPipelineArtifact@1
+        displayName: Artefact build web
+        inputs:
+          targetPath: chantier-frontend/apps/chantier-back-office/build
+          artifact: web-build
+
+  # ---------------------------------------------------------------------------------------------
+  # Mobile : Flutter 3.35.7 epingle, Android
+  # ---------------------------------------------------------------------------------------------
+  - job: mobile
+    displayName: Mobile Flutter
+    timeoutInMinutes: 40
+    variables:
+      JAVA_HOME: $(JAVA_HOME_17_X64)
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: Cache@2
+        displayName: Cache Flutter SDK $(FLUTTER_VERSION)
+        inputs:
+          key: 'flutter | "$(Agent.OS)" | "$(FLUTTER_VERSION)"'
+          path: $(FLUTTER_HOME)
+          cacheHitVar: FLUTTER_CACHE_HIT
+
+      - script: git clone --depth 1 --branch "$(FLUTTER_VERSION)" https://github.com/flutter/flutter.git "$(FLUTTER_HOME)"
+        displayName: Installer Flutter $(FLUTTER_VERSION)
+        condition: ne(variables.FLUTTER_CACHE_HIT, 'true')
+
+      - script: |
+          set -euo pipefail
+          echo "##vso[task.prependpath]$(FLUTTER_HOME)/bin"
+          export PATH="$(FLUTTER_HOME)/bin:$PATH"
+          flutter config --no-analytics
+          flutter --version
+          flutter --version | grep -q "Flutter $(FLUTTER_VERSION)"
+        displayName: Verifier la version epinglee
+
+      - task: Cache@2
+        displayName: Cache pub
+        inputs:
+          key: 'pub | "$(Agent.OS)" | chantier-mobile/pubspec.lock'
+          restoreKeys: |
+            pub | "$(Agent.OS)"
+          path: $(PUB_CACHE)
+
+      - task: Cache@2
+        displayName: Cache Gradle
+        inputs:
+          key: 'gradle | "$(Agent.OS)" | chantier-mobile/android/**/*.gradle* | chantier-mobile/android/gradle/wrapper/gradle-wrapper.properties'
+          restoreKeys: |
+            gradle | "$(Agent.OS)"
+          path: $(GRADLE_USER_HOME)
+
+      # Tests Drift : SQLite natif en memoire (README mobile).
+      - script: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libsqlite3-dev
+        displayName: libsqlite3-dev
+
+      - script: flutter pub get
+        workingDirectory: chantier-mobile
+        displayName: flutter pub get
+
+      # Client d'API mobile (M4, ADR 0006) : 3 etapes dans cet ordre (swagger_parser ecrit du code non formate).
+      - script: dart run swagger_parser
+        workingDirectory: chantier-mobile
+        displayName: swagger_parser (client d'API depuis OpenAPI)
+
+      - script: dart run build_runner build --delete-conflicting-outputs
+        workingDirectory: chantier-mobile
+        displayName: build_runner (Drift, freezed, json, retrofit)
+
+      - script: dart format lib
+        workingDirectory: chantier-mobile
+        displayName: dart format lib (apres generation)
+
+      # Schema Drift exporte et tests de migration generes : doivent correspondre au code (README mobile).
+      - script: |
+          set -euo pipefail
+          dart run drift_dev schema dump lib/database/app_database.dart drift_schemas/
+          dart run drift_dev schema generate drift_schemas/ test/generated_migrations/
+        workingDirectory: chantier-mobile
+        displayName: Schema Drift (dump et tests de migration)
+
+      # Le script voit les fichiers modifies, supprimes ET nouveaux (git diff --exit-code seul ignore les non suivis).
+      - script: >
+          bash scripts/ci/check-generated-drift.sh "Fichiers generes mobile"
+          chantier-mobile/lib chantier-mobile/drift_schemas chantier-mobile/test/generated_migrations
+        displayName: Fichiers generes identiques aux versionnes (*.g.dart, migrations)
+
+      - script: dart format --output=none --set-exit-if-changed lib test
+        workingDirectory: chantier-mobile
+        displayName: dart format
+
+      - script: flutter analyze
+        workingDirectory: chantier-mobile
+        displayName: flutter analyze (zero avertissement)
+
+      - script: flutter test --coverage
+        workingDirectory: chantier-mobile
+        displayName: flutter test
+
+      - task: PublishPipelineArtifact@1
+        displayName: Artefact couverture mobile
+        condition: succeededOrFailed()
+        inputs:
+          targetPath: chantier-mobile/coverage
+          artifact: mobile-coverage
+
+      - script: |
+          yes | flutter doctor --android-licenses > /dev/null 2>&1 || true
+          flutter build apk --debug
+        workingDirectory: chantier-mobile
+        displayName: flutter build apk --debug
+
+      - task: PublishPipelineArtifact@1
+        displayName: Artefact APK debug
+        inputs:
+          targetPath: chantier-mobile/build/app/outputs/flutter-apk/app-debug.apk
+          artifact: apk-debug
+
+  # ---------------------------------------------------------------------------------------------
+  # Parcours de bout en bout : Playwright, Chromium seul (ADR 0010, QA D-4).
+  # NON BLOQUANT : continueOnError rend le job « reussi avec avertissements » s'il echoue. Raison : premier
+  # passage sur agent hebergé jamais mesure (navigateur, SQL Server en conteneur, API demarree en arriere-plan).
+  # Passer continueOnError a false quand 5 executions consecutives sont stables (voir docs/exploitation/ci.md).
+  # Aucun secret stocke : base et mot de passe de demonstration sont generes a chaque execution, masques, jetes.
+  # ---------------------------------------------------------------------------------------------
+  - job: e2e
+    displayName: Parcours Playwright (Chromium)
+    timeoutInMinutes: 30
+    continueOnError: true
+    variables:
+      API_PORT: 8195
+      WEB_PORT: 3600
+      PLAYWRIGHT_BROWSERS_PATH: $(Pipeline.Workspace)/.playwright
+    steps:
+      - checkout: self
+        fetchDepth: 1
+
+      - task: UseDotNet@2
+        displayName: 'SDK .NET 10'
+        inputs:
+          packageType: sdk
+          version: 10.0.x
+
+      - task: NodeTool@0
+        displayName: Node 22
+        inputs:
+          versionSpec: 22.x
+
+      - task: Cache@2
+        displayName: Cache NuGet
+        inputs:
+          key: 'nuget | "$(Agent.OS)" | chantier-backend/Directory.Packages.props | chantier-backend/**/*.csproj'
+          restoreKeys: |
+            nuget | "$(Agent.OS)"
+          path: $(NUGET_PACKAGES)
+
+      - task: Cache@2
+        displayName: Cache npm
+        inputs:
+          key: 'npm | "$(Agent.OS)" | chantier-frontend/package-lock.json'
+          restoreKeys: |
+            npm | "$(Agent.OS)"
+          path: $(NPM_CACHE_DIR)
+
+      - task: Cache@2
+        displayName: Cache navigateurs Playwright
+        inputs:
+          key: 'playwright | "$(Agent.OS)" | chantier-frontend/package-lock.json'
+          path: $(PLAYWRIGHT_BROWSERS_PATH)
+
+      - script: npm ci --cache "$(NPM_CACHE_DIR)" --prefer-offline --no-audit --no-fund
+        workingDirectory: chantier-frontend
+        displayName: npm ci
+
+      - script: npx playwright install --with-deps chromium
+        workingDirectory: chantier-frontend
+        displayName: Playwright, Chromium seul
+
+      # Secrets de l'execution : jamais ecrits dans un fichier du depot, masques dans les journaux.
+      - script: |
+          set -euo pipefail
+          sa="Aa1!$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)"
+          demo="Aa1!$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)"
+          jwt="$(head -c 48 /dev/urandom | base64 | tr -d '\n')"
+          for v in "$sa" "$demo" "$jwt"; do echo "##vso[task.setsecret]$v"; done
+          echo "##vso[task.setvariable variable=E2E_SA_PASSWORD;issecret=true]$sa"
+          echo "##vso[task.setvariable variable=E2E_DEMO_PASSWORD;issecret=true]$demo"
+          echo "##vso[task.setvariable variable=E2E_JWT_KEY;issecret=true]$jwt"
+        displayName: Generer les secrets de l'execution
+
+      - script: |
+          set -euo pipefail
+          docker run -d --name e2e-db -p 14335:1433 \
+            -e ACCEPT_EULA=Y -e MSSQL_PID=Developer -e MSSQL_SA_PASSWORD="$SA_PASSWORD" \
+            mcr.microsoft.com/mssql/server:2022-latest
+          for i in $(seq 1 60); do
+            if docker exec e2e-db /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" > /dev/null 2>&1; then
+              echo "Base prete apres $((i * 3)) s"; exit 0
+            fi
+            sleep 3
+          done
+          docker logs e2e-db | tail -20
+          exit 1
+        displayName: Base SQL Server (conteneur)
+        env:
+          SA_PASSWORD: $(E2E_SA_PASSWORD)
+
+      # API et Playwright dans UNE seule etape : un processus lance en arriere-plan ne survit pas forcement a la fin
+      # de son etape sur l'agent. API en Development avec les donnees de demonstration (Seed:Demo n'agit qu'en
+      # Development). Le webServer de playwright.config.ts lance `nx preview` (qui construit le web) sur le port 3600 ;
+      # l'URL de l'API est donc fournie au build via VITE_BACKEND_API_BASE_URL.
+      - script: |
+          set -euo pipefail
+          mkdir -p "$(Build.ArtifactStagingDirectory)/e2e"
+          dotnet build chantier-backend/WebApi/Chantier.WebApi -c Release
+          dotnet chantier-backend/WebApi/Chantier.WebApi/bin/Release/net10.0/Chantier.WebApi.dll             --urls "http://localhost:$(API_PORT)" > "$(Build.ArtifactStagingDirectory)/e2e/api.log" 2>&1 &
+          api_pid=$!
+          trap 'kill $api_pid 2>/dev/null || true' EXIT
+          for i in $(seq 1 60); do
+            if curl -fsS "http://localhost:$(API_PORT)/health/ready" > /dev/null 2>&1; then echo "API prete"; break; fi
+            if [ "$i" -eq 60 ]; then tail -40 "$(Build.ArtifactStagingDirectory)/e2e/api.log"; exit 1; fi
+            sleep 2
+          done
+          cd chantier-frontend
+          npx playwright test -c apps/chantier-back-office-e2e --project=chromium --reporter=list,junit
+        displayName: API (Seed:Demo) et Playwright (Chromium)
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          Seed__Demo: true
+          Seed__DemoPassword: $(E2E_DEMO_PASSWORD)
+          JwtSettings__Key: $(E2E_JWT_KEY)
+          ConnectionStrings__ChantierDb: Server=localhost,14335;Database=ChantierE2E;User Id=sa;Password=$(E2E_SA_PASSWORD);TrustServerCertificate=True
+          VITE_BACKEND_API_BASE_URL: http://localhost:$(API_PORT)
+          QA_DEMO_PASSWORD: $(E2E_DEMO_PASSWORD)
+          QA_API_URL: http://localhost:$(API_PORT)
+          PLAYWRIGHT_JUNIT_OUTPUT_FILE: $(Build.ArtifactStagingDirectory)/e2e/junit.xml
+
+      - task: PublishTestResults@2
+        displayName: Rapport Playwright
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFormat: JUnit
+          testResultsFiles: junit.xml
+          searchFolder: $(Build.ArtifactStagingDirectory)/e2e
+          testRunTitle: Playwright Chromium
+
+      - script: cp -r chantier-frontend/apps/chantier-back-office-e2e/test-output "$(Build.ArtifactStagingDirectory)/e2e/" 2>/dev/null || true
+        displayName: Reunir les traces Playwright
+        condition: succeededOrFailed()
+
+      - task: PublishPipelineArtifact@1
+        displayName: Artefact e2e (journal API, traces)
+        condition: succeededOrFailed()
+        inputs:
+          targetPath: $(Build.ArtifactStagingDirectory)/e2e
+          artifact: e2e
+
+      - script: docker rm -f e2e-db || true
+        displayName: Arreter la base
+        condition: always()

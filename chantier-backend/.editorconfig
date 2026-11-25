@@ -1,0 +1,4 @@
+# Complete le .editorconfig racine (sans root = true).
+# Les migrations EF Core sont generees (espaces de noms a accolades, designer) : jamais relues par les regles de style.
+[Core/Chantier.Infrastructure/Persistence/Migrations/*.cs]
+generated_code = true

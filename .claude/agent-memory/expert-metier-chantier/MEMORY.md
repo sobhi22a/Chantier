@@ -1,0 +1,1 @@
+- [Socle : hypothèses et questions ouvertes](project_socle.md) — socle.md rédigé le 24/11/2026, hypothèses H-01..H-20 à valider

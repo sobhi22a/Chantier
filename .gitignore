@@ -1,0 +1,33 @@
+bin/
+obj/
+node_modules/
+build/
+.dart_tool/
+.env
+*.user
+.claude/settings.local.json
+
+# --- Complement D0 (plan socle) ---
+.env.*
+!.env.example
+.vs/
+.idea/
+*.suo
+TestResults/
+coverage/
+.nx/
+dist/
+chantier-frontend/build/
+**/Storage/
+
+# Signature Android : jamais dans le depot
+*.jks
+*.keystore
+**/android/key.properties
+**/android/local.properties
+
+# Symboles de build mobile (--split-debug-info) conserves par la CI, pas par git
+**/debug-info/
+
+# Etat local du script scripts/dev.ps1 (PID, journaux)
+.dev/

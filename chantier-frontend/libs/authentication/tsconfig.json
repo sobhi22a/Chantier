@@ -1,0 +1,25 @@
+{
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../state-store"
+    },
+    {
+      "path": "../user-interface"
+    },
+    {
+      "path": "../i18n"
+    },
+    {
+      "path": "../api-core"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
+  "extends": "../../tsconfig.base.json"
+}

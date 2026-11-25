@@ -1,0 +1,1 @@
+- [Risques, endroits sensibles et commandes d'audit du projet](revue_socle_risques_et_commandes.md) — limiteur global JWT, cookie rejouable, montant mobile, sauvegarde Android, npm/dotnet/flutter, API isolée pour mesurer

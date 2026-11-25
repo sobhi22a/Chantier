@@ -1,0 +1,46 @@
+/* Styles globaux. Propriétés logiques uniquement (inline-*, block-*) : la page s'inverse seule en arabe (ADR 0007). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-block-size: 100%;
+}
+
+html {
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #fff;
+  color: #111;
+  font-size: 1rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-block-size: 100dvh;
+}
+
+/* Les flèches directionnelles (retour, suivant) se retournent en arabe. */
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Impression A4 : fond et menus retirés (les écrans imprimables arrivent avec les rapports). */
+@page {
+  size: A4;
+  margin: 15mm;
+}
+
+@media print {
+  body {
+    background: none;
+  }
+}

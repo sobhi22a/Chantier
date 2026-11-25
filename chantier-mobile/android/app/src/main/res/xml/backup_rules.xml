@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 et moins (API 30-) : meme regle, aucune donnee de l'application n'est sauvegardee
+     (R1-04). Redondant avec android:allowBackup="false", conserve en defense en profondeur. -->
+<full-backup-content>
+    <exclude domain="root" />
+    <exclude domain="file" />
+    <exclude domain="database" />
+    <exclude domain="sharedpref" />
+    <exclude domain="external" />
+</full-backup-content>

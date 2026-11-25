@@ -1,0 +1,4 @@
+# Exceptions au controle des paquets interdits (check-banned-packages.ps1).
+# Une exception exige un ADR : une ligne par paquet, au format
+#   NomDuPaquet   # ADR NNNN
+# Aucune exception a ce jour.

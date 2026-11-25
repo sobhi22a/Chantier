@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Profil debug UNIQUEMENT : HTTP en clair autorise pour joindre l'API de
+     developpement (emulateur 10.0.2.2, adb reverse, reseau local).
+     Le profil release n'a pas ce fichier : le trafic en clair y est refuse. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

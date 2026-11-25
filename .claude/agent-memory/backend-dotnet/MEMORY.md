@@ -1,0 +1,1 @@
+- [Commandes, conventions et pièges backend](backend_commandes_et_pieges.md) — build/tests/migrations/API locale, horloge de test, SiteScoped, idempotence (B1 à B4)

@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "lib": [
+      "es2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es2022",
+    "customConditions": [
+      "@chantier-frontend/source"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@chantier-frontend/api-core": [
+        "libs/api-core/src/index.ts"
+      ],
+      "@chantier-frontend/authentication": [
+        "libs/authentication/src/index.ts"
+      ],
+      "@chantier-frontend/i18n": [
+        "libs/i18n/src/index.ts"
+      ],
+      "@chantier-frontend/state-store": [
+        "libs/state-store/src/index.ts"
+      ],
+      "@chantier-frontend/user-interface": [
+        "libs/user-interface/src/index.ts"
+      ],
+      "@chantier-frontend/testing": [
+        "libs/testing/src/index.ts"
+      ]
+    }
+  }
+}

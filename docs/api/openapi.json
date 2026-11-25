@@ -1,0 +1,4067 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Chantier API",
+    "description": "API du suivi de chantier (préfixe `/api/v1`). Ce document est **généré** par le backend et fait foi ; les clients web et mobile en génèrent leurs types.\n\n- **Authentification** : web = cookie `HttpOnly` posé par `POST /auth/login` (`isAppMobile = false`) ; mobile = jeton porteur (`isAppMobile = true`) renouvelé par `POST /auth/refresh`.\n- **Erreurs** : toujours `application/problem+json` avec `code` (code métier stable, traduit par les clients) et `traceId`. Catalogue : `docs/api/codes-erreur.md`.\n- **Versions** : `version` est un jeton de concurrence (entier décimal en chaîne) ; une modification avec une version périmée répond 409 `CONFLIT_VERSION`.\n- **Dates** : date métier `2026-11-24` ; horodatage UTC `2026-11-24T10:15:00Z`.\n- **Hors ligne** : création idempotente par `clientId` ; synchronisation par `GET /sync/changes` (curseur serveur) et `POST /sync/push`.\n- **Évolution** : seuls des ajouts sont permis dans `/api/v1` (champs facultatifs, nouvelles routes).",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/auth/change-password": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Changer son mot de passe (obligatoire après un mot de passe provisoire). Révoque tous les jetons de rafraîchissement.",
+        "operationId": "Auth_ChangePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Se connecter.",
+        "description": "Web (`isAppMobile = false`) : cookie de session HttpOnly. Mobile : jeton d'accès de 15 min et jeton de\nrafraîchissement de 14 jours. Identifiant faux, mot de passe faux et compte désactivé donnent la même réponse.",
+        "operationId": "Auth_Login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [ ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Se déconnecter : efface le cookie et révoque le jeton de rafraîchissement fourni.",
+        "operationId": "Auth_Logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Mon profil et mes permissions. Le téléphone n'est renvoyé qu'à son titulaire.",
+        "operationId": "Auth_Me",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/me/language": {
+      "put": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Changer ma langue (français ou arabe).",
+        "operationId": "Auth_UpdateLanguage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLanguageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Renouveler les jetons (mobile). L'ancien jeton de rafraîchissement n'est plus accepté.",
+        "operationId": "Auth_Refresh",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [ ]
+      }
+    },
+    "/api/v1/reference/wilayas": {
+      "get": {
+        "tags": [
+          "Reference"
+        ],
+        "summary": "Liste des wilayas (code, nom français, nom arabe).",
+        "operationId": "Reference_Wilayas",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WilayaResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/reference/wilayas/{code}/communes": {
+      "get": {
+        "tags": [
+          "Reference"
+        ],
+        "summary": "Communes d'une wilaya (404 si le code est inconnu).",
+        "operationId": "Reference_Communes",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommuneResponse"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites": {
+      "get": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Mes chantiers (l'Admin voit tous les chantiers).",
+        "description": "Les chantiers archivés ne sont listés qu'avec `includeArchived=true`. `sort` : `name`, `-name`, `code`, `-code`, `createdAt`, `-createdAt`.",
+        "operationId": "Sites_List",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Recherche dans le code et les noms.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type d'ouvrage.",
+            "schema": {
+              "$ref": "#/components/schemas/SiteType"
+            }
+          },
+          {
+            "name": "wilaya",
+            "in": "query",
+            "description": "Nom de la wilaya.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "description": "Inclure les chantiers archivés.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Tri : `name` (défaut), `-name`, `code`, `-code`, `createdAt`, `-createdAt`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Numéro de page, à partir de 1.",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Taille de page (1 à 200).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PagedResultOfSiteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Créer un chantier (Admin).",
+        "operationId": "Sites_Create",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSiteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/code-suggestion": {
+      "get": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Proposer un code de chantier libre (modifiable avant la création).",
+        "operationId": "Sites_SuggestCode",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type d'ouvrage.",
+            "schema": {
+              "$ref": "#/components/schemas/SiteType"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Nom du chantier, dont on tire le code.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteCodeSuggestion"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}": {
+      "get": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Fiche d'un chantier.",
+        "operationId": "Sites_Get",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Modifier un chantier (Admin). Le code est immuable ; `version` détecte une modification concurrente.",
+        "operationId": "Sites_Update",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSiteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Version périmée (`CONFLIT_VERSION`) ; `current` contient l'état actuel de la ressource.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/archive": {
+      "post": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Archiver un chantier : lecture seule, restaurable, jamais supprimé.",
+        "operationId": "Sites_Archive",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/members": {
+      "get": {
+        "tags": [
+          "SiteMembers"
+        ],
+        "summary": "Personnes affectées au chantier (nom et rôle).",
+        "operationId": "SiteMembers_List",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemsResponseOfSiteMemberResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/members/{userId}": {
+      "delete": {
+        "tags": [
+          "SiteMembers"
+        ],
+        "summary": "Retirer une personne : l'accès est coupé tout de suite. Idempotent.",
+        "operationId": "SiteMembers_Remove",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "SiteMembers"
+        ],
+        "summary": "Affecter une personne : immédiat. 201 si créée, 200 si elle était déjà affectée.",
+        "operationId": "SiteMembers_Assign",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteMemberResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteMemberResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/restore": {
+      "post": {
+        "tags": [
+          "Sites"
+        ],
+        "summary": "Restaurer un chantier archivé.",
+        "operationId": "Sites_Restore",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/zones": {
+      "get": {
+        "tags": [
+          "Zones"
+        ],
+        "summary": "Zones du chantier, du plus bas au plus haut, avec pagination par curseur.",
+        "operationId": "Zones_List",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "block",
+            "in": "query",
+            "description": "Limiter à un bloc.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Recherche dans le bloc et le libellé.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeArchived",
+            "in": "query",
+            "description": "Inclure les zones archivées.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "Taille de page (1 à 200).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "`nextCursor` de la page précédente (opaque).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorPageOfZoneResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Zones"
+        ],
+        "summary": "Ajouter une zone. Un même `clientId` renvoyé donne 200 et la même zone, sans doublon.",
+        "operationId": "Zones_Create",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateZoneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneResponse"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/zones/{zoneId}": {
+      "get": {
+        "tags": [
+          "Zones"
+        ],
+        "summary": "Une zone du chantier.",
+        "operationId": "Zones_Get",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "zoneId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Zones"
+        ],
+        "summary": "Modifier une zone. `version` détecte une modification concurrente (409 `CONFLIT_VERSION`) ; 422 `ZONE_EXISTANTE` si la position est prise.",
+        "operationId": "Zones_Update",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "zoneId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateZoneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Version périmée (`CONFLIT_VERSION`) ; `current` contient l'état actuel de la ressource.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/zones/{zoneId}/archive": {
+      "post": {
+        "tags": [
+          "Zones"
+        ],
+        "summary": "Archiver une zone (Admin, ConducteurTravaux) : elle disparaît des choix mais pas de l'historique.",
+        "operationId": "Zones_Archive",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "zoneId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sites/{siteId}/zones/{zoneId}/restore": {
+      "post": {
+        "tags": [
+          "Zones"
+        ],
+        "summary": "Restaurer une zone archivée (422 `ZONE_EXISTANTE` si une zone identique a été créée depuis).",
+        "operationId": "Zones_Restore",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "zoneId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZoneResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `ACCES_RETIRE`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Règle métier non respectée ; `code` donne la raison (voir le catalogue des codes d'erreur).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sync/changes": {
+      "get": {
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Changements depuis le curseur (lecture).",
+        "description": "`since` est le curseur renvoyé par le serveur (jamais l'horloge du téléphone) ; absent ou `0` = première synchronisation.\n`siteId` est facultatif : absent = tous les chantiers visibles. Répéter l'appel tant que `hasMore` vaut vrai.\nUne ligne n'est à appliquer que si sa `version` est plus grande que celle déjà connue.",
+        "operationId": "Sync_Changes",
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "description": "Curseur reçu du serveur ; absent ou `0` = première synchronisation.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "siteId",
+            "in": "query",
+            "description": "Limiter à un chantier (404 s'il n'est pas affecté) ; absent = tous les chantiers visibles.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Nombre de lignes par page (1 à 500, 200 par défaut).",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPullResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Ressource introuvable **ou chantier non affecté** (`INTROUVABLE`) : la réponse est identique.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    },
+    "/api/v1/sync/push": {
+      "post": {
+        "tags": [
+          "Sync"
+        ],
+        "summary": "Envoyer un lot d'opérations saisies hors ligne.",
+        "description": "Réponse 200 avec un résultat par opération, dans l'ordre : `applied`, `duplicate` (déjà reçue, éventuellement\n`merged`), `conflict` ou `rejected` (avec `code`). Un lot peut réussir partiellement : ne rejouer que ce qui doit l'être.",
+        "operationId": "Sync_Push",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SyncPushRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncPushResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Données invalides (`VALIDATION`, `DATE_INVALIDE`, `CURSEUR_INVALIDE`) ; le détail par champ est dans `errors`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Non authentifié, session expirée ou accès retiré (`NON_AUTHENTIFIE`, `REFRESH_INVALIDE`, `ACCES_RETIRE`, `IDENTIFIANTS_INVALIDES`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rôle sans la permission requise (`INTERDIT`) ou mot de passe provisoire à changer (`MOT_DE_PASSE_A_CHANGER`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Lot trop volumineux (`LOT_TROP_GRAND`).",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [ ]
+          },
+          {
+            "cookieAuth": [ ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthResult": {
+        "required": [
+          "user"
+        ],
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/AuthUserResponse"
+          },
+          "accessToken": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "refreshToken": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "expiresIn": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "format": "int32"
+          }
+        },
+        "description": "Resultat de connexion ou de rafraichissement. Web (`isAppMobile = false`) : cookie + `user`.\nMobile : en plus `accessToken` (15 min), `refreshToken` (14 jours, rotatif) et `expiresIn` (secondes)."
+      },
+      "AuthUserResponse": {
+        "required": [
+          "id",
+          "userName",
+          "fullName",
+          "role",
+          "language",
+          "mustChangePassword"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "mustChangePassword": {
+            "type": "boolean"
+          }
+        },
+        "description": "Utilisateur renvoye apres connexion. Jamais de telephone ici : il n'est visible que par son titulaire via `GET /auth/me` (H-17)."
+      },
+      "ChangePasswordRequest": {
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ],
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "maxLength": 256,
+            "minLength": 0,
+            "type": "string",
+            "description": "Mot de passe actuel (ou provisoire)."
+          },
+          "newPassword": {
+            "maxLength": 256,
+            "minLength": 0,
+            "type": "string",
+            "description": "Nouveau mot de passe ; sinon 422 `MOT_DE_PASSE_FAIBLE`."
+          }
+        },
+        "description": "Changement de mot de passe (8 caractères au moins, dont un chiffre)."
+      },
+      "CommuneResponse": {
+        "required": [
+          "nameFr",
+          "nameAr"
+        ],
+        "type": "object",
+        "properties": {
+          "nameFr": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateSiteRequest": {
+        "required": [
+          "code",
+          "name",
+          "type",
+          "wilaya",
+          "commune",
+          "owner"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "examples": [
+              "CH-ECO-UV18"
+            ],
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "Code unique et immuable, proposé par `GET /sites/code-suggestion`."
+          },
+          "name": {
+            "examples": [
+              "École UV18"
+            ],
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "description": "Nom du chantier (français)."
+          },
+          "nameAr": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom en arabe (facultatif) : affiché à la place du nom français s'il est présent."
+          },
+          "type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Type d'ouvrage.",
+                "$ref": "#/components/schemas/SiteType"
+              }
+            ]
+          },
+          "wilaya": {
+            "examples": [
+              "Blida"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "description": "Wilaya (liste de référence)."
+          },
+          "commune": {
+            "examples": [
+              "Boufarik"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "description": "Commune (liste de la wilaya ; une saisie libre est acceptée)."
+          },
+          "latitude": {
+            "examples": [
+              36.575
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Latitude en degrés décimaux (va avec la longitude).",
+            "format": "double"
+          },
+          "longitude": {
+            "examples": [
+              2.912
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Longitude en degrés décimaux (va avec la latitude).",
+            "format": "double"
+          },
+          "owner": {
+            "examples": [
+              "Direction des équipements publics (fictive)"
+            ],
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "description": "Maître d'ouvrage."
+          },
+          "contractNumber": {
+            "examples": [
+              "M-2026-UV18-001"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Numéro du marché."
+          },
+          "contractAmount": {
+            "examples": [
+              185000000
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Montant du marché en DZD, 2 décimales.",
+            "format": "double"
+          },
+          "delayDays": {
+            "examples": [
+              540
+            ],
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Délai en jours calendaires (entier supérieur à 0).",
+            "format": "int32"
+          },
+          "odsDate": {
+            "examples": [
+              "2026-03-02"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Date complète de l'ordre de service de démarrage ; une date incomplète (`../03/2026`) donne `DATE_INVALIDE`.",
+            "format": "date"
+          }
+        }
+      },
+      "CreateZoneRequest": {
+        "required": [
+          "block"
+        ],
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "examples": [
+              "7c1e6a52-0d3b-4c59-9a43-6f1f2b9d8e10"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Identifiant généré par le téléphone : un renvoi avec le même `clientId` donne 200 et la même zone.",
+            "format": "uuid"
+          },
+          "clientCreatedAt": {
+            "examples": [
+              "2026-11-24T06:58:00Z"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Heure du téléphone à la saisie (« saisi le ») : information seulement, jamais utilisée pour trier ou décider.",
+            "format": "date-time"
+          },
+          "block": {
+            "examples": [
+              "Bloc 01"
+            ],
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "description": "Bloc du chantier (obligatoire)."
+          },
+          "elevation": {
+            "examples": [
+              3.4
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Cote en mètres, 2 décimales, de -20,00 à +60,00 (paramétrable).",
+            "format": "double"
+          },
+          "roomType": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Type de local (classe, couloir, cantine...).",
+                "$ref": "#/components/schemas/RoomType"
+              }
+            ]
+          },
+          "roomNumber": {
+            "examples": [
+              2
+            ],
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Numéro du local (1 à 999) ; exige un type de local.",
+            "format": "int32"
+          },
+          "roomLabel": {
+            "examples": [
+              "Façade cantine"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Libellé libre, seulement si `roomType = Other`."
+          }
+        },
+        "description": "Création, y compris hors ligne : `clientId` rend l'envoi idempotent."
+      },
+      "CursorPageOfZoneResponse": {
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ZoneResponse"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "description": "Liste paginee par curseur (listes de terrain) : `nextCursor` absent = derniere page."
+      },
+      "ItemsResponseOfSiteMemberResponse": {
+        "required": [
+          "items"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteMemberResponse"
+            }
+          }
+        },
+        "description": "Liste sans pagination (petite liste bornee, par exemple les personnes affectees a un chantier)."
+      },
+      "LoginRequest": {
+        "required": [
+          "userName",
+          "password"
+        ],
+        "type": "object",
+        "properties": {
+          "userName": {
+            "examples": [
+              "chef.dev"
+            ],
+            "maxLength": 256,
+            "minLength": 0,
+            "type": "string",
+            "description": "Identifiant de connexion."
+          },
+          "password": {
+            "maxLength": 256,
+            "minLength": 0,
+            "type": "string",
+            "description": "Mot de passe."
+          },
+          "isAppMobile": {
+            "type": "boolean",
+            "description": "`true` : jetons (mobile) ; `false` : cookie de session (web)."
+          }
+        }
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Jeton de rafraîchissement à révoquer (mobile)."
+          }
+        },
+        "description": "Déconnexion : le corps est facultatif."
+      },
+      "MeResponse": {
+        "required": [
+          "id",
+          "userName",
+          "fullName",
+          "phoneNumber",
+          "role",
+          "language",
+          "permissions",
+          "permissionsVersion",
+          "mustChangePassword"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userName": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "role": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "permissionsVersion": {
+            "type": "string"
+          },
+          "mustChangePassword": {
+            "type": "boolean"
+          }
+        },
+        "description": "Profil du titulaire : le seul endroit ou son telephone est renvoye (H-17, CT-14)."
+      },
+      "PagedResultOfSiteResponse": {
+        "required": [
+          "items",
+          "page",
+          "pageSize",
+          "totalCount"
+        ],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteResponse"
+            }
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "description": "Liste paginee par numero de page avec total (back-office seulement)."
+      },
+      "ProblemDetails": {
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "traceId"
+        ],
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "URI stable du type d'erreur, dérivée de `code`."
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer",
+            "description": "Code HTTP.",
+            "format": "int32"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "description": "Code métier stable (`VALIDATION`, `INTROUVABLE`, `ZONE_EXISTANTE`...). Ensemble ouvert : un client ignore un code qu'il ne connaît pas et affiche `title`."
+          },
+          "traceId": {
+            "type": "string",
+            "description": "Identifiant à communiquer au support."
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Détail par champ (400 `VALIDATION`) : nom du champ en camelCase, puis les messages."
+          },
+          "current": {
+            "type": "object",
+            "description": "409 `CONFLIT_VERSION` : état actuel de la ressource (même JSON que sa réponse REST)."
+          }
+        },
+        "description": "Erreur au format RFC 9457 (`application/problem+json`). Les clients traduisent `code` ; `title` et `detail` ne sont qu'un repli en français."
+      },
+      "RefreshRequest": {
+        "required": [
+          "refreshToken"
+        ],
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "description": "Jeton de rafraîchissement reçu à la connexion ou au dernier renouvellement (il n'est valable qu'une fois)."
+          }
+        },
+        "description": "Renouvellement des jetons (mobile)."
+      },
+      "RoomType": {
+        "enum": [
+          "Classroom",
+          "Corridor",
+          "Canteen",
+          "Refectory",
+          "Kitchen",
+          "Office",
+          "Sanitary",
+          "TechnicalRoom",
+          "Facade",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "SiteCodeSuggestion": {
+        "required": [
+          "code"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "SiteMemberResponse": {
+        "required": [
+          "userId",
+          "fullName",
+          "role",
+          "assignedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "assignedAt": {
+            "type": "string",
+            "description": "Date d'affectation (heure du serveur, UTC).",
+            "format": "date-time"
+          }
+        },
+        "description": "Personne affectée au chantier : nom et rôle, jamais de téléphone ni d'identifiant de connexion (H-17)."
+      },
+      "SiteResponse": {
+        "required": [
+          "id",
+          "code",
+          "name",
+          "nameAr",
+          "type",
+          "wilaya",
+          "commune",
+          "latitude",
+          "longitude",
+          "owner",
+          "contractNumber",
+          "delayDays",
+          "odsDate",
+          "contractualEndDate",
+          "archivedAt",
+          "archivedByName",
+          "version",
+          "createdAt",
+          "createdByName",
+          "updatedAt",
+          "updatedByName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "description": "Code unique et immuable, par exemple `CH-ECO-UV18`."
+          },
+          "name": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom en arabe, s'il existe."
+          },
+          "type": {
+            "$ref": "#/components/schemas/SiteType"
+          },
+          "wilaya": {
+            "type": "string"
+          },
+          "commune": {
+            "type": "string"
+          },
+          "latitude": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "longitude": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "format": "double"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "contractNumber": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "contractAmount": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Montant du marché en DZD (2 décimales) ; absent sans la permission `ContractAmount.View`.",
+            "format": "double"
+          },
+          "delayDays": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Délai contractuel en jours calendaires.",
+            "format": "int32"
+          },
+          "odsDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Date de l'ordre de service de démarrage.",
+            "format": "date"
+          },
+          "contractualEndDate": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Fin contractuelle = date de l'ODS + délai, calculée par le serveur ; `null` si l'un des deux manque (« À définir »).",
+            "format": "date"
+          },
+          "archivedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Date d'archivage ; un chantier archivé est en lecture seule.",
+            "format": "date-time"
+          },
+          "archivedByName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom de la personne qui a archivé."
+          },
+          "version": {
+            "type": "string",
+            "description": "Jeton de concurrence (entier décimal en chaîne), à renvoyer à la modification."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Création (heure du serveur, UTC).",
+            "format": "date-time"
+          },
+          "createdByName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom du créateur."
+          },
+          "updatedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Dernière modification (heure du serveur, UTC).",
+            "format": "date-time"
+          },
+          "updatedByName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom de la dernière personne ayant modifié."
+          }
+        },
+        "description": "Chantier tel que renvoyé par l'API et par la synchronisation (même JSON). Le montant du marché (`contractAmount`) est\n<b>absent</b> de la réponse (et non masqué) sans la permission `ContractAmount.View` (CT-20, CA-003.5)."
+      },
+      "SiteType": {
+        "enum": [
+          "School",
+          "Housing",
+          "PublicFacility",
+          "Other"
+        ],
+        "type": "string",
+        "description": "Type d'ouvrage. Stocke et expose sous forme de chaine (jamais d'entier, contrat d'API)."
+      },
+      "SyncChange": {
+        "required": [
+          "entity",
+          "id",
+          "siteId",
+          "version",
+          "data"
+        ],
+        "type": "object",
+        "properties": {
+          "entity": {
+            "type": "string",
+            "description": "`site`, `zone` ou `member` ; un client ignore une entité qu'il ne connaît pas."
+          },
+          "id": {
+            "type": "string",
+            "description": "Identifiant de la ligne.",
+            "format": "uuid"
+          },
+          "siteId": {
+            "type": "string",
+            "description": "Chantier de la ligne (pour un chantier : son propre identifiant).",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version serveur (entier décimal en chaîne) : n'appliquer la ligne que si elle est plus grande que celle déjà connue."
+          },
+          "data": {
+            "type": "object",
+            "description": "Ressource telle que renvoyée par l'API REST : `SiteResponse` (site), `ZoneResponse` (zone) ou `SyncMemberData` (member)."
+          }
+        },
+        "description": "Ligne créée ou modifiée depuis le curseur."
+      },
+      "SyncDeletion": {
+        "required": [
+          "entity",
+          "id",
+          "siteId",
+          "version"
+        ],
+        "type": "object",
+        "properties": {
+          "entity": {
+            "type": "string",
+            "description": "`site`, `zone` ou `member`."
+          },
+          "id": {
+            "type": "string",
+            "description": "Identifiant de la ligne supprimée.",
+            "format": "uuid"
+          },
+          "siteId": {
+            "type": "string",
+            "description": "Chantier de la ligne.",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version serveur de la suppression."
+          }
+        },
+        "description": "Pierre tombale : le client supprime la ligne (et, pour un chantier, tous ses enfants)."
+      },
+      "SyncMemberData": {
+        "required": [
+          "id",
+          "siteId",
+          "userId",
+          "fullName",
+          "role",
+          "assignedAt"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identifiant de l'affectation (celui des pierres tombales `member`).",
+            "format": "uuid"
+          },
+          "siteId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "assignedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "description": "Ligne `member` de la synchronisation : une affectation (nom et rôle, jamais de téléphone, H-17)."
+      },
+      "SyncPullResponse": {
+        "required": [
+          "changes",
+          "deleted",
+          "cursor",
+          "hasMore"
+        ],
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncChange"
+            },
+            "description": "Lignes créées ou modifiées, par version croissante."
+          },
+          "deleted": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncDeletion"
+            },
+            "description": "Pierres tombales."
+          },
+          "cursor": {
+            "type": "string",
+            "description": "Curseur à renvoyer au prochain appel (donné par le serveur, jamais l'horloge du téléphone)."
+          },
+          "hasMore": {
+            "type": "boolean",
+            "description": "Vrai s'il reste des changements : rappeler tout de suite avec ce curseur."
+          }
+        },
+        "description": "Une page de changements."
+      },
+      "SyncPushOperation": {
+        "required": [
+          "clientId",
+          "entity",
+          "operation"
+        ],
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "examples": [
+              "7c1e6a52-0d3b-4c59-9a43-6f1f2b9d8e10"
+            ],
+            "type": "string",
+            "description": "Identifiant généré par le téléphone : rend l'envoi idempotent (un renvoi donne `duplicate`).",
+            "format": "uuid"
+          },
+          "entity": {
+            "examples": [
+              "zone"
+            ],
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "Entité visée (`zone` au socle) ; une autre entité reçoit `rejected` `ENTITE_NON_SYNCHRONISABLE`."
+          },
+          "operation": {
+            "examples": [
+              "create"
+            ],
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "`create`, `update` ou `transition` (au socle : `create` d'une zone)."
+          },
+          "siteId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Chantier visé.",
+            "format": "uuid"
+          },
+          "payload": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "description": "Contenu de l'opération : les champs de la ressource (pour une zone : `block`, `elevation`, `roomType`, `roomNumber`, `roomLabel`, `clientCreatedAt`)."
+          },
+          "baseVersion": {
+            "maxLength": 30,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Version serveur lue par le téléphone (modifications) ; inutilisée pour une création."
+          }
+        },
+        "description": "Une opération saisie hors ligne. Le chantier visé est vérifié à l'envoi (affectation, sinon `INTROUVABLE`)."
+      },
+      "SyncPushRequest": {
+        "required": [
+          "operations"
+        ],
+        "type": "object",
+        "properties": {
+          "operations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncPushOperation"
+            },
+            "description": "Opérations dans l'ordre de saisie ; les résultats reviennent dans le même ordre."
+          }
+        },
+        "description": "Lot d'opérations envoyé par le téléphone (100 au maximum, 1 Mo au maximum)."
+      },
+      "SyncPushResponse": {
+        "required": [
+          "results"
+        ],
+        "type": "object",
+        "properties": {
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SyncPushResult"
+            }
+          }
+        },
+        "description": "Un résultat par opération, dans l'ordre d'envoi."
+      },
+      "SyncPushResult": {
+        "required": [
+          "clientId",
+          "status"
+        ],
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "Identifiant de l'opération côté téléphone.",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "description": "`applied`, `duplicate`, `conflict` ou `rejected`."
+          },
+          "resource": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "description": "Ressource créée ou déjà existante (`applied`, `duplicate`)."
+          },
+          "current": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "description": "État du serveur (`conflict`)."
+          },
+          "code": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Code d'erreur du catalogue (`rejected`) : `INTROUVABLE`, `INTERDIT`, `CHANTIER_ARCHIVE`, `VALIDATION`, `ZONE_EXISTANTE`, `ENTITE_NON_SYNCHRONISABLE`."
+          },
+          "merged": {
+            "type": [
+              "null",
+              "boolean"
+            ],
+            "description": "Vrai si une ressource identique, créée par un autre téléphone, a été retenue : y rattacher les saisies, sans erreur affichée."
+          },
+          "errors": {
+            "type": [
+              "null",
+              "object"
+            ],
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "description": "Détail par champ (`rejected` avec `VALIDATION`)."
+          }
+        },
+        "description": "Résultat d'une opération, dans l'ordre d'envoi : `applied`, `duplicate` (déjà reçue, éventuellement\n`merged` avec une ressource identique), `conflict` (avec `current`) ou `rejected` (avec `code`)."
+      },
+      "UpdateLanguageRequest": {
+        "required": [
+          "language"
+        ],
+        "type": "object",
+        "properties": {
+          "language": {
+            "examples": [
+              "ar"
+            ],
+            "maxLength": 2,
+            "minLength": 0,
+            "type": "string",
+            "description": "`fr` ou `ar`."
+          }
+        },
+        "description": "Langue de l'interface."
+      },
+      "UpdateSiteRequest": {
+        "required": [
+          "version",
+          "name",
+          "type",
+          "wilaya",
+          "commune",
+          "owner"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "examples": [
+              48213
+            ],
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "Version lue avec le chantier ; une version périmée donne 409 `CONFLIT_VERSION`."
+          },
+          "name": {
+            "examples": [
+              "École UV18"
+            ],
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "description": "Nom du chantier (français)."
+          },
+          "nameAr": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom en arabe (facultatif) : affiché à la place du nom français s'il est présent."
+          },
+          "type": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Type d'ouvrage.",
+                "$ref": "#/components/schemas/SiteType"
+              }
+            ]
+          },
+          "wilaya": {
+            "examples": [
+              "Blida"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "description": "Wilaya (liste de référence)."
+          },
+          "commune": {
+            "examples": [
+              "Boufarik"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string",
+            "description": "Commune (liste de la wilaya ; une saisie libre est acceptée)."
+          },
+          "latitude": {
+            "examples": [
+              36.575
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Latitude en degrés décimaux (va avec la longitude).",
+            "format": "double"
+          },
+          "longitude": {
+            "examples": [
+              2.912
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Longitude en degrés décimaux (va avec la latitude).",
+            "format": "double"
+          },
+          "owner": {
+            "examples": [
+              "Direction des équipements publics (fictive)"
+            ],
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string",
+            "description": "Maître d'ouvrage."
+          },
+          "contractNumber": {
+            "examples": [
+              "M-2026-UV18-001"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Numéro du marché."
+          },
+          "contractAmount": {
+            "examples": [
+              185000000
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Montant du marché en DZD, 2 décimales.",
+            "format": "double"
+          },
+          "delayDays": {
+            "examples": [
+              540
+            ],
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Délai en jours calendaires (entier supérieur à 0).",
+            "format": "int32"
+          },
+          "odsDate": {
+            "examples": [
+              "2026-03-02"
+            ],
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Date complète de l'ordre de service de démarrage ; une date incomplète (`../03/2026`) donne `DATE_INVALIDE`.",
+            "format": "date"
+          }
+        },
+        "description": "Modification : pas de `code` (immuable). `version` est la valeur lue, pour détecter une modification concurrente."
+      },
+      "UpdateZoneRequest": {
+        "required": [
+          "version",
+          "block"
+        ],
+        "type": "object",
+        "properties": {
+          "version": {
+            "examples": [
+              48230
+            ],
+            "maxLength": 30,
+            "minLength": 0,
+            "type": "string",
+            "description": "Version lue avec la zone ; une version périmée donne 409 `CONFLIT_VERSION`."
+          },
+          "block": {
+            "examples": [
+              "Bloc 01"
+            ],
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string",
+            "description": "Bloc du chantier (obligatoire)."
+          },
+          "elevation": {
+            "examples": [
+              3.4
+            ],
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Cote en mètres, 2 décimales, de -20,00 à +60,00 (paramétrable).",
+            "format": "double"
+          },
+          "roomType": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Type de local (classe, couloir, cantine...).",
+                "$ref": "#/components/schemas/RoomType"
+              }
+            ]
+          },
+          "roomNumber": {
+            "examples": [
+              2
+            ],
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Numéro du local (1 à 999) ; exige un type de local.",
+            "format": "int32"
+          },
+          "roomLabel": {
+            "examples": [
+              "Façade cantine"
+            ],
+            "maxLength": 100,
+            "minLength": 0,
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Libellé libre, seulement si `roomType = Other`."
+          }
+        }
+      },
+      "WilayaResponse": {
+        "required": [
+          "code",
+          "nameFr",
+          "nameAr"
+        ],
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "nameFr": {
+            "type": "string"
+          },
+          "nameAr": {
+            "type": "string"
+          }
+        }
+      },
+      "ZoneResponse": {
+        "required": [
+          "id",
+          "siteId",
+          "clientId",
+          "clientCreatedAt",
+          "block",
+          "elevation",
+          "roomType",
+          "roomNumber",
+          "roomLabel",
+          "archivedAt",
+          "archivedByName",
+          "version",
+          "createdAt",
+          "createdByName",
+          "updatedAt",
+          "updatedByName"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "siteId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientId": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Identifiant généré par le téléphone qui a créé la zone (création hors ligne), sinon `null`.",
+            "format": "uuid"
+          },
+          "clientCreatedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "« Saisi le » du téléphone : information seulement, jamais utilisée pour trier ou décider.",
+            "format": "date-time"
+          },
+          "block": {
+            "type": "string",
+            "description": "Bloc, par exemple `Bloc 01`."
+          },
+          "elevation": {
+            "type": [
+              "null",
+              "number"
+            ],
+            "description": "Cote en mètres, 2 décimales (affichage signé côté client : −1,90 ; ±0,00 ; +3,40).",
+            "format": "double"
+          },
+          "roomType": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "Type de local.",
+                "$ref": "#/components/schemas/RoomType"
+              }
+            ]
+          },
+          "roomNumber": {
+            "type": [
+              "null",
+              "integer"
+            ],
+            "description": "Numéro du local (classe 02).",
+            "format": "int32"
+          },
+          "roomLabel": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Libellé libre, seulement si le type est `Other`."
+          },
+          "archivedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Date d'archivage ; une zone archivée n'est plus proposée à la saisie.",
+            "format": "date-time"
+          },
+          "archivedByName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom de la personne qui a archivé."
+          },
+          "version": {
+            "type": "string",
+            "description": "Jeton de concurrence (entier décimal en chaîne), à renvoyer à la modification."
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Création (heure du serveur, UTC).",
+            "format": "date-time"
+          },
+          "createdByName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom du créateur."
+          },
+          "updatedAt": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Dernière modification (heure du serveur, UTC).",
+            "format": "date-time"
+          },
+          "updatedByName": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "Nom de la dernière personne ayant modifié."
+          }
+        },
+        "description": "Zone d'un chantier : bloc, cote (en mètres) et local. Identique à la ligne `zone` de la synchronisation."
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "description": "Mobile : jeton d'accès (15 minutes) renvoyé par `POST /auth/login` avec `isAppMobile = true`.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "description": "Web : cookie de session `HttpOnly` posé par `POST /auth/login` avec `isAppMobile = false`.",
+        "name": ".Chantier.Identity.Application",
+        "in": "cookie"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Reference"
+    },
+    {
+      "name": "SiteMembers"
+    },
+    {
+      "name": "Sites"
+    },
+    {
+      "name": "Sync"
+    },
+    {
+      "name": "Zones"
+    }
+  ]
+}

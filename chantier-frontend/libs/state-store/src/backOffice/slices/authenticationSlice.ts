@@ -20,6 +20,8 @@ export interface UserAuthState {
   /** Mot de passe provisoire : le serveur refuse tout sauf le changement de mot de passe (CA-001.7). */
   mustChangePassword: boolean;
   claims: UserClaims | null;
+  /** Liste brute des permissions du serveur (`Requests.Approve`…) : pour les actions que le format `claims` ne porte pas. */
+  permissions: string[];
 }
 
 export const initialAuthState: UserAuthState = {
@@ -29,6 +31,7 @@ export const initialAuthState: UserAuthState = {
   isAuthenticated: false,
   mustChangePassword: false,
   claims: null,
+  permissions: [],
 };
 
 const CLAIM_ACTIONS = ["View", "Create", "Update", "Delete"] as const;
@@ -68,6 +71,7 @@ const authSlice = createSlice({
     },
     deleteUserClaims: (state) => {
       state.claims = null;
+      state.permissions = [];
     },
     setAuthLoadingState: (state, action: PayloadAction<{ isLoading: boolean }>) => {
       state.isAuthLoading = action.payload.isLoading;
@@ -84,6 +88,7 @@ const authSlice = createSlice({
         state.userId = action.payload.id;
         state.mustChangePassword = action.payload.mustChangePassword;
         state.claims = claimsFromPermissions(action.payload.permissions);
+        state.permissions = action.payload.permissions;
         state.isAuthLoading = false;
         state.isClaimsLoading = false;
       })
@@ -93,6 +98,7 @@ const authSlice = createSlice({
         state.userId = null;
         state.mustChangePassword = false;
         state.claims = null;
+        state.permissions = [];
         state.isAuthLoading = false;
         state.isClaimsLoading = false;
       })
@@ -101,6 +107,7 @@ const authSlice = createSlice({
         state.userId = null;
         state.mustChangePassword = false;
         state.claims = null;
+        state.permissions = [];
       });
   },
 });

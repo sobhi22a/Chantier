@@ -55,6 +55,24 @@ class SitesRepository {
   }) async {
     final decoded = [for (final change in page.changes) decodeChange(change)];
 
+    // Le serveur range une page parents d'abord, mais **entre deux pages aucun ordre n'est garanti**
+    // (ecart 26 du contrat) : un chantier retouche apres ses zones, ses demandes ou ses livraisons
+    // arrive sur une page SUIVANTE. Les cles etrangeres sont donc suspendues le temps de la page
+    // (le pragma ne s'applique pas dans une transaction) et les lignes sans chantier sont
+    // retirees **une fois le pull termine**, quand toutes les pages sont appliquees.
+    await _db.customStatement('PRAGMA foreign_keys = OFF');
+    try {
+      return await _applyPage(page, ownerUserId, decoded);
+    } finally {
+      await _db.customStatement('PRAGMA foreign_keys = ON');
+    }
+  }
+
+  Future<PullApplyResult> _applyPage(
+    SyncPullResponse page,
+    String ownerUserId,
+    List<DecodedChange> decoded,
+  ) {
     return _db.transaction(() async {
       // Rechargement complet (permissions modifiees, curseur invalide) : les lignes de meme
       // version ecrasent les locales, pour qu'un champ retire ne survive pas (R1-03).
@@ -76,14 +94,36 @@ class SitesRepository {
             row,
             overwrite: overwrite,
           ),
+          ProductChange(:final row) => await _db.productsDao.upsertIfNewer(
+            row,
+            overwrite: overwrite,
+          ),
+          SupplierChange(:final row) => await _db.suppliersDao.upsertIfNewer(
+            row,
+            overwrite: overwrite,
+          ),
+          RequestChange(:final row) =>
+            await _db.materialRequestsDao.upsertIfNewer(
+              row,
+              overwrite: overwrite,
+            ),
+          DeliveryChange(:final row) => await _db.deliveriesDao.upsertIfNewer(
+            row,
+            overwrite: overwrite,
+          ),
+          PhotoChange(:final row) => await _db.deliveryPhotosDao.upsertIfNewer(
+            row,
+            overwrite: overwrite,
+          ),
           UnknownEntityChange() => false,
         };
         written ? applied++ : ignored++;
       }
       for (final deletion in page.deleted) {
         final removed = switch (deletion.entity) {
-          // Suppression en cascade : le chantier emporte ses zones et ses affectations.
-          'site' => await _db.sitesDao.deleteSite(deletion.id),
+          // Cascade explicite : le chantier emporte ses zones, affectations, demandes,
+          // livraisons et photos (les cles etrangeres sont suspendues pendant le pull).
+          'site' => await _db.deleteSiteCascade(deletion.id),
           'zone' => await _db.zonesDao.deleteZone(deletion.id),
           'member' => await _db.siteMembersDao.deleteMember(deletion.id),
           _ => 0,
@@ -95,9 +135,12 @@ class SitesRepository {
         SyncStateKeys.ownerUserId: ownerUserId,
         if (!page.hasMore) SyncStateKeys.initialSyncDone: 'true',
       });
-      // Derniere page : le rechargement est termine.
-      if (!page.hasMore && overwrite) {
-        await _db.syncStateDao.remove(SyncStateKeys.fullReload);
+      // Derniere page : toutes les pages sont appliquees, les lignes dont le chantier n'est
+      // jamais arrive sont retirees ; le rechargement est termine.
+      if (!page.hasMore) {
+        final orphans = await _db.deleteOrphans();
+        if (orphans > 0) ignored += orphans;
+        if (overwrite) await _db.syncStateDao.remove(SyncStateKeys.fullReload);
       }
       return PullApplyResult(applied: applied, ignored: ignored);
     });
@@ -111,8 +154,8 @@ class SitesRepository {
   ///   serveur (meme `clientId`) ;
   /// * [merged] : une zone identique, creee par un autre telephone, a ete retenue (CA-011.6) ;
   ///   la zone locale en attente est supprimee et la zone retenue est enregistree, **sans erreur
-  ///   affichee**. Les saisies futures qui referenceront la zone locale devront etre rattachees
-  ///   a la zone retenue (aucune saisie ne reference encore les zones au socle).
+  ///   affichee**. Les demandes de materiaux saisies pour la zone locale sont rattachees a la zone
+  ///   retenue (lignes locales et operations en attente).
   Future<void> applyPushedZone({
     required String operationClientId,
     required Object? resource,
@@ -124,6 +167,18 @@ class SitesRepository {
         final local = await _db.zonesDao.getById(operationClientId);
         if (local != null && local.isPending) {
           await _db.zonesDao.deleteZone(operationClientId);
+          if (retained != null) {
+            // Les demandes saisies pour la zone locale (affichees et en attente d'envoi)
+            // designent la zone retenue : aucune saisie ne reste accrochee a une zone disparue.
+            await _db.zonesDao.reattachRequests(
+              from: operationClientId,
+              to: retained.id,
+            );
+            await _db.outboxDao.rewriteZoneReference(
+              fromClientId: operationClientId,
+              toZoneId: retained.id,
+            );
+          }
         }
       }
       if (retained != null) await _db.zonesDao.upsertIfNewer(retained);

@@ -1,1 +1,1 @@
-- [Commandes, conventions et pièges backend](backend_commandes_et_pieges.md) — build/tests/migrations/API locale, horloge de test, SiteScoped, idempotence (B1 à B4)
+- [Commandes, conventions et pièges backend](backend_commandes_et_pieges.md) — build/tests/migrations/API locale, horloge de test, SiteScoped, idempotence, sync, verrous applicatifs (socle + matériaux B1-B11, démo, générateurs, corrections R2 : RCSI, rejeu 1205, fenêtre de synchro, photos)

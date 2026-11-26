@@ -5,6 +5,7 @@ import {
   AuthProviderComponent,
   ChangePasswordPageComponent,
   DefaultRedirectComponent,
+  FOLLOW_UP_PERMISSIONS,
   PermissionsGuardComponent,
   PERMISSIONS_RESOURCES,
   SignInComponent,
@@ -18,6 +19,23 @@ import {
 import DashboardLayout from "../../layouts/structure/dashboard/DashboardLayout.component";
 import { BACK_OFFICE_ROUTES } from "./navigationRoutes";
 import { DEFAULT_ROUTES } from "./routesMapping";
+
+// Pages des matériaux chargées à la demande (une copie de code par route).
+const loadRequestsSection = async () => ({
+  Component: (await import("../../../features/materials/sections/Requests.section")).default,
+});
+const loadToApproveSection = async () => ({
+  Component: (await import("../../../features/materials/sections/ToApprove.section")).default,
+});
+const loadToOrderSection = async () => ({
+  Component: (await import("../../../features/materials/sections/ToOrder.section")).default,
+});
+const loadDeliveriesSection = async () => ({
+  Component: (await import("../../../features/materials/sections/Deliveries.section")).default,
+});
+const loadFollowUpSection = async () => ({
+  Component: (await import("../../../features/materials/sections/FollowUp.section")).default,
+});
 
 // =============== ROUTES =============== //
 // Exportées séparément pour que les tests puissent les monter dans un routeur en mémoire.
@@ -78,6 +96,85 @@ export const backOfficeRoutes: RouteObject[] = [
                 }),
               },
             ],
+          },
+          {
+            path: BACK_OFFICE_ROUTES.MATERIAL_REQUESTS,
+            element: (
+              <PermissionsGuardComponent resourceKey={PERMISSIONS_RESOURCES.REQUESTS}>
+                <Outlet />
+              </PermissionsGuardComponent>
+            ),
+            // La fiche s'ouvre dans un tiroir au-dessus de la même liste : même page, adresse partageable.
+            children: [
+              { index: true, lazy: loadRequestsSection },
+              { path: ":siteId/:requestId", lazy: loadRequestsSection },
+            ],
+          },
+          {
+            path: BACK_OFFICE_ROUTES.MATERIAL_TO_APPROVE,
+            element: (
+              <PermissionsGuardComponent permission="Requests.Approve">
+                <Outlet />
+              </PermissionsGuardComponent>
+            ),
+            children: [
+              { index: true, lazy: loadToApproveSection },
+              { path: ":siteId/:requestId", lazy: loadToApproveSection },
+            ],
+          },
+          {
+            path: BACK_OFFICE_ROUTES.MATERIAL_TO_ORDER,
+            element: (
+              <PermissionsGuardComponent permission="Orders.Create">
+                <Outlet />
+              </PermissionsGuardComponent>
+            ),
+            children: [
+              { index: true, lazy: loadToOrderSection },
+              { path: ":siteId/:requestId", lazy: loadToOrderSection },
+            ],
+          },
+          {
+            path: BACK_OFFICE_ROUTES.MATERIAL_DELIVERIES,
+            element: (
+              <PermissionsGuardComponent permission="Deliveries.View">
+                <Outlet />
+              </PermissionsGuardComponent>
+            ),
+            children: [
+              { index: true, lazy: loadDeliveriesSection },
+              { path: ":siteId/:deliveryId", lazy: loadDeliveriesSection },
+            ],
+          },
+          {
+            path: BACK_OFFICE_ROUTES.MATERIAL_FOLLOW_UP,
+            element: (
+              <PermissionsGuardComponent anyOf={FOLLOW_UP_PERMISSIONS}>
+                <Outlet />
+              </PermissionsGuardComponent>
+            ),
+            children: [
+              { index: true, lazy: loadFollowUpSection },
+              { path: ":siteId/:requestId", lazy: loadFollowUpSection },
+            ],
+          },
+          {
+            path: BACK_OFFICE_ROUTES.CATALOG_PRODUCTS,
+            element: (
+              <PermissionsGuardComponent resourceKey={PERMISSIONS_RESOURCES.PRODUCTS}>
+                <Outlet />
+              </PermissionsGuardComponent>
+            ),
+            children: [{ index: true, lazy: async () => ({ Component: (await import("../../../features/catalog/sections/Products.section")).default }) }],
+          },
+          {
+            path: BACK_OFFICE_ROUTES.CATALOG_SUPPLIERS,
+            element: (
+              <PermissionsGuardComponent resourceKey={PERMISSIONS_RESOURCES.SUPPLIERS}>
+                <Outlet />
+              </PermissionsGuardComponent>
+            ),
+            children: [{ index: true, lazy: async () => ({ Component: (await import("../../../features/catalog/sections/Suppliers.section")).default }) }],
           },
           { path: BACK_OFFICE_ROUTES.UNAUTHORIZED, element: <GenericUnauthorizedComponent /> },
         ],

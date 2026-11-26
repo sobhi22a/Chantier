@@ -10,6 +10,8 @@ public sealed record SyncScope(Guid UserId, IReadOnlyList<Guid>? VisibleSiteIds,
 /// <summary>
 /// Une entite synchronisee en lecture. Ajouter une entite = une source de plus (et son inscription dans <see cref="ISyncTouch"/>).
 /// Une ligne ne produit <b>qu'une</b> ligne de reponse : la version sert de curseur et ne doit pas etre dupliquee.
+/// Une source <b>globale</b> (produits, fournisseurs : <c>SyncChangeRow.SiteId</c> nul) ignore le filtre de chantier de <see cref="SyncScope"/> :
+/// tous les utilisateurs authentifies recoivent ses lignes, meme sans chantier affecte.
 /// </summary>
 public interface ISyncSource
 {

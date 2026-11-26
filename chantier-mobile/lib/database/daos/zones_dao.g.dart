@@ -6,4 +6,6 @@ part of 'zones_dao.dart';
 mixin _$ZonesDaoMixin on DatabaseAccessor<AppDatabase> {
   $SitesTable get sites => attachedDatabase.sites;
   $ZonesTable get zones => attachedDatabase.zones;
+  $MaterialRequestsTable get materialRequests =>
+      attachedDatabase.materialRequests;
 }

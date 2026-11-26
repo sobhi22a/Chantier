@@ -38,6 +38,23 @@
   "errorUnitesIncompatibles": "Unités incompatibles : impossible de les additionner.",
   "errorExpressionInvalide": "Expression de métré invalide.",
   "errorTransitionInterdite": "Ce changement de statut n'est pas autorisé.",
+  "errorDemandeVerrouillee": "Demande validée : la quantité et le produit ne se modifient plus. Annulez-la et créez-en une nouvelle.",
+  "errorDemandeNonOuverte": "Cette demande n'accepte plus de livraison.",
+  "errorCommandeExistante": "Cette demande est déjà commandée.",
+  "errorProduitDifferent": "Le produit de la livraison n'est pas celui de la demande.",
+  "errorQuantiteEntiereRequise": "Nombre entier requis.",
+  "errorUniteNonAutorisee": "Cette unité n'est pas autorisée pour ce produit.",
+  "errorMasseSacObligatoire": "Indiquez la masse d'un sac pour ce produit.",
+  "errorProduitExistant": "Ce produit existe déjà.",
+  "errorFournisseurExistant": "Ce fournisseur existe déjà.",
+  "errorProduitInactif": "Ce produit est désactivé : choisissez-en un autre.",
+  "errorFournisseurInactif": "Ce fournisseur est désactivé.",
+  "errorZoneHorsChantier": "Cette zone n'appartient pas à ce chantier.",
+  "errorLivraisonDejaRattachee": "Cette livraison est déjà rattachée à une autre demande.",
+  "errorPhotosTropNombreuses": "Nombre maximal de photos atteint pour cette livraison.",
+  "errorPhotoDejaEnvoyee": "Cette photo a déjà été envoyée.",
+  "errorFichierTropGros": "Image trop volumineuse.",
+  "errorTypeFichierRefuse": "Seules les images JPEG sont acceptées.",
   "errorNetwork": "Pas de réseau. Vos saisies sont conservées et partiront au retour du réseau.",
   "errorTimeout": "Le serveur met trop de temps à répondre. Réessayez.",
   "errorUnknown": "Une erreur est survenue. Réessayez.",
@@ -306,5 +323,515 @@
       }
     }
   },
-  "pendingSyncFailed": "La synchronisation n'a pas abouti. Vos saisies sont conservées."
+  "pendingSyncFailed": "La synchronisation n'a pas abouti. Vos saisies sont conservées.",
+  "requestStatusRequested": "Demandée",
+  "requestStatusValidated": "Validée",
+  "requestStatusRejected": "Refusée",
+  "requestStatusOrdered": "Commandée",
+  "requestStatusPartiallyDelivered": "Livrée partiellement",
+  "requestStatusDelivered": "Livrée",
+  "requestStatusReceived": "Réceptionnée",
+  "requestStatusCancelled": "Annulée",
+  "priorityNormal": "Normale",
+  "priorityUrgent": "Urgente",
+  "priorityBlocking": "Bloquante",
+  "deliveryStatusRecorded": "Enregistrée",
+  "deliveryStatusCancelled": "Annulée",
+  "conformityConform": "Conforme",
+  "conformityWithReserve": "Avec réserve",
+  "unitPiece": "u",
+  "unitLinearMeter": "ml",
+  "unitSquareMeter": "m²",
+  "unitCubicMeter": "m³",
+  "unitKilogram": "kg",
+  "unitTonne": "T",
+  "unitBag": "sac",
+  "unitLiter": "L",
+  "unitHour": "h",
+  "unitDay": "j",
+  "unitManDay": "pers·j",
+  "unitLumpSum": "forfait",
+  "productCategoryBinders": "Liants",
+  "productCategorySteel": "Acier",
+  "productCategoryMasonry": "Maçonnerie",
+  "productCategoryAggregates": "Granulats",
+  "productCategoryAdmixtures": "Adjuvants",
+  "productCategoryFinishingWorks": "Second œuvre",
+  "productCategoryOther": "Autre",
+  "reasonAlreadyOrdered": "Déjà commandé",
+  "reasonStockSufficient": "Stock suffisant sur le chantier",
+  "reasonQuantityToReview": "Quantité à revoir",
+  "reasonOverBudget": "Hors budget",
+  "reasonEntryError": "Erreur de saisie",
+  "reasonNoLongerNeeded": "Plus besoin",
+  "reasonDuplicate": "Doublon",
+  "reasonSupplierUnavailable": "Fournisseur indisponible",
+  "reasonPriceRefused": "Prix refusé",
+  "reasonSupplierWillNotDeliver": "Le fournisseur ne livrera pas le reste",
+  "reasonQuantitySufficient": "Quantité suffisante",
+  "reasonDoubleEntry": "Saisie en double",
+  "reasonQuantityError": "Erreur de quantité",
+  "reasonRefusedAtReception": "Refusée à la réception",
+  "reasonQuantityMissing": "Quantité manquante",
+  "reasonDamagedProduct": "Produit abîmé",
+  "reasonWrongProduct": "Mauvais produit",
+  "reasonOther": "Autre",
+  "materialNumberPending": "Numéro en attente",
+  "materialToConfirm": "À confirmer",
+  "materialOverdueDays": "En retard de {days} j",
+  "@materialOverdueDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "requestsTitle": "Demandes de matériaux",
+  "requestNew": "Nouvelle demande",
+  "requestNewShort": "+ Demande",
+  "requestsOpen": "Demandes",
+  "approvalsTitle": "À valider",
+  "approvalsEmpty": "Aucune demande à valider.",
+  "requestsViewToFollow": "À suivre",
+  "requestsViewReceived": "Terminées",
+  "requestsViewClosed": "Refusées et annulées",
+  "requestsViewArchived": "Archivées",
+  "requestsMine": "Mes demandes",
+  "requestsAll": "Toutes",
+  "requestsEmpty": "Aucune demande ici.",
+  "requestsSearchHint": "Rechercher (DEM-014, ciment…)",
+  "requestPendingSend": "En attente d'envoi",
+  "requestNeedsCheck": "À vérifier",
+  "requestNeededBy": "Pour le {date}",
+  "@requestNeededBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "requestFormProduct": "Matériau",
+  "requestFormSearchHint": "Chercher un matériau",
+  "requestFormNoProduct": "Aucun matériau trouvé.",
+  "requestFormTopProducts": "Les plus demandés",
+  "requestFormOtherProduct": "Autre produit",
+  "requestFormFreeName": "Nom du matériau",
+  "requestFormFreeNameInvalid": "Entrez 3 à 100 caractères.",
+  "requestFormQuantity": "Quantité",
+  "requestFormUnit": "Unité",
+  "requestFormZone": "Zone",
+  "requestFormZoneOther": "Autre zone",
+  "requestFormNeededBy": "Pour le",
+  "requestFormTomorrow": "Demain",
+  "requestFormInDays": "+ {days} jours",
+  "@requestFormInDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "requestFormNextWeek": "Semaine prochaine",
+  "requestFormOtherDate": "Autre date",
+  "requestFormPriority": "Urgence",
+  "requestFormNote": "Remarque (facultatif)",
+  "requestFormSend": "Envoyer",
+  "requestFormSendAnother": "Envoyer et ajouter un autre matériau",
+  "requestFormPastDate": "Cette date est déjà passée.",
+  "requestFormSendAnyway": "Envoyer quand même",
+  "requestFormDuplicate": "{number} est déjà ouverte pour ce matériau et cette zone.",
+  "@requestFormDuplicate": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "requestFormSeeDuplicate": "Voir la demande",
+  "requestFormOtherRequest": "C'est une autre demande",
+  "requestSaved": "Demande enregistrée. En attente d'envoi.",
+  "requestEditTitle": "Corriger la demande",
+  "requestEditSave": "Enregistrer",
+  "requestEditNothing": "Aucune modification.",
+  "requestEditProductLocked": "Le matériau ne se corrige pas : annulez la demande puis recréez-la.",
+  "requestEditBusy": "Cette saisie est en cours d'envoi. Réessayez dans un instant.",
+  "requestDetailHistory": "Historique",
+  "requestDetailRequestedBy": "Demandée par {name}",
+  "@requestDetailRequestedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "requestDetailZone": "Zone",
+  "requestDetailNote": "Remarque",
+  "requestDetailReason": "Motif",
+  "requestDetailReceived": "Reçu",
+  "requestDetailRemaining": "Reste",
+  "requestDetailVariance": "Écart",
+  "requestDetailDuplicate": "Doublon possible de {number}",
+  "@requestDetailDuplicate": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "requestDetailNotFound": "Cette demande n'est plus sur ce téléphone.",
+  "requestDetailSavedAt": "Saisie le {when}",
+  "@requestDetailSavedAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "requestZoneNone": "Non précisée",
+  "requestActionEdit": "Corriger",
+  "requestActionCancel": "Annuler la demande",
+  "requestCancelTitle": "Annuler cette demande ?",
+  "requestCancelConfirm": "Annuler la demande",
+  "requestCancelKeep": "Garder la demande",
+  "requestReasonTitle": "Motif",
+  "requestReasonNoteLabel": "Précisez le motif",
+  "requestReasonNoteRequired": "Précisez le motif (Autre).",
+  "requestReasonRequired": "Choisissez un motif.",
+  "requestActionQueued": "Enregistré. En attente d'envoi.",
+  "requestActionAlreadyQueued": "Une action est déjà en attente d'envoi pour cette demande.",
+  "approvalApprove": "Valider",
+  "approvalReject": "Refuser",
+  "approvalAdjust": "Autre quantité",
+  "approvalAdjustTitle": "Valider avec une autre quantité",
+  "approvalAdjustConfirm": "Valider cette quantité",
+  "approvalPending": "Validation en attente d'envoi",
+  "approvalRejectTitle": "Refuser la demande",
+  "approvalRejectConfirm": "Refuser",
+  "historyCreated": "Demande créée",
+  "historyEdited": "Demande modifiée",
+  "historyApproved": "Validée",
+  "historyQuantityAdjusted": "Quantité ajustée",
+  "historyRejected": "Refusée",
+  "historyCancelled": "Annulée",
+  "historyReceived": "Réceptionnée",
+  "historyStatusChange": "{fromStatus} → {toStatus}",
+  "@historyStatusChange": {
+    "placeholders": {
+      "fromStatus": {
+        "type": "String"
+      },
+      "toStatus": {
+        "type": "String"
+      }
+    }
+  },
+  "historyBy": "par {name}",
+  "@historyBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldQuantity": "Quantité",
+  "fieldZone": "Zone",
+  "fieldNeededBy": "Pour le",
+  "fieldPriority": "Urgence",
+  "fieldNote": "Remarque",
+  "fieldProduct": "Matériau",
+  "fieldChange": "{field} : {oldValue} → {newValue}",
+  "@fieldChange": {
+    "placeholders": {
+      "field": {
+        "type": "String"
+      },
+      "newValue": {
+        "type": "String"
+      },
+      "oldValue": {
+        "type": "String"
+      }
+    }
+  },
+  "fieldEmpty": "vide",
+  "pendingEntityRequest": "Demande de matériau",
+  "pendingView": "Voir",
+  "conflictTitle": "À vérifier",
+  "conflictIntro": "Le serveur garde sa version. Rien n'est supprimé tant que vous n'avez pas choisi.",
+  "conflictYourVersion": "Votre version",
+  "conflictServerVersion": "Version du serveur",
+  "conflictFieldsInDisagreement": "Champs en désaccord : {fields}",
+  "@conflictFieldsInDisagreement": {
+    "placeholders": {
+      "fields": {
+        "type": "String"
+      }
+    }
+  },
+  "conflictYourAction": "Votre action : {action}",
+  "@conflictYourAction": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "conflictActionApprove": "valider",
+  "conflictActionReject": "refuser",
+  "conflictActionCancel": "annuler",
+  "conflictActionReceive": "réceptionner",
+  "conflictServerStatus": "Statut sur le serveur : {status}",
+  "@conflictServerStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "conflictKeepServer": "Garder la version du serveur",
+  "conflictRedo": "Refaire ma modification",
+  "conflictCreateNew": "Créer une nouvelle demande avec mes valeurs",
+  "conflictCorrect": "Corriger ma saisie",
+  "conflictKeepServerTitle": "Garder la version du serveur ?",
+  "conflictKeepServerBody": "Votre saisie sera supprimée de ce téléphone. Cette action est définitive.",
+  "conflictGone": "Cette saisie n'est plus à vérifier.",
+  "deliveriesTitle": "Livraisons",
+  "toReceiveTitle": "À recevoir",
+  "toReceptionTitle": "À réceptionner",
+  "homeDeliveriesTitle": "Livraisons et réception",
+  "toReceiveEmpty": "Aucune commande à recevoir.",
+  "toReceiveSearchHint": "Rechercher (fournisseur, matériau, DEM-014)",
+  "toReceiveExpectedOn": "Prévue le {date}",
+  "@toReceiveExpectedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "toReceiveNoDate": "Date prévue non indiquée",
+  "toReceiveRemaining": "Reste : {quantity}",
+  "@toReceiveRemaining": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      }
+    }
+  },
+  "toReceiveWithoutRequest": "Livraison sans demande",
+  "receiveFilterAll": "Toutes",
+  "receiveFilterToday": "Aujourd'hui",
+  "receiveFilterWeek": "Cette semaine",
+  "receiveFilterLate": "En retard",
+  "toReceptionEmpty": "Aucune demande à réceptionner.",
+  "toReceptionAction": "Réceptionner",
+  "receiveNowPrompt": "{number} est livrée. Réceptionner maintenant ?",
+  "@receiveNowPrompt": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "receiveNowYes": "Réceptionner",
+  "receiveNowLater": "Plus tard",
+  "deliveryNewTitle": "Recevoir une livraison",
+  "deliveryNoRequestTitle": "Livraison sans demande",
+  "deliveryEditTitle": "Corriger la livraison",
+  "deliveryFormSupplier": "Fournisseur",
+  "deliveryFormOtherSupplier": "Autre fournisseur",
+  "deliveryFormSupplierName": "Nom du fournisseur",
+  "deliveryFormSupplierInvalid": "Entrez 3 à 100 caractères.",
+  "deliveryFormQuantity": "Quantité reçue",
+  "deliveryFormDate": "Date de livraison",
+  "deliveryFormToday": "Aujourd'hui",
+  "deliveryFormYesterday": "Hier",
+  "deliveryFormOtherDate": "Autre date",
+  "deliveryFormNote": "N° du bon de livraison (facultatif)",
+  "deliveryFormConformity": "Conformité",
+  "deliveryFormReserveReason": "Motif de la réserve",
+  "deliveryFormReserveNote": "Précisez la réserve",
+  "deliveryFormReserveRequired": "Choisissez le motif de la réserve.",
+  "deliveryFormPhotos": "Photos du bon",
+  "deliveryFormSave": "Enregistrer la livraison",
+  "deliveryFormBeforeRequest": "Cette date est antérieure à la demande.",
+  "deliveryAnnouncePartial": "Livraison partielle : il restera {quantity}",
+  "@deliveryAnnouncePartial": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      }
+    }
+  },
+  "deliveryAnnounceComplete": "Livraison complète",
+  "deliveryAnnounceSurplus": "Surplus de +{quantity} (+{percent} %)",
+  "@deliveryAnnounceSurplus": {
+    "placeholders": {
+      "quantity": {
+        "type": "String"
+      },
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "deliveryDuplicateNote": "Ce bon est déjà saisi : {number}.",
+  "@deliveryDuplicateNote": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
+  "deliveryDuplicateSee": "Voir la livraison",
+  "deliveryDuplicateOther": "C'est une autre livraison",
+  "deliverySaved": "Livraison enregistrée. En attente d'envoi.",
+  "deliveryProductLocked": "Le matériau est celui de la demande.",
+  "deliveryProductNeeded": "Choisissez le matériau.",
+  "photoAdd": "Photographier le bon",
+  "photoRetake": "Reprendre",
+  "photoKeep": "Garder",
+  "photoMax": "{max} photos au maximum.",
+  "@photoMax": {
+    "placeholders": {
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "photoCountLabel": "Photos : {count}",
+  "@photoCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "photoErrorNotImage": "Ce fichier n'est pas une image JPEG.",
+  "photoErrorTooLarge": "Cette photo est trop lourde. Reprenez-la.",
+  "photoErrorUnreadable": "Photo illisible. Reprenez-la.",
+  "photoErrorNoCamera": "Aucun appareil photo disponible.",
+  "photoPendingSend": "Photo en attente d'envoi",
+  "photoPendingSendCount": "Photo en attente d'envoi ({count})",
+  "@photoPendingSendCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "photoUploaded": "Envoyée",
+  "photoShow": "Afficher la photo",
+  "photoHide": "Masquer",
+  "photoNeedsNetwork": "Réseau nécessaire pour afficher la photo.",
+  "photoNotFound": "Photo introuvable.",
+  "photoFileProblem": "Fichier à vérifier : {reason}",
+  "@photoFileProblem": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "photoAbandon": "Abandonner la photo",
+  "photoAbandonBody": "Cette photo sera supprimée de ce téléphone. Cette action est définitive.",
+  "deliveriesEmpty": "Aucune livraison ici.",
+  "deliveriesSearchHint": "Rechercher (LIV-006, ciment…)",
+  "deliveriesFilterAll": "Toutes",
+  "deliveriesFilterUnattached": "Non rattachées",
+  "deliveriesFilterReserve": "Avec réserve",
+  "deliveriesFilterNoteMissing": "BL manquant",
+  "deliveryUnattachedBadge": "Non rattachée",
+  "deliveryNoteMissingBadge": "BL manquant",
+  "deliveryDetailNotFound": "Cette livraison n'est plus sur ce téléphone.",
+  "deliveryDetailQuantity": "Quantité",
+  "deliveryDetailInRequest": "Équivalent dans la demande",
+  "deliveryDetailSupplier": "Fournisseur",
+  "deliveryDetailRequest": "Demande",
+  "deliveryDetailDate": "Date de livraison",
+  "deliveryDetailNote": "Bon n°",
+  "deliveryDetailReserve": "Réserve",
+  "deliveryDetailCancelReason": "Motif d'annulation",
+  "deliveryDetailUnattachedReason": "Pourquoi non rattachée",
+  "deliveryDetailPhotos": "Photos du bon",
+  "deliveryDetailNoPhotos": "Aucune photo.",
+  "deliveryDetailSavedAt": "Saisie le {when}",
+  "@deliveryDetailSavedAt": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "deliveryActionEdit": "Corriger",
+  "deliveryActionCancel": "Annuler la livraison",
+  "deliveryCancelTitle": "Annuler cette livraison ?",
+  "deliveryCancelConfirm": "Annuler la livraison",
+  "deliveryAttachInfo": "Pour rattacher cette livraison à une demande, il faut du réseau : faites-le depuis le bureau ou une fois connecté.",
+  "unattachedNoRequestChosen": "Aucune demande choisie",
+  "unattachedRequestNotOpen": "La demande n'était plus ouverte",
+  "unattachedRequestMissing": "Demande introuvable",
+  "requestDetailDeliveries": "Livraisons",
+  "requestDetailSupplier": "Fournisseur",
+  "requestDetailExpected": "Livraison prévue le {date}",
+  "@requestDetailExpected": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "requestActionReceive": "Recevoir une livraison",
+  "requestActionReception": "Réceptionner",
+  "supplierCall": "Appeler le fournisseur",
+  "supplierCallNeedsNetwork": "Réseau nécessaire pour afficher le numéro.",
+  "supplierCallNoNumber": "Aucun numéro enregistré pour ce fournisseur.",
+  "supplierCallTitle": "Fournisseur : {name}",
+  "@supplierCallTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "supplierCallDial": "Appeler",
+  "supplierCallClose": "Fermer",
+  "supplierCallNoApp": "Impossible d'ouvrir le téléphone.",
+  "historyDeliveryRegistered": "Livraison enregistrée",
+  "historyDeliveryEdited": "Livraison corrigée",
+  "historyDeliveryCancelled": "Livraison annulée",
+  "historyDeliveryAttached": "Livraison rattachée",
+  "historyStatusRecomputed": "Statut recalculé",
+  "historyPhotoAdded": "Photo ajoutée",
+  "historyOrdered": "Commandée",
+  "fieldDeliveryDate": "Date de livraison",
+  "fieldDeliveryNote": "Bon n°",
+  "fieldConformity": "Conformité",
+  "fieldReserveReason": "Motif de la réserve",
+  "fieldReserveNote": "Remarque de réserve",
+  "pendingEntityDelivery": "Livraison",
+  "pendingEntityPhoto": "Photo du bon",
+  "conflictRequestNotComplete": "La demande n'est plus complète : votre réception n'a pas été enregistrée.",
+  "conflictDeliveryCancelled": "Cette livraison a été annulée entre-temps.",
+  "conflictDeliveryRequestClosed": "La demande est déjà réceptionnée : ses livraisons ne se modifient plus.",
+  "conflictServerDeliveryStatus": "Statut de la livraison sur le serveur : {status}",
+  "@conflictServerDeliveryStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "conflictYourPhoto": "Photo du bon prise le {when}",
+  "@conflictYourPhoto": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "pendingPhotosTitle": "Photos à envoyer",
+  "pendingPhotosRefused": "Photo refusée par le serveur",
+  "errorErreurTemporaire": "Le serveur est occupé un instant. Rien n'a été enregistré : réessayez.",
+  "historyUnavailableOffline": "Historique indisponible hors ligne."
 }

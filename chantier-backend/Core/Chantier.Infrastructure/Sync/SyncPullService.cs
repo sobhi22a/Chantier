@@ -20,7 +20,8 @@ public sealed class SyncPullService(
     ICurrentUser currentUser,
     IUserPermissions permissions,
     ISiteAccess siteAccess,
-    ApplicationDbContext db) : ISyncPullService
+    ApplicationDbContext db,
+    SyncWindow window) : ISyncPullService
 {
     public async Task<SyncPullResponse> PullAsync(string? since, Guid? siteId, int limit, CancellationToken cancellationToken = default)
     {
@@ -57,6 +58,9 @@ public sealed class SyncPullService(
         // Sans reste, plus aucune transaction ouverte ne peut produire de version inferieure a la borne : on avance jusqu'a elle.
         var next = hasMore ? page[^1].Version : Math.Max(cursor, upper - 1);
 
+        // Dans la page seulement : parents avant enfants (le curseur, lui, reste la version de la derniere ligne par version).
+        page = page.OrderBy(row => ParentRank(row.Entity)).ThenBy(row => row.Version).ToList();
+
         return new SyncPullResponse(
             page.Where(row => !row.IsTombstone)
                 .Select(row => new SyncChange(row.Entity, row.Id, row.SiteId, Format(row.Version), row.Data!))
@@ -65,8 +69,23 @@ public sealed class SyncPullService(
                 .Select(row => new SyncDeletion(row.Entity, row.Id, row.SiteId, Format(row.Version)))
                 .ToList(),
             Format(next),
-            hasMore);
+            hasMore,
+            ResetRequired: cursor > 0 && await window.HasHiddenChangesAsync(scope, cursor, upper, cancellationToken));
     }
+
+    /// <summary>
+    /// Rang d'une entite dans une page : une ligne ne depend que d'entites de rang inferieur (chantier, produit et fournisseur, puis zone et affectation,
+    /// demande, livraison, photo). Une entite inconnue passe en dernier.
+    /// </summary>
+    private static int ParentRank(string entity) => entity switch
+    {
+        SyncEntities.Site or SyncEntities.Product or SyncEntities.Supplier => 0,
+        SyncEntities.Zone or SyncEntities.Member => 1,
+        SyncEntities.Request => 2,
+        SyncEntities.Delivery => 3,
+        SyncEntities.Photo => 4,
+        _ => 5,
+    };
 
     /// <summary>Chantiers lus : celui demande, sinon tous les affectes ; <c>null</c> = tous (Admin).</summary>
     private async Task<IReadOnlyList<Guid>?> VisibleSitesAsync(Guid userId, Guid? siteId, IReadOnlySet<string> granted, CancellationToken cancellationToken)

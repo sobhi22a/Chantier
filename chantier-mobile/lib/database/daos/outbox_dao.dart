@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:chantier_mobile/database/app_database.dart';
 import 'package:chantier_mobile/database/tables/outbox_operations.dart';
 import 'package:drift/drift.dart';
@@ -44,6 +46,69 @@ class OutboxDao extends DatabaseAccessor<AppDatabase> with _$OutboxDaoMixin {
   Future<OutboxRow?> getByClientId(String clientId) => (select(
     outboxOperations,
   )..where((t) => t.clientId.equals(clientId))).getSingleOrNull();
+
+  Future<OutboxRow?> getById(int id) => (select(
+    outboxOperations,
+  )..where((t) => t.id.equals(id))).getSingleOrNull();
+
+  /// Toutes les operations du proprietaire, les plus anciennes d'abord (lecture ponctuelle).
+  Future<List<OutboxRow>> allFor(String ownerUserId) =>
+      (select(outboxOperations)
+            ..where((t) => t.ownerUserId.equals(ownerUserId))
+            ..orderBy([(t) => OrderingTerm.asc(t.id)]))
+          .get();
+
+  /// Remplace le contenu (et le libelle) d'une operation **pas encore envoyee** : correction
+  /// d'une saisie qui attend son envoi, sans operation supplementaire. Retourne `false` si
+  /// l'operation n'est plus `pending` (envoi en cours ou termine).
+  Future<bool> replacePendingPayload(
+    int id, {
+    required String payloadJson,
+    required String label,
+  }) async {
+    final updated =
+        await (update(outboxOperations)..where(
+              (t) =>
+                  t.id.equals(id) & t.status.equals(OutboxStatus.pending.name),
+            ))
+            .write(
+              OutboxOperationsCompanion(
+                payloadJson: Value(payloadJson),
+                label: Value(label),
+              ),
+            );
+    return updated > 0;
+  }
+
+  /// Une zone creee hors ligne a ete fusionnee avec une zone identique du serveur : les demandes
+  /// en attente qui designaient l'ancienne par `zoneClientId` designent maintenant la zone
+  /// retenue (`zoneId`). Rien n'est perdu, aucune erreur n'est affichee.
+  Future<void> rewriteZoneReference({
+    required String fromClientId,
+    required String toZoneId,
+  }) async {
+    final rows =
+        await (select(outboxOperations)..where(
+              (t) =>
+                  t.entity.equals('request') &
+                  t.operation.equals('create') &
+                  t.status.isIn([
+                    OutboxStatus.pending.name,
+                    OutboxStatus.sending.name,
+                  ]),
+            ))
+            .get();
+    for (final row in rows) {
+      final payload = jsonDecode(row.payloadJson);
+      if (payload is! Map || payload['zoneClientId'] != fromClientId) continue;
+      final next = Map<String, Object?>.from(payload)
+        ..remove('zoneClientId')
+        ..['zoneId'] = toZoneId;
+      await (update(outboxOperations)..where((t) => t.id.equals(row.id))).write(
+        OutboxOperationsCompanion(payloadJson: Value(jsonEncode(next))),
+      );
+    }
+  }
 
   /// Operations `pending` du proprietaire, **dans l'ordre de creation**, par lot.
   Future<List<OutboxRow>> pendingFor(String ownerUserId, {int limit = 50}) =>
@@ -94,16 +159,23 @@ class OutboxDao extends DatabaseAccessor<AppDatabase> with _$OutboxDaoMixin {
       );
 
   /// Reponse `conflict` ou `rejected` : conservee avec son code, **jamais rejouee seule**.
+  ///
+  /// Pour un `conflict`, [conflictJson] garde l'etat du serveur (`current`, sans prix) et
+  /// [conflictFields] la liste des champs en desaccord, pour l'ecran « A verifier » (ADR 0011).
   Future<void> markFailed(
     int id, {
     required OutboxStatus status,
     required String? errorCode,
+    String? conflictJson,
+    String? conflictFields,
   }) {
     assert(status == OutboxStatus.conflict || status == OutboxStatus.rejected);
     return (update(outboxOperations)..where((t) => t.id.equals(id))).write(
       OutboxOperationsCompanion(
         status: Value(status),
         lastErrorCode: Value(errorCode),
+        conflictJson: Value(conflictJson),
+        conflictFields: Value(conflictFields),
       ),
     );
   }

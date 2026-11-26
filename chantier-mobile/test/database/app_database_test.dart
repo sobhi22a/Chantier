@@ -52,6 +52,62 @@ void main() {
       },
     );
 
+    test(
+      'efface aussi demandes, livraisons, photos, catalogue et reglages (demandes de materiaux)',
+      () async {
+        await _fillLocalData(db);
+        await db.productsDao.upsertIfNewer(productRow());
+        await db.suppliersDao.upsertIfNewer(supplierRow());
+        await db.materialRequestsDao.upsertIfNewer(requestRow());
+        await db.deliveriesDao.upsertIfNewer(deliveryRow());
+        await db.deliveryPhotosDao.upsertIfNewer(photoRow());
+        await db.appSettingsDao.set('materials', '{}');
+
+        await db.purgeSyncedData();
+
+        for (final table in [
+          'products',
+          'suppliers',
+          'material_requests',
+          'deliveries',
+          'delivery_photos',
+          'app_settings',
+        ]) {
+          expect(await _count(db, table), 0, reason: table);
+        }
+      },
+    );
+
+    test(
+      'CONSERVE les fichiers de photos en attente de A (jamais perdus avant la confirmation)',
+      () async {
+        await _fillLocalData(db);
+        await db.deliveryPhotosDao.enqueueFile(
+          pendingPhotoFile(clientId: 'p-1', owner: 'user-a'),
+        );
+        await db.deliveryPhotosDao.enqueueFile(
+          pendingPhotoFile(clientId: 'p-2', owner: 'user-b'),
+        );
+
+        await db.purgeSyncedData();
+
+        expect(
+          (await db.deliveryPhotosDao.filesFor(
+            'user-a',
+          )).map((f) => f.clientId),
+          ['p-1'],
+        );
+        expect(
+          (await db.deliveryPhotosDao.filesFor(
+            'user-b',
+          )).map((f) => f.clientId),
+          ['p-2'],
+        );
+        // Un autre compte ne voit pas le fichier de A.
+        expect(await db.deliveryPhotosDao.filesFor('user-c'), isEmpty);
+      },
+    );
+
     test('CONSERVE la file d\'envoi de A, pour A seul', () async {
       await _fillLocalData(db);
       await db.transaction(() async {

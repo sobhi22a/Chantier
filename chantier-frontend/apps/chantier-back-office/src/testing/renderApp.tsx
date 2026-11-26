@@ -18,6 +18,7 @@ export const mockSession = (role: TestRole | null, overrides: Partial<MeResponse
 
 export interface RenderedApp extends RenderResult {
   router: ReturnType<typeof createMemoryRouter>;
+  store: ReturnType<typeof createChantierStore>;
 }
 
 /** L'application complète (fournisseurs, routes, faux serveur MSW) à une adresse donnée. */
@@ -25,10 +26,11 @@ export const renderApp = (path: string, language: Language = "fr"): RenderedApp 
   const i18nInstance = createI18n(language, { persist: false });
   setAcceptLanguageProvider(() => i18nInstance.language);
   const router = createMemoryRouter(backOfficeRoutes, { initialEntries: [path] });
+  const store = createChantierStore();
   const result = render(
-    <AppProviders i18nInstance={i18nInstance} store={createChantierStore()} mantineEnv="test">
+    <AppProviders i18nInstance={i18nInstance} store={store} mantineEnv="test">
       <RouterProvider router={router} />
     </AppProviders>,
   );
-  return { ...result, router };
+  return { ...result, router, store };
 };

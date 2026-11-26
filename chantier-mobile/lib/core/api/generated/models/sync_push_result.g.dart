@@ -18,6 +18,9 @@ _SyncPushResult _$SyncPushResultFromJson(Map<String, dynamic> json) =>
         (k, e) =>
             MapEntry(k, (e as List<dynamic>).map((e) => e as String).toList()),
       ),
+      conflictFields: (json['conflictFields'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$SyncPushResultToJson(_SyncPushResult instance) =>
@@ -29,4 +32,5 @@ Map<String, dynamic> _$SyncPushResultToJson(_SyncPushResult instance) =>
       'code': instance.code,
       'merged': instance.merged,
       'errors': instance.errors,
+      'conflictFields': instance.conflictFields,
     };

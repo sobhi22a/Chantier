@@ -8,14 +8,15 @@ part 'sync_push_result.freezed.dart';
 part 'sync_push_result.g.dart';
 
 /// Résultat d'une opération, dans l'ordre d'envoi : `applied`, `duplicate` (déjà reçue, éventuellement.
-/// `merged` avec une ressource identique), `conflict` (avec `current`) ou `rejected` (avec `code`).
+/// `merged` avec une ressource identique), `conflict` (avec `current`), `rejected` (avec `code`) ou `retry` (echec momentane du serveur, rien n'est ecrit : renvoyer.
+/// l'operation telle quelle plus tard ; un client qui ne connait pas ce statut la renvoie comme une operation sans reponse).
 @Freezed()
 abstract class SyncPushResult with _$SyncPushResult {
   const factory SyncPushResult({
     /// Identifiant de l'opération côté téléphone.
     required String clientId,
 
-    /// `applied`, `duplicate`, `conflict` ou `rejected`.
+    /// `applied`, `duplicate`, `conflict`, `rejected` ou `retry`.
     required String status,
 
     /// Ressource créée ou déjà existante (`applied`, `duplicate`).
@@ -32,6 +33,9 @@ abstract class SyncPushResult with _$SyncPushResult {
 
     /// Détail par champ (`rejected` avec `VALIDATION`).
     Map<String, List<String>>? errors,
+
+    /// Champs en désaccord (`conflict` avec `CONFLIT_VERSION`) : la valeur saisie et celle du serveur diffèrent de la valeur de départ.
+    List<String>? conflictFields,
   }) = _SyncPushResult;
 
   factory SyncPushResult.fromJson(Map<String, Object?> json) =>

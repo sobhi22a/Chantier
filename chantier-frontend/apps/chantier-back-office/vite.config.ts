@@ -55,6 +55,8 @@ export default defineConfig(({ mode }) => {
       watch: false,
       globals: true,
       environment: 'jsdom',
+      // Formulaires Mantine complets (sélecteurs, calendriers, MSW) : plus lents que le seuil par défaut de 5 s sous charge.
+      testTimeout: 20000,
       include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
       setupFiles: ['../../tools/vitest/setup-dom.ts'],
       env: { VITE_BACKEND_API_BASE_URL: 'http://api.test' },

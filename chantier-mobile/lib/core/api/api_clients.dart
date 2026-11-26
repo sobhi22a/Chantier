@@ -21,7 +21,12 @@ class ApiClients {
         dioClient.dio,
         baseUrl: config.serverRootUrl,
       ),
-      reference = ReferenceClient(dioClient.dio, baseUrl: config.serverRootUrl);
+      reference = ReferenceClient(dioClient.dio, baseUrl: config.serverRootUrl),
+      materialSettings = MaterialSettingsClient(
+        dioClient.dio,
+        baseUrl: config.serverRootUrl,
+      ),
+      suppliers = SuppliersClient(dioClient.dio, baseUrl: config.serverRootUrl);
 
   /// Routes authentifiees : `me`, `logout`, `change-password`, langue.
   final AuthClient auth;
@@ -33,6 +38,13 @@ class ApiClients {
   final ZonesClient zones;
   final SiteMembersClient siteMembers;
   final ReferenceClient reference;
+
+  /// Reglages des demandes de materiaux (`GET /settings/materials`).
+  final MaterialSettingsClient materialSettings;
+
+  /// Fournisseurs : seule la lecture d'un fournisseur sert au telephone (numero a l'appel,
+  /// en ligne, jamais stocke).
+  final SuppliersClient suppliers;
 
   /// Execute un appel genere et convertit toute erreur en [ApiException].
   static Future<T> guard<T>(Future<T> Function() call) => DioClient.guard(call);

@@ -10,7 +10,7 @@ _SyncDeletion _$SyncDeletionFromJson(Map<String, dynamic> json) =>
     _SyncDeletion(
       entity: json['entity'] as String,
       id: json['id'] as String,
-      siteId: json['siteId'] as String,
+      siteId: json['siteId'] as String?,
       version: json['version'] as String,
     );
 

@@ -13,8 +13,11 @@ describe("constantes d'authentification", () => {
     expect(Object.values(PERMISSIONS_RESOURCES).sort()).toEqual([
       "AllSites",
       "ContractAmount",
+      "Products",
+      "Requests",
       "SiteMembers",
       "Sites",
+      "Suppliers",
       "Zones",
     ]);
   });

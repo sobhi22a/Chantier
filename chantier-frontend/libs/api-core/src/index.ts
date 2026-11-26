@@ -22,4 +22,7 @@ export type { NetworkActivityState } from "./lib/networkActivity.slice";
 
 // Client généré depuis docs/api/openapi.json (npm run generate:api) + étiquettes de cache.
 export { enhancedApi } from "./lib/enhancedApi";
+export { usePhotoContentQuery } from "./lib/photoContent";
+export { useZoneDirectoryQuery } from "./lib/zoneDirectory";
+export type { PhotoContentArg } from "./lib/photoContent";
 export * from "./generated/chantierApi";

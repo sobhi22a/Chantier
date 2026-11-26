@@ -18,9 +18,9 @@ mixin _$SyncChange {
 
 /// `site`, `zone` ou `member` ; un client ignore une entité qu'il ne connaît pas.
  String get entity;/// Identifiant de la ligne.
- String get id;/// Chantier de la ligne (pour un chantier : son propre identifiant).
- String get siteId;/// Version serveur (entier décimal en chaîne) : n'appliquer la ligne que si elle est plus grande que celle déjà connue.
- String get version;/// Ressource telle que renvoyée par l'API REST : `SiteResponse` (site), `ZoneResponse` (zone) ou `SyncMemberData` (member).
+ String get id;/// Chantier de la ligne (pour un chantier : son propre identifiant) ; `null` pour une entité globale (`product`, `supplier`).
+ String? get siteId;/// Version serveur (entier décimal en chaîne) : n'appliquer la ligne que si elle est plus grande que celle déjà connue.
+ String get version;/// Ressource de la ligne, selon `entity` : `SiteResponse` (site), `ZoneResponse` (zone), `SyncMemberData` (member), `ProductResponse` (product), `SupplierSyncData` (supplier, sans téléphone), `RequestSyncData` (request, sans champ commercial), `DeliverySyncData` (delivery, sans montant ni photos) ou `PhotoResponse` (photo, métadonnées seulement).
  dynamic get data;
 /// Create a copy of SyncChange
 /// with the given fields replaced by the non-null parameter values.
@@ -54,7 +54,7 @@ abstract mixin class $SyncChangeCopyWith<$Res>  {
   factory $SyncChangeCopyWith(SyncChange value, $Res Function(SyncChange) _then) = _$SyncChangeCopyWithImpl;
 @useResult
 $Res call({
- String entity, String id, String siteId, String version, dynamic data
+ String entity, String id, String? siteId, String version, dynamic data
 });
 
 
@@ -70,12 +70,12 @@ class _$SyncChangeCopyWithImpl<$Res>
 
 /// Create a copy of SyncChange
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? entity = null,Object? id = null,Object? siteId = null,Object? version = null,Object? data = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? entity = null,Object? id = null,Object? siteId = freezed,Object? version = null,Object? data = freezed,}) {
   return _then(_self.copyWith(
 entity: null == entity ? _self.entity : entity // ignore: cast_nullable_to_non_nullable
 as String,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,siteId: null == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
-as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,siteId: freezed == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
+as String?,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as String,data: freezed == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
 as dynamic,
   ));
@@ -95,11 +95,11 @@ class _SyncChange implements SyncChange {
 @override final  String entity;
 /// Identifiant de la ligne.
 @override final  String id;
-/// Chantier de la ligne (pour un chantier : son propre identifiant).
-@override final  String siteId;
+/// Chantier de la ligne (pour un chantier : son propre identifiant) ; `null` pour une entité globale (`product`, `supplier`).
+@override final  String? siteId;
 /// Version serveur (entier décimal en chaîne) : n'appliquer la ligne que si elle est plus grande que celle déjà connue.
 @override final  String version;
-/// Ressource telle que renvoyée par l'API REST : `SiteResponse` (site), `ZoneResponse` (zone) ou `SyncMemberData` (member).
+/// Ressource de la ligne, selon `entity` : `SiteResponse` (site), `ZoneResponse` (zone), `SyncMemberData` (member), `ProductResponse` (product), `SupplierSyncData` (supplier, sans téléphone), `RequestSyncData` (request, sans champ commercial), `DeliverySyncData` (delivery, sans montant ni photos) ou `PhotoResponse` (photo, métadonnées seulement).
 @override final  dynamic data;
 
 /// Create a copy of SyncChange
@@ -135,7 +135,7 @@ abstract mixin class _$SyncChangeCopyWith<$Res> implements $SyncChangeCopyWith<$
   factory _$SyncChangeCopyWith(_SyncChange value, $Res Function(_SyncChange) _then) = __$SyncChangeCopyWithImpl;
 @override @useResult
 $Res call({
- String entity, String id, String siteId, String version, dynamic data
+ String entity, String id, String? siteId, String version, dynamic data
 });
 
 
@@ -151,12 +151,12 @@ class __$SyncChangeCopyWithImpl<$Res>
 
 /// Create a copy of SyncChange
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? entity = null,Object? id = null,Object? siteId = null,Object? version = null,Object? data = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? entity = null,Object? id = null,Object? siteId = freezed,Object? version = null,Object? data = freezed,}) {
   return _then(_SyncChange(
 entity: null == entity ? _self.entity : entity // ignore: cast_nullable_to_non_nullable
 as String,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,siteId: null == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
-as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,siteId: freezed == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
+as String?,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as String,data: freezed == data ? _self.data : data // ignore: cast_nullable_to_non_nullable
 as dynamic,
   ));

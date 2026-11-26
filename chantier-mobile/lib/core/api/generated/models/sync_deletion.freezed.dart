@@ -18,8 +18,8 @@ mixin _$SyncDeletion {
 
 /// `site`, `zone` ou `member`.
  String get entity;/// Identifiant de la ligne supprimée.
- String get id;/// Chantier de la ligne.
- String get siteId;/// Version serveur de la suppression.
+ String get id;/// Chantier de la ligne ; `null` pour une entité globale.
+ String? get siteId;/// Version serveur de la suppression.
  String get version;
 /// Create a copy of SyncDeletion
 /// with the given fields replaced by the non-null parameter values.
@@ -53,7 +53,7 @@ abstract mixin class $SyncDeletionCopyWith<$Res>  {
   factory $SyncDeletionCopyWith(SyncDeletion value, $Res Function(SyncDeletion) _then) = _$SyncDeletionCopyWithImpl;
 @useResult
 $Res call({
- String entity, String id, String siteId, String version
+ String entity, String id, String? siteId, String version
 });
 
 
@@ -69,12 +69,12 @@ class _$SyncDeletionCopyWithImpl<$Res>
 
 /// Create a copy of SyncDeletion
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? entity = null,Object? id = null,Object? siteId = null,Object? version = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? entity = null,Object? id = null,Object? siteId = freezed,Object? version = null,}) {
   return _then(_self.copyWith(
 entity: null == entity ? _self.entity : entity // ignore: cast_nullable_to_non_nullable
 as String,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,siteId: null == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
-as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,siteId: freezed == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
+as String?,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -93,8 +93,8 @@ class _SyncDeletion implements SyncDeletion {
 @override final  String entity;
 /// Identifiant de la ligne supprimée.
 @override final  String id;
-/// Chantier de la ligne.
-@override final  String siteId;
+/// Chantier de la ligne ; `null` pour une entité globale.
+@override final  String? siteId;
 /// Version serveur de la suppression.
 @override final  String version;
 
@@ -131,7 +131,7 @@ abstract mixin class _$SyncDeletionCopyWith<$Res> implements $SyncDeletionCopyWi
   factory _$SyncDeletionCopyWith(_SyncDeletion value, $Res Function(_SyncDeletion) _then) = __$SyncDeletionCopyWithImpl;
 @override @useResult
 $Res call({
- String entity, String id, String siteId, String version
+ String entity, String id, String? siteId, String version
 });
 
 
@@ -147,12 +147,12 @@ class __$SyncDeletionCopyWithImpl<$Res>
 
 /// Create a copy of SyncDeletion
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? entity = null,Object? id = null,Object? siteId = null,Object? version = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? entity = null,Object? id = null,Object? siteId = freezed,Object? version = null,}) {
   return _then(_SyncDeletion(
 entity: null == entity ? _self.entity : entity // ignore: cast_nullable_to_non_nullable
 as String,id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,siteId: null == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
-as String,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as String,siteId: freezed == siteId ? _self.siteId : siteId // ignore: cast_nullable_to_non_nullable
+as String?,version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

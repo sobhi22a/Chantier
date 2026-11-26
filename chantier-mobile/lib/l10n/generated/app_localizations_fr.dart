@@ -120,6 +120,66 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ce changement de statut n\'est pas autorisé.';
 
   @override
+  String get errorDemandeVerrouillee =>
+      'Demande validée : la quantité et le produit ne se modifient plus. Annulez-la et créez-en une nouvelle.';
+
+  @override
+  String get errorDemandeNonOuverte =>
+      'Cette demande n\'accepte plus de livraison.';
+
+  @override
+  String get errorCommandeExistante => 'Cette demande est déjà commandée.';
+
+  @override
+  String get errorProduitDifferent =>
+      'Le produit de la livraison n\'est pas celui de la demande.';
+
+  @override
+  String get errorQuantiteEntiereRequise => 'Nombre entier requis.';
+
+  @override
+  String get errorUniteNonAutorisee =>
+      'Cette unité n\'est pas autorisée pour ce produit.';
+
+  @override
+  String get errorMasseSacObligatoire =>
+      'Indiquez la masse d\'un sac pour ce produit.';
+
+  @override
+  String get errorProduitExistant => 'Ce produit existe déjà.';
+
+  @override
+  String get errorFournisseurExistant => 'Ce fournisseur existe déjà.';
+
+  @override
+  String get errorProduitInactif =>
+      'Ce produit est désactivé : choisissez-en un autre.';
+
+  @override
+  String get errorFournisseurInactif => 'Ce fournisseur est désactivé.';
+
+  @override
+  String get errorZoneHorsChantier =>
+      'Cette zone n\'appartient pas à ce chantier.';
+
+  @override
+  String get errorLivraisonDejaRattachee =>
+      'Cette livraison est déjà rattachée à une autre demande.';
+
+  @override
+  String get errorPhotosTropNombreuses =>
+      'Nombre maximal de photos atteint pour cette livraison.';
+
+  @override
+  String get errorPhotoDejaEnvoyee => 'Cette photo a déjà été envoyée.';
+
+  @override
+  String get errorFichierTropGros => 'Image trop volumineuse.';
+
+  @override
+  String get errorTypeFichierRefuse => 'Seules les images JPEG sont acceptées.';
+
+  @override
   String get errorNetwork =>
       'Pas de réseau. Vos saisies sont conservées et partiront au retour du réseau.';
 
@@ -621,4 +681,985 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get pendingSyncFailed =>
       'La synchronisation n\'a pas abouti. Vos saisies sont conservées.';
+
+  @override
+  String get requestStatusRequested => 'Demandée';
+
+  @override
+  String get requestStatusValidated => 'Validée';
+
+  @override
+  String get requestStatusRejected => 'Refusée';
+
+  @override
+  String get requestStatusOrdered => 'Commandée';
+
+  @override
+  String get requestStatusPartiallyDelivered => 'Livrée partiellement';
+
+  @override
+  String get requestStatusDelivered => 'Livrée';
+
+  @override
+  String get requestStatusReceived => 'Réceptionnée';
+
+  @override
+  String get requestStatusCancelled => 'Annulée';
+
+  @override
+  String get priorityNormal => 'Normale';
+
+  @override
+  String get priorityUrgent => 'Urgente';
+
+  @override
+  String get priorityBlocking => 'Bloquante';
+
+  @override
+  String get deliveryStatusRecorded => 'Enregistrée';
+
+  @override
+  String get deliveryStatusCancelled => 'Annulée';
+
+  @override
+  String get conformityConform => 'Conforme';
+
+  @override
+  String get conformityWithReserve => 'Avec réserve';
+
+  @override
+  String get unitPiece => 'u';
+
+  @override
+  String get unitLinearMeter => 'ml';
+
+  @override
+  String get unitSquareMeter => 'm²';
+
+  @override
+  String get unitCubicMeter => 'm³';
+
+  @override
+  String get unitKilogram => 'kg';
+
+  @override
+  String get unitTonne => 'T';
+
+  @override
+  String get unitBag => 'sac';
+
+  @override
+  String get unitLiter => 'L';
+
+  @override
+  String get unitHour => 'h';
+
+  @override
+  String get unitDay => 'j';
+
+  @override
+  String get unitManDay => 'pers·j';
+
+  @override
+  String get unitLumpSum => 'forfait';
+
+  @override
+  String get productCategoryBinders => 'Liants';
+
+  @override
+  String get productCategorySteel => 'Acier';
+
+  @override
+  String get productCategoryMasonry => 'Maçonnerie';
+
+  @override
+  String get productCategoryAggregates => 'Granulats';
+
+  @override
+  String get productCategoryAdmixtures => 'Adjuvants';
+
+  @override
+  String get productCategoryFinishingWorks => 'Second œuvre';
+
+  @override
+  String get productCategoryOther => 'Autre';
+
+  @override
+  String get reasonAlreadyOrdered => 'Déjà commandé';
+
+  @override
+  String get reasonStockSufficient => 'Stock suffisant sur le chantier';
+
+  @override
+  String get reasonQuantityToReview => 'Quantité à revoir';
+
+  @override
+  String get reasonOverBudget => 'Hors budget';
+
+  @override
+  String get reasonEntryError => 'Erreur de saisie';
+
+  @override
+  String get reasonNoLongerNeeded => 'Plus besoin';
+
+  @override
+  String get reasonDuplicate => 'Doublon';
+
+  @override
+  String get reasonSupplierUnavailable => 'Fournisseur indisponible';
+
+  @override
+  String get reasonPriceRefused => 'Prix refusé';
+
+  @override
+  String get reasonSupplierWillNotDeliver =>
+      'Le fournisseur ne livrera pas le reste';
+
+  @override
+  String get reasonQuantitySufficient => 'Quantité suffisante';
+
+  @override
+  String get reasonDoubleEntry => 'Saisie en double';
+
+  @override
+  String get reasonQuantityError => 'Erreur de quantité';
+
+  @override
+  String get reasonRefusedAtReception => 'Refusée à la réception';
+
+  @override
+  String get reasonQuantityMissing => 'Quantité manquante';
+
+  @override
+  String get reasonDamagedProduct => 'Produit abîmé';
+
+  @override
+  String get reasonWrongProduct => 'Mauvais produit';
+
+  @override
+  String get reasonOther => 'Autre';
+
+  @override
+  String get materialNumberPending => 'Numéro en attente';
+
+  @override
+  String get materialToConfirm => 'À confirmer';
+
+  @override
+  String materialOverdueDays(String days) {
+    return 'En retard de $days j';
+  }
+
+  @override
+  String get requestsTitle => 'Demandes de matériaux';
+
+  @override
+  String get requestNew => 'Nouvelle demande';
+
+  @override
+  String get requestNewShort => '+ Demande';
+
+  @override
+  String get requestsOpen => 'Demandes';
+
+  @override
+  String get approvalsTitle => 'À valider';
+
+  @override
+  String get approvalsEmpty => 'Aucune demande à valider.';
+
+  @override
+  String get requestsViewToFollow => 'À suivre';
+
+  @override
+  String get requestsViewReceived => 'Terminées';
+
+  @override
+  String get requestsViewClosed => 'Refusées et annulées';
+
+  @override
+  String get requestsViewArchived => 'Archivées';
+
+  @override
+  String get requestsMine => 'Mes demandes';
+
+  @override
+  String get requestsAll => 'Toutes';
+
+  @override
+  String get requestsEmpty => 'Aucune demande ici.';
+
+  @override
+  String get requestsSearchHint => 'Rechercher (DEM-014, ciment…)';
+
+  @override
+  String get requestPendingSend => 'En attente d\'envoi';
+
+  @override
+  String get requestNeedsCheck => 'À vérifier';
+
+  @override
+  String requestNeededBy(String date) {
+    return 'Pour le $date';
+  }
+
+  @override
+  String get requestFormProduct => 'Matériau';
+
+  @override
+  String get requestFormSearchHint => 'Chercher un matériau';
+
+  @override
+  String get requestFormNoProduct => 'Aucun matériau trouvé.';
+
+  @override
+  String get requestFormTopProducts => 'Les plus demandés';
+
+  @override
+  String get requestFormOtherProduct => 'Autre produit';
+
+  @override
+  String get requestFormFreeName => 'Nom du matériau';
+
+  @override
+  String get requestFormFreeNameInvalid => 'Entrez 3 à 100 caractères.';
+
+  @override
+  String get requestFormQuantity => 'Quantité';
+
+  @override
+  String get requestFormUnit => 'Unité';
+
+  @override
+  String get requestFormZone => 'Zone';
+
+  @override
+  String get requestFormZoneOther => 'Autre zone';
+
+  @override
+  String get requestFormNeededBy => 'Pour le';
+
+  @override
+  String get requestFormTomorrow => 'Demain';
+
+  @override
+  String requestFormInDays(String days) {
+    return '+ $days jours';
+  }
+
+  @override
+  String get requestFormNextWeek => 'Semaine prochaine';
+
+  @override
+  String get requestFormOtherDate => 'Autre date';
+
+  @override
+  String get requestFormPriority => 'Urgence';
+
+  @override
+  String get requestFormNote => 'Remarque (facultatif)';
+
+  @override
+  String get requestFormSend => 'Envoyer';
+
+  @override
+  String get requestFormSendAnother => 'Envoyer et ajouter un autre matériau';
+
+  @override
+  String get requestFormPastDate => 'Cette date est déjà passée.';
+
+  @override
+  String get requestFormSendAnyway => 'Envoyer quand même';
+
+  @override
+  String requestFormDuplicate(String number) {
+    return '$number est déjà ouverte pour ce matériau et cette zone.';
+  }
+
+  @override
+  String get requestFormSeeDuplicate => 'Voir la demande';
+
+  @override
+  String get requestFormOtherRequest => 'C\'est une autre demande';
+
+  @override
+  String get requestSaved => 'Demande enregistrée. En attente d\'envoi.';
+
+  @override
+  String get requestEditTitle => 'Corriger la demande';
+
+  @override
+  String get requestEditSave => 'Enregistrer';
+
+  @override
+  String get requestEditNothing => 'Aucune modification.';
+
+  @override
+  String get requestEditProductLocked =>
+      'Le matériau ne se corrige pas : annulez la demande puis recréez-la.';
+
+  @override
+  String get requestEditBusy =>
+      'Cette saisie est en cours d\'envoi. Réessayez dans un instant.';
+
+  @override
+  String get requestDetailHistory => 'Historique';
+
+  @override
+  String requestDetailRequestedBy(String name) {
+    return 'Demandée par $name';
+  }
+
+  @override
+  String get requestDetailZone => 'Zone';
+
+  @override
+  String get requestDetailNote => 'Remarque';
+
+  @override
+  String get requestDetailReason => 'Motif';
+
+  @override
+  String get requestDetailReceived => 'Reçu';
+
+  @override
+  String get requestDetailRemaining => 'Reste';
+
+  @override
+  String get requestDetailVariance => 'Écart';
+
+  @override
+  String requestDetailDuplicate(String number) {
+    return 'Doublon possible de $number';
+  }
+
+  @override
+  String get requestDetailNotFound =>
+      'Cette demande n\'est plus sur ce téléphone.';
+
+  @override
+  String requestDetailSavedAt(String when) {
+    return 'Saisie le $when';
+  }
+
+  @override
+  String get requestZoneNone => 'Non précisée';
+
+  @override
+  String get requestActionEdit => 'Corriger';
+
+  @override
+  String get requestActionCancel => 'Annuler la demande';
+
+  @override
+  String get requestCancelTitle => 'Annuler cette demande ?';
+
+  @override
+  String get requestCancelConfirm => 'Annuler la demande';
+
+  @override
+  String get requestCancelKeep => 'Garder la demande';
+
+  @override
+  String get requestReasonTitle => 'Motif';
+
+  @override
+  String get requestReasonNoteLabel => 'Précisez le motif';
+
+  @override
+  String get requestReasonNoteRequired => 'Précisez le motif (Autre).';
+
+  @override
+  String get requestReasonRequired => 'Choisissez un motif.';
+
+  @override
+  String get requestActionQueued => 'Enregistré. En attente d\'envoi.';
+
+  @override
+  String get requestActionAlreadyQueued =>
+      'Une action est déjà en attente d\'envoi pour cette demande.';
+
+  @override
+  String get approvalApprove => 'Valider';
+
+  @override
+  String get approvalReject => 'Refuser';
+
+  @override
+  String get approvalAdjust => 'Autre quantité';
+
+  @override
+  String get approvalAdjustTitle => 'Valider avec une autre quantité';
+
+  @override
+  String get approvalAdjustConfirm => 'Valider cette quantité';
+
+  @override
+  String get approvalPending => 'Validation en attente d\'envoi';
+
+  @override
+  String get approvalRejectTitle => 'Refuser la demande';
+
+  @override
+  String get approvalRejectConfirm => 'Refuser';
+
+  @override
+  String get historyCreated => 'Demande créée';
+
+  @override
+  String get historyEdited => 'Demande modifiée';
+
+  @override
+  String get historyApproved => 'Validée';
+
+  @override
+  String get historyQuantityAdjusted => 'Quantité ajustée';
+
+  @override
+  String get historyRejected => 'Refusée';
+
+  @override
+  String get historyCancelled => 'Annulée';
+
+  @override
+  String get historyReceived => 'Réceptionnée';
+
+  @override
+  String historyStatusChange(String fromStatus, String toStatus) {
+    return '$fromStatus → $toStatus';
+  }
+
+  @override
+  String historyBy(String name) {
+    return 'par $name';
+  }
+
+  @override
+  String get fieldQuantity => 'Quantité';
+
+  @override
+  String get fieldZone => 'Zone';
+
+  @override
+  String get fieldNeededBy => 'Pour le';
+
+  @override
+  String get fieldPriority => 'Urgence';
+
+  @override
+  String get fieldNote => 'Remarque';
+
+  @override
+  String get fieldProduct => 'Matériau';
+
+  @override
+  String fieldChange(String field, String newValue, String oldValue) {
+    return '$field : $oldValue → $newValue';
+  }
+
+  @override
+  String get fieldEmpty => 'vide';
+
+  @override
+  String get pendingEntityRequest => 'Demande de matériau';
+
+  @override
+  String get pendingView => 'Voir';
+
+  @override
+  String get conflictTitle => 'À vérifier';
+
+  @override
+  String get conflictIntro =>
+      'Le serveur garde sa version. Rien n\'est supprimé tant que vous n\'avez pas choisi.';
+
+  @override
+  String get conflictYourVersion => 'Votre version';
+
+  @override
+  String get conflictServerVersion => 'Version du serveur';
+
+  @override
+  String conflictFieldsInDisagreement(String fields) {
+    return 'Champs en désaccord : $fields';
+  }
+
+  @override
+  String conflictYourAction(String action) {
+    return 'Votre action : $action';
+  }
+
+  @override
+  String get conflictActionApprove => 'valider';
+
+  @override
+  String get conflictActionReject => 'refuser';
+
+  @override
+  String get conflictActionCancel => 'annuler';
+
+  @override
+  String get conflictActionReceive => 'réceptionner';
+
+  @override
+  String conflictServerStatus(String status) {
+    return 'Statut sur le serveur : $status';
+  }
+
+  @override
+  String get conflictKeepServer => 'Garder la version du serveur';
+
+  @override
+  String get conflictRedo => 'Refaire ma modification';
+
+  @override
+  String get conflictCreateNew => 'Créer une nouvelle demande avec mes valeurs';
+
+  @override
+  String get conflictCorrect => 'Corriger ma saisie';
+
+  @override
+  String get conflictKeepServerTitle => 'Garder la version du serveur ?';
+
+  @override
+  String get conflictKeepServerBody =>
+      'Votre saisie sera supprimée de ce téléphone. Cette action est définitive.';
+
+  @override
+  String get conflictGone => 'Cette saisie n\'est plus à vérifier.';
+
+  @override
+  String get deliveriesTitle => 'Livraisons';
+
+  @override
+  String get toReceiveTitle => 'À recevoir';
+
+  @override
+  String get toReceptionTitle => 'À réceptionner';
+
+  @override
+  String get homeDeliveriesTitle => 'Livraisons et réception';
+
+  @override
+  String get toReceiveEmpty => 'Aucune commande à recevoir.';
+
+  @override
+  String get toReceiveSearchHint =>
+      'Rechercher (fournisseur, matériau, DEM-014)';
+
+  @override
+  String toReceiveExpectedOn(String date) {
+    return 'Prévue le $date';
+  }
+
+  @override
+  String get toReceiveNoDate => 'Date prévue non indiquée';
+
+  @override
+  String toReceiveRemaining(String quantity) {
+    return 'Reste : $quantity';
+  }
+
+  @override
+  String get toReceiveWithoutRequest => 'Livraison sans demande';
+
+  @override
+  String get receiveFilterAll => 'Toutes';
+
+  @override
+  String get receiveFilterToday => 'Aujourd\'hui';
+
+  @override
+  String get receiveFilterWeek => 'Cette semaine';
+
+  @override
+  String get receiveFilterLate => 'En retard';
+
+  @override
+  String get toReceptionEmpty => 'Aucune demande à réceptionner.';
+
+  @override
+  String get toReceptionAction => 'Réceptionner';
+
+  @override
+  String receiveNowPrompt(String number) {
+    return '$number est livrée. Réceptionner maintenant ?';
+  }
+
+  @override
+  String get receiveNowYes => 'Réceptionner';
+
+  @override
+  String get receiveNowLater => 'Plus tard';
+
+  @override
+  String get deliveryNewTitle => 'Recevoir une livraison';
+
+  @override
+  String get deliveryNoRequestTitle => 'Livraison sans demande';
+
+  @override
+  String get deliveryEditTitle => 'Corriger la livraison';
+
+  @override
+  String get deliveryFormSupplier => 'Fournisseur';
+
+  @override
+  String get deliveryFormOtherSupplier => 'Autre fournisseur';
+
+  @override
+  String get deliveryFormSupplierName => 'Nom du fournisseur';
+
+  @override
+  String get deliveryFormSupplierInvalid => 'Entrez 3 à 100 caractères.';
+
+  @override
+  String get deliveryFormQuantity => 'Quantité reçue';
+
+  @override
+  String get deliveryFormDate => 'Date de livraison';
+
+  @override
+  String get deliveryFormToday => 'Aujourd\'hui';
+
+  @override
+  String get deliveryFormYesterday => 'Hier';
+
+  @override
+  String get deliveryFormOtherDate => 'Autre date';
+
+  @override
+  String get deliveryFormNote => 'N° du bon de livraison (facultatif)';
+
+  @override
+  String get deliveryFormConformity => 'Conformité';
+
+  @override
+  String get deliveryFormReserveReason => 'Motif de la réserve';
+
+  @override
+  String get deliveryFormReserveNote => 'Précisez la réserve';
+
+  @override
+  String get deliveryFormReserveRequired =>
+      'Choisissez le motif de la réserve.';
+
+  @override
+  String get deliveryFormPhotos => 'Photos du bon';
+
+  @override
+  String get deliveryFormSave => 'Enregistrer la livraison';
+
+  @override
+  String get deliveryFormBeforeRequest =>
+      'Cette date est antérieure à la demande.';
+
+  @override
+  String deliveryAnnouncePartial(String quantity) {
+    return 'Livraison partielle : il restera $quantity';
+  }
+
+  @override
+  String get deliveryAnnounceComplete => 'Livraison complète';
+
+  @override
+  String deliveryAnnounceSurplus(String quantity, String percent) {
+    return 'Surplus de +$quantity (+$percent %)';
+  }
+
+  @override
+  String deliveryDuplicateNote(String number) {
+    return 'Ce bon est déjà saisi : $number.';
+  }
+
+  @override
+  String get deliveryDuplicateSee => 'Voir la livraison';
+
+  @override
+  String get deliveryDuplicateOther => 'C\'est une autre livraison';
+
+  @override
+  String get deliverySaved => 'Livraison enregistrée. En attente d\'envoi.';
+
+  @override
+  String get deliveryProductLocked => 'Le matériau est celui de la demande.';
+
+  @override
+  String get deliveryProductNeeded => 'Choisissez le matériau.';
+
+  @override
+  String get photoAdd => 'Photographier le bon';
+
+  @override
+  String get photoRetake => 'Reprendre';
+
+  @override
+  String get photoKeep => 'Garder';
+
+  @override
+  String photoMax(String max) {
+    return '$max photos au maximum.';
+  }
+
+  @override
+  String photoCountLabel(String count) {
+    return 'Photos : $count';
+  }
+
+  @override
+  String get photoErrorNotImage => 'Ce fichier n\'est pas une image JPEG.';
+
+  @override
+  String get photoErrorTooLarge => 'Cette photo est trop lourde. Reprenez-la.';
+
+  @override
+  String get photoErrorUnreadable => 'Photo illisible. Reprenez-la.';
+
+  @override
+  String get photoErrorNoCamera => 'Aucun appareil photo disponible.';
+
+  @override
+  String get photoPendingSend => 'Photo en attente d\'envoi';
+
+  @override
+  String photoPendingSendCount(String count) {
+    return 'Photo en attente d\'envoi ($count)';
+  }
+
+  @override
+  String get photoUploaded => 'Envoyée';
+
+  @override
+  String get photoShow => 'Afficher la photo';
+
+  @override
+  String get photoHide => 'Masquer';
+
+  @override
+  String get photoNeedsNetwork => 'Réseau nécessaire pour afficher la photo.';
+
+  @override
+  String get photoNotFound => 'Photo introuvable.';
+
+  @override
+  String photoFileProblem(String reason) {
+    return 'Fichier à vérifier : $reason';
+  }
+
+  @override
+  String get photoAbandon => 'Abandonner la photo';
+
+  @override
+  String get photoAbandonBody =>
+      'Cette photo sera supprimée de ce téléphone. Cette action est définitive.';
+
+  @override
+  String get deliveriesEmpty => 'Aucune livraison ici.';
+
+  @override
+  String get deliveriesSearchHint => 'Rechercher (LIV-006, ciment…)';
+
+  @override
+  String get deliveriesFilterAll => 'Toutes';
+
+  @override
+  String get deliveriesFilterUnattached => 'Non rattachées';
+
+  @override
+  String get deliveriesFilterReserve => 'Avec réserve';
+
+  @override
+  String get deliveriesFilterNoteMissing => 'BL manquant';
+
+  @override
+  String get deliveryUnattachedBadge => 'Non rattachée';
+
+  @override
+  String get deliveryNoteMissingBadge => 'BL manquant';
+
+  @override
+  String get deliveryDetailNotFound =>
+      'Cette livraison n\'est plus sur ce téléphone.';
+
+  @override
+  String get deliveryDetailQuantity => 'Quantité';
+
+  @override
+  String get deliveryDetailInRequest => 'Équivalent dans la demande';
+
+  @override
+  String get deliveryDetailSupplier => 'Fournisseur';
+
+  @override
+  String get deliveryDetailRequest => 'Demande';
+
+  @override
+  String get deliveryDetailDate => 'Date de livraison';
+
+  @override
+  String get deliveryDetailNote => 'Bon n°';
+
+  @override
+  String get deliveryDetailReserve => 'Réserve';
+
+  @override
+  String get deliveryDetailCancelReason => 'Motif d\'annulation';
+
+  @override
+  String get deliveryDetailUnattachedReason => 'Pourquoi non rattachée';
+
+  @override
+  String get deliveryDetailPhotos => 'Photos du bon';
+
+  @override
+  String get deliveryDetailNoPhotos => 'Aucune photo.';
+
+  @override
+  String deliveryDetailSavedAt(String when) {
+    return 'Saisie le $when';
+  }
+
+  @override
+  String get deliveryActionEdit => 'Corriger';
+
+  @override
+  String get deliveryActionCancel => 'Annuler la livraison';
+
+  @override
+  String get deliveryCancelTitle => 'Annuler cette livraison ?';
+
+  @override
+  String get deliveryCancelConfirm => 'Annuler la livraison';
+
+  @override
+  String get deliveryAttachInfo =>
+      'Pour rattacher cette livraison à une demande, il faut du réseau : faites-le depuis le bureau ou une fois connecté.';
+
+  @override
+  String get unattachedNoRequestChosen => 'Aucune demande choisie';
+
+  @override
+  String get unattachedRequestNotOpen => 'La demande n\'était plus ouverte';
+
+  @override
+  String get unattachedRequestMissing => 'Demande introuvable';
+
+  @override
+  String get requestDetailDeliveries => 'Livraisons';
+
+  @override
+  String get requestDetailSupplier => 'Fournisseur';
+
+  @override
+  String requestDetailExpected(String date) {
+    return 'Livraison prévue le $date';
+  }
+
+  @override
+  String get requestActionReceive => 'Recevoir une livraison';
+
+  @override
+  String get requestActionReception => 'Réceptionner';
+
+  @override
+  String get supplierCall => 'Appeler le fournisseur';
+
+  @override
+  String get supplierCallNeedsNetwork =>
+      'Réseau nécessaire pour afficher le numéro.';
+
+  @override
+  String get supplierCallNoNumber =>
+      'Aucun numéro enregistré pour ce fournisseur.';
+
+  @override
+  String supplierCallTitle(String name) {
+    return 'Fournisseur : $name';
+  }
+
+  @override
+  String get supplierCallDial => 'Appeler';
+
+  @override
+  String get supplierCallClose => 'Fermer';
+
+  @override
+  String get supplierCallNoApp => 'Impossible d\'ouvrir le téléphone.';
+
+  @override
+  String get historyDeliveryRegistered => 'Livraison enregistrée';
+
+  @override
+  String get historyDeliveryEdited => 'Livraison corrigée';
+
+  @override
+  String get historyDeliveryCancelled => 'Livraison annulée';
+
+  @override
+  String get historyDeliveryAttached => 'Livraison rattachée';
+
+  @override
+  String get historyStatusRecomputed => 'Statut recalculé';
+
+  @override
+  String get historyPhotoAdded => 'Photo ajoutée';
+
+  @override
+  String get historyOrdered => 'Commandée';
+
+  @override
+  String get fieldDeliveryDate => 'Date de livraison';
+
+  @override
+  String get fieldDeliveryNote => 'Bon n°';
+
+  @override
+  String get fieldConformity => 'Conformité';
+
+  @override
+  String get fieldReserveReason => 'Motif de la réserve';
+
+  @override
+  String get fieldReserveNote => 'Remarque de réserve';
+
+  @override
+  String get pendingEntityDelivery => 'Livraison';
+
+  @override
+  String get pendingEntityPhoto => 'Photo du bon';
+
+  @override
+  String get conflictRequestNotComplete =>
+      'La demande n\'est plus complète : votre réception n\'a pas été enregistrée.';
+
+  @override
+  String get conflictDeliveryCancelled =>
+      'Cette livraison a été annulée entre-temps.';
+
+  @override
+  String get conflictDeliveryRequestClosed =>
+      'La demande est déjà réceptionnée : ses livraisons ne se modifient plus.';
+
+  @override
+  String conflictServerDeliveryStatus(String status) {
+    return 'Statut de la livraison sur le serveur : $status';
+  }
+
+  @override
+  String conflictYourPhoto(String when) {
+    return 'Photo du bon prise le $when';
+  }
+
+  @override
+  String get pendingPhotosTitle => 'Photos à envoyer';
+
+  @override
+  String get pendingPhotosRefused => 'Photo refusée par le serveur';
+
+  @override
+  String get errorErreurTemporaire =>
+      'Le serveur est occupé un instant. Rien n\'a été enregistré : réessayez.';
+
+  @override
+  String get historyUnavailableOffline => 'Historique indisponible hors ligne.';
 }

@@ -167,7 +167,7 @@ if ($dbHealth -ne 'healthy') {
 $port = 14335
 $m = Select-String -Path $envFile -Pattern '^MSSQL_PORT=(\d+)' | Select-Object -First 1
 if ($m) { $port = $m.Matches[0].Groups[1].Value }
-Write-Host "Base prete : localhost,$port (utilisateur sa, mot de passe dans .env)."
+Write-Host "Base prete : 127.0.0.1,$port (utilisateur sa, mot de passe dans .env)."
 
 $startApi = $Api -or $Web -or $All -or $Mobile
 $startWeb = $Web -or $All
@@ -200,7 +200,7 @@ if (Test-Url "http://localhost:$apiPort/health/live") {
 
     $env:ASPNETCORE_ENVIRONMENT = 'Development'
     $env:Seed__Demo = 'true'
-    $env:ConnectionStrings__ChantierDb = "Server=localhost,$port;Database=ChantierDev;User Id=sa;Password=$saPassword;TrustServerCertificate=True"
+    $env:ConnectionStrings__ChantierDb = "Server=127.0.0.1,$port;Database=ChantierDev;User Id=sa;Password=$saPassword;TrustServerCertificate=True"
 
     Write-Host 'Compilation et demarrage de l API...'
     $apiLog = Join-Path $devDir 'api.log'

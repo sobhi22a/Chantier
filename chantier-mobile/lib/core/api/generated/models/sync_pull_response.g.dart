@@ -16,6 +16,7 @@ _SyncPullResponse _$SyncPullResponseFromJson(Map<String, dynamic> json) =>
           .toList(),
       cursor: json['cursor'] as String,
       hasMore: json['hasMore'] as bool,
+      resetRequired: json['resetRequired'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$SyncPullResponseToJson(_SyncPullResponse instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$SyncPullResponseToJson(_SyncPullResponse instance) =>
       'deleted': instance.deleted,
       'cursor': instance.cursor,
       'hasMore': instance.hasMore,
+      'resetRequired': instance.resetRequired,
     };

@@ -114,6 +114,59 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errorTransitionInterdite => 'تغيير الحالة هذا غير مسموح.';
 
   @override
+  String get errorDemandeVerrouillee =>
+      'تمت المصادقة على الطلب: لا يمكن تعديل الكمية والمادة. ألغِه وأنشئ طلباً جديداً.';
+
+  @override
+  String get errorDemandeNonOuverte => 'هذا الطلب لا يقبل تسليماً جديداً.';
+
+  @override
+  String get errorCommandeExistante => 'تم تقديم طلبية لهذا الطلب من قبل.';
+
+  @override
+  String get errorProduitDifferent => 'مادة التسليم ليست مادة الطلب.';
+
+  @override
+  String get errorQuantiteEntiereRequise => 'يجب إدخال عدد صحيح.';
+
+  @override
+  String get errorUniteNonAutorisee => 'هذه الوحدة غير مسموح بها لهذه المادة.';
+
+  @override
+  String get errorMasseSacObligatoire => 'حدد وزن الكيس لهذه المادة.';
+
+  @override
+  String get errorProduitExistant => 'هذه المادة موجودة مسبقاً.';
+
+  @override
+  String get errorFournisseurExistant => 'هذا المورّد موجود مسبقاً.';
+
+  @override
+  String get errorProduitInactif => 'هذه المادة معطّلة: اختر مادة أخرى.';
+
+  @override
+  String get errorFournisseurInactif => 'هذا المورّد معطّل.';
+
+  @override
+  String get errorZoneHorsChantier => 'هذه المنطقة لا تنتمي إلى هذه الورشة.';
+
+  @override
+  String get errorLivraisonDejaRattachee => 'هذا التسليم مرتبط بطلب آخر.';
+
+  @override
+  String get errorPhotosTropNombreuses =>
+      'تم بلوغ العدد الأقصى للصور لهذا التسليم.';
+
+  @override
+  String get errorPhotoDejaEnvoyee => 'تم إرسال هذه الصورة من قبل.';
+
+  @override
+  String get errorFichierTropGros => 'الصورة كبيرة جداً.';
+
+  @override
+  String get errorTypeFichierRefuse => 'تُقبل صور JPEG فقط.';
+
+  @override
   String get errorNetwork =>
       'لا يوجد اتصال. إدخالاتك محفوظة وسيتم إرسالها عند عودة الاتصال.';
 
@@ -628,4 +681,975 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pendingSyncFailed => 'لم تكتمل المزامنة. إدخالاتك محفوظة.';
+
+  @override
+  String get requestStatusRequested => 'تم الطلب';
+
+  @override
+  String get requestStatusValidated => 'تمت المصادقة';
+
+  @override
+  String get requestStatusRejected => 'تم الرفض';
+
+  @override
+  String get requestStatusOrdered => 'تم تقديم الطلبية';
+
+  @override
+  String get requestStatusPartiallyDelivered => 'تسليم جزئي';
+
+  @override
+  String get requestStatusDelivered => 'تم التسليم';
+
+  @override
+  String get requestStatusReceived => 'تم الاستلام';
+
+  @override
+  String get requestStatusCancelled => 'ملغى';
+
+  @override
+  String get priorityNormal => 'عادية';
+
+  @override
+  String get priorityUrgent => 'مستعجلة';
+
+  @override
+  String get priorityBlocking => 'معطِّلة للورشة';
+
+  @override
+  String get deliveryStatusRecorded => 'مسجّلة';
+
+  @override
+  String get deliveryStatusCancelled => 'ملغاة';
+
+  @override
+  String get conformityConform => 'مطابق';
+
+  @override
+  String get conformityWithReserve => 'مع تحفظ';
+
+  @override
+  String get unitPiece => 'قطعة';
+
+  @override
+  String get unitLinearMeter => 'م.ط';
+
+  @override
+  String get unitSquareMeter => 'م²';
+
+  @override
+  String get unitCubicMeter => 'م³';
+
+  @override
+  String get unitKilogram => 'كغ';
+
+  @override
+  String get unitTonne => 'طن';
+
+  @override
+  String get unitBag => 'كيس';
+
+  @override
+  String get unitLiter => 'لتر';
+
+  @override
+  String get unitHour => 'ساعة';
+
+  @override
+  String get unitDay => 'يوم';
+
+  @override
+  String get unitManDay => 'يوم عمل';
+
+  @override
+  String get unitLumpSum => 'جزافي';
+
+  @override
+  String get productCategoryBinders => 'مواد رابطة';
+
+  @override
+  String get productCategorySteel => 'حديد';
+
+  @override
+  String get productCategoryMasonry => 'بناء';
+
+  @override
+  String get productCategoryAggregates => 'ركام';
+
+  @override
+  String get productCategoryAdmixtures => 'مواد مضافة';
+
+  @override
+  String get productCategoryFinishingWorks => 'أشغال التهيئة';
+
+  @override
+  String get productCategoryOther => 'أخرى';
+
+  @override
+  String get reasonAlreadyOrdered => 'تم طلبه من قبل';
+
+  @override
+  String get reasonStockSufficient => 'المخزون كافٍ في الورشة';
+
+  @override
+  String get reasonQuantityToReview => 'الكمية تحتاج مراجعة';
+
+  @override
+  String get reasonOverBudget => 'خارج الميزانية';
+
+  @override
+  String get reasonEntryError => 'خطأ في الإدخال';
+
+  @override
+  String get reasonNoLongerNeeded => 'لم تعد هناك حاجة';
+
+  @override
+  String get reasonDuplicate => 'تكرار';
+
+  @override
+  String get reasonSupplierUnavailable => 'المورّد غير متاح';
+
+  @override
+  String get reasonPriceRefused => 'تم رفض السعر';
+
+  @override
+  String get reasonSupplierWillNotDeliver => 'لن يسلّم المورّد المتبقي';
+
+  @override
+  String get reasonQuantitySufficient => 'الكمية كافية';
+
+  @override
+  String get reasonDoubleEntry => 'إدخال مزدوج';
+
+  @override
+  String get reasonQuantityError => 'خطأ في الكمية';
+
+  @override
+  String get reasonRefusedAtReception => 'مرفوض عند الاستلام';
+
+  @override
+  String get reasonQuantityMissing => 'كمية ناقصة';
+
+  @override
+  String get reasonDamagedProduct => 'مادة تالفة';
+
+  @override
+  String get reasonWrongProduct => 'مادة خاطئة';
+
+  @override
+  String get reasonOther => 'أخرى';
+
+  @override
+  String get materialNumberPending => 'الرقم قيد الانتظار';
+
+  @override
+  String get materialToConfirm => 'بانتظار التأكيد';
+
+  @override
+  String materialOverdueDays(String days) {
+    return 'متأخر بـ $days يوم';
+  }
+
+  @override
+  String get requestsTitle => 'طلبات المواد';
+
+  @override
+  String get requestNew => 'طلب جديد';
+
+  @override
+  String get requestNewShort => '+ طلب';
+
+  @override
+  String get requestsOpen => 'الطلبات';
+
+  @override
+  String get approvalsTitle => 'للمصادقة';
+
+  @override
+  String get approvalsEmpty => 'لا توجد طلبات للمصادقة.';
+
+  @override
+  String get requestsViewToFollow => 'قيد المتابعة';
+
+  @override
+  String get requestsViewReceived => 'المنتهية';
+
+  @override
+  String get requestsViewClosed => 'المرفوضة والملغاة';
+
+  @override
+  String get requestsViewArchived => 'المؤرشفة';
+
+  @override
+  String get requestsMine => 'طلباتي';
+
+  @override
+  String get requestsAll => 'الكل';
+
+  @override
+  String get requestsEmpty => 'لا توجد طلبات هنا.';
+
+  @override
+  String get requestsSearchHint => 'بحث (DEM-014، إسمنت…)';
+
+  @override
+  String get requestPendingSend => 'بانتظار الإرسال';
+
+  @override
+  String get requestNeedsCheck => 'للمراجعة';
+
+  @override
+  String requestNeededBy(String date) {
+    return 'لتاريخ $date';
+  }
+
+  @override
+  String get requestFormProduct => 'المادة';
+
+  @override
+  String get requestFormSearchHint => 'ابحث عن مادة';
+
+  @override
+  String get requestFormNoProduct => 'لم يتم العثور على مادة.';
+
+  @override
+  String get requestFormTopProducts => 'الأكثر طلبًا';
+
+  @override
+  String get requestFormOtherProduct => 'مادة أخرى';
+
+  @override
+  String get requestFormFreeName => 'اسم المادة';
+
+  @override
+  String get requestFormFreeNameInvalid => 'أدخل من 3 إلى 100 حرف.';
+
+  @override
+  String get requestFormQuantity => 'الكمية';
+
+  @override
+  String get requestFormUnit => 'الوحدة';
+
+  @override
+  String get requestFormZone => 'المنطقة';
+
+  @override
+  String get requestFormZoneOther => 'منطقة أخرى';
+
+  @override
+  String get requestFormNeededBy => 'لتاريخ';
+
+  @override
+  String get requestFormTomorrow => 'غدًا';
+
+  @override
+  String requestFormInDays(String days) {
+    return '+ $days أيام';
+  }
+
+  @override
+  String get requestFormNextWeek => 'الأسبوع القادم';
+
+  @override
+  String get requestFormOtherDate => 'تاريخ آخر';
+
+  @override
+  String get requestFormPriority => 'درجة الاستعجال';
+
+  @override
+  String get requestFormNote => 'ملاحظة (اختياري)';
+
+  @override
+  String get requestFormSend => 'إرسال';
+
+  @override
+  String get requestFormSendAnother => 'إرسال وإضافة مادة أخرى';
+
+  @override
+  String get requestFormPastDate => 'هذا التاريخ مضى بالفعل.';
+
+  @override
+  String get requestFormSendAnyway => 'إرسال على أي حال';
+
+  @override
+  String requestFormDuplicate(String number) {
+    return 'الطلب $number مفتوح بالفعل لهذه المادة ولهذه المنطقة.';
+  }
+
+  @override
+  String get requestFormSeeDuplicate => 'عرض الطلب';
+
+  @override
+  String get requestFormOtherRequest => 'إنه طلب آخر';
+
+  @override
+  String get requestSaved => 'تم حفظ الطلب. بانتظار الإرسال.';
+
+  @override
+  String get requestEditTitle => 'تصحيح الطلب';
+
+  @override
+  String get requestEditSave => 'حفظ';
+
+  @override
+  String get requestEditNothing => 'لا توجد تعديلات.';
+
+  @override
+  String get requestEditProductLocked =>
+      'لا يمكن تصحيح المادة: ألغِ الطلب ثم أنشئه من جديد.';
+
+  @override
+  String get requestEditBusy =>
+      'هذا الإدخال قيد الإرسال. أعد المحاولة بعد لحظة.';
+
+  @override
+  String get requestDetailHistory => 'السجل';
+
+  @override
+  String requestDetailRequestedBy(String name) {
+    return 'طلبها $name';
+  }
+
+  @override
+  String get requestDetailZone => 'المنطقة';
+
+  @override
+  String get requestDetailNote => 'ملاحظة';
+
+  @override
+  String get requestDetailReason => 'السبب';
+
+  @override
+  String get requestDetailReceived => 'المستلم';
+
+  @override
+  String get requestDetailRemaining => 'المتبقي';
+
+  @override
+  String get requestDetailVariance => 'الفرق';
+
+  @override
+  String requestDetailDuplicate(String number) {
+    return 'قد يكون مكررًا للطلب $number';
+  }
+
+  @override
+  String get requestDetailNotFound => 'لم يعد هذا الطلب على هذا الهاتف.';
+
+  @override
+  String requestDetailSavedAt(String when) {
+    return 'أُدخل في $when';
+  }
+
+  @override
+  String get requestZoneNone => 'غير محددة';
+
+  @override
+  String get requestActionEdit => 'تصحيح';
+
+  @override
+  String get requestActionCancel => 'إلغاء الطلب';
+
+  @override
+  String get requestCancelTitle => 'هل تريد إلغاء هذا الطلب؟';
+
+  @override
+  String get requestCancelConfirm => 'إلغاء الطلب';
+
+  @override
+  String get requestCancelKeep => 'الإبقاء على الطلب';
+
+  @override
+  String get requestReasonTitle => 'السبب';
+
+  @override
+  String get requestReasonNoteLabel => 'وضّح السبب';
+
+  @override
+  String get requestReasonNoteRequired => 'وضّح السبب (أخرى).';
+
+  @override
+  String get requestReasonRequired => 'اختر سببًا.';
+
+  @override
+  String get requestActionQueued => 'تم الحفظ. بانتظار الإرسال.';
+
+  @override
+  String get requestActionAlreadyQueued =>
+      'هناك إجراء بانتظار الإرسال لهذا الطلب بالفعل.';
+
+  @override
+  String get approvalApprove => 'مصادقة';
+
+  @override
+  String get approvalReject => 'رفض';
+
+  @override
+  String get approvalAdjust => 'كمية أخرى';
+
+  @override
+  String get approvalAdjustTitle => 'المصادقة بكمية أخرى';
+
+  @override
+  String get approvalAdjustConfirm => 'المصادقة على هذه الكمية';
+
+  @override
+  String get approvalPending => 'المصادقة بانتظار الإرسال';
+
+  @override
+  String get approvalRejectTitle => 'رفض الطلب';
+
+  @override
+  String get approvalRejectConfirm => 'رفض';
+
+  @override
+  String get historyCreated => 'تم إنشاء الطلب';
+
+  @override
+  String get historyEdited => 'تم تعديل الطلب';
+
+  @override
+  String get historyApproved => 'تمت المصادقة';
+
+  @override
+  String get historyQuantityAdjusted => 'تم تعديل الكمية';
+
+  @override
+  String get historyRejected => 'تم الرفض';
+
+  @override
+  String get historyCancelled => 'تم الإلغاء';
+
+  @override
+  String get historyReceived => 'تم الاستلام';
+
+  @override
+  String historyStatusChange(String fromStatus, String toStatus) {
+    return 'من $fromStatus إلى $toStatus';
+  }
+
+  @override
+  String historyBy(String name) {
+    return 'بواسطة $name';
+  }
+
+  @override
+  String get fieldQuantity => 'الكمية';
+
+  @override
+  String get fieldZone => 'المنطقة';
+
+  @override
+  String get fieldNeededBy => 'لتاريخ';
+
+  @override
+  String get fieldPriority => 'درجة الاستعجال';
+
+  @override
+  String get fieldNote => 'ملاحظة';
+
+  @override
+  String get fieldProduct => 'المادة';
+
+  @override
+  String fieldChange(String field, String newValue, String oldValue) {
+    return '$field: من $oldValue إلى $newValue';
+  }
+
+  @override
+  String get fieldEmpty => 'فارغ';
+
+  @override
+  String get pendingEntityRequest => 'طلب مادة';
+
+  @override
+  String get pendingView => 'عرض';
+
+  @override
+  String get conflictTitle => 'للمراجعة';
+
+  @override
+  String get conflictIntro => 'يحتفظ الخادم بنسخته. لا يُحذف شيء قبل أن تختار.';
+
+  @override
+  String get conflictYourVersion => 'نسختك';
+
+  @override
+  String get conflictServerVersion => 'نسخة الخادم';
+
+  @override
+  String conflictFieldsInDisagreement(String fields) {
+    return 'الحقول المتعارضة: $fields';
+  }
+
+  @override
+  String conflictYourAction(String action) {
+    return 'إجراؤك: $action';
+  }
+
+  @override
+  String get conflictActionApprove => 'مصادقة';
+
+  @override
+  String get conflictActionReject => 'رفض';
+
+  @override
+  String get conflictActionCancel => 'إلغاء';
+
+  @override
+  String get conflictActionReceive => 'استلام';
+
+  @override
+  String conflictServerStatus(String status) {
+    return 'الحالة على الخادم: $status';
+  }
+
+  @override
+  String get conflictKeepServer => 'الاحتفاظ بنسخة الخادم';
+
+  @override
+  String get conflictRedo => 'إعادة تعديلي';
+
+  @override
+  String get conflictCreateNew => 'إنشاء طلب جديد بقيمي';
+
+  @override
+  String get conflictCorrect => 'تصحيح إدخالي';
+
+  @override
+  String get conflictKeepServerTitle => 'هل تحتفظ بنسخة الخادم؟';
+
+  @override
+  String get conflictKeepServerBody =>
+      'سيُحذف إدخالك من هذا الهاتف. هذا الإجراء نهائي.';
+
+  @override
+  String get conflictGone => 'لم يعد هذا الإدخال بحاجة إلى مراجعة.';
+
+  @override
+  String get deliveriesTitle => 'التسليمات';
+
+  @override
+  String get toReceiveTitle => 'للاستلام';
+
+  @override
+  String get toReceptionTitle => 'للمعاينة والقبول';
+
+  @override
+  String get homeDeliveriesTitle => 'التسليمات والاستلام';
+
+  @override
+  String get toReceiveEmpty => 'لا توجد طلبيات للاستلام.';
+
+  @override
+  String get toReceiveSearchHint => 'بحث (مورّد، مادة، DEM-014)';
+
+  @override
+  String toReceiveExpectedOn(String date) {
+    return 'موعد التسليم $date';
+  }
+
+  @override
+  String get toReceiveNoDate => 'موعد التسليم غير محدد';
+
+  @override
+  String toReceiveRemaining(String quantity) {
+    return 'المتبقي: $quantity';
+  }
+
+  @override
+  String get toReceiveWithoutRequest => 'تسليم بدون طلب';
+
+  @override
+  String get receiveFilterAll => 'الكل';
+
+  @override
+  String get receiveFilterToday => 'اليوم';
+
+  @override
+  String get receiveFilterWeek => 'هذا الأسبوع';
+
+  @override
+  String get receiveFilterLate => 'متأخرة';
+
+  @override
+  String get toReceptionEmpty => 'لا توجد طلبات للمعاينة والقبول.';
+
+  @override
+  String get toReceptionAction => 'تأكيد الاستلام';
+
+  @override
+  String receiveNowPrompt(String number) {
+    return '$number تم تسليمها. هل تؤكد الاستلام الآن؟';
+  }
+
+  @override
+  String get receiveNowYes => 'تأكيد الاستلام';
+
+  @override
+  String get receiveNowLater => 'لاحقًا';
+
+  @override
+  String get deliveryNewTitle => 'استلام تسليم';
+
+  @override
+  String get deliveryNoRequestTitle => 'تسليم بدون طلب';
+
+  @override
+  String get deliveryEditTitle => 'تصحيح التسليم';
+
+  @override
+  String get deliveryFormSupplier => 'المورّد';
+
+  @override
+  String get deliveryFormOtherSupplier => 'مورّد آخر';
+
+  @override
+  String get deliveryFormSupplierName => 'اسم المورّد';
+
+  @override
+  String get deliveryFormSupplierInvalid => 'أدخل من 3 إلى 100 حرف.';
+
+  @override
+  String get deliveryFormQuantity => 'الكمية المستلمة';
+
+  @override
+  String get deliveryFormDate => 'تاريخ التسليم';
+
+  @override
+  String get deliveryFormToday => 'اليوم';
+
+  @override
+  String get deliveryFormYesterday => 'أمس';
+
+  @override
+  String get deliveryFormOtherDate => 'تاريخ آخر';
+
+  @override
+  String get deliveryFormNote => 'رقم وصل التسليم (اختياري)';
+
+  @override
+  String get deliveryFormConformity => 'المطابقة';
+
+  @override
+  String get deliveryFormReserveReason => 'سبب التحفظ';
+
+  @override
+  String get deliveryFormReserveNote => 'وضّح التحفظ';
+
+  @override
+  String get deliveryFormReserveRequired => 'اختر سبب التحفظ.';
+
+  @override
+  String get deliveryFormPhotos => 'صور وصل التسليم';
+
+  @override
+  String get deliveryFormSave => 'حفظ التسليم';
+
+  @override
+  String get deliveryFormBeforeRequest => 'هذا التاريخ سابق للطلب.';
+
+  @override
+  String deliveryAnnouncePartial(String quantity) {
+    return 'تسليم جزئي: سيتبقى $quantity';
+  }
+
+  @override
+  String get deliveryAnnounceComplete => 'تسليم كامل';
+
+  @override
+  String deliveryAnnounceSurplus(String quantity, String percent) {
+    return 'زيادة قدرها +$quantity (+$percent %)';
+  }
+
+  @override
+  String deliveryDuplicateNote(String number) {
+    return 'هذا الوصل مسجّل مسبقًا: $number.';
+  }
+
+  @override
+  String get deliveryDuplicateSee => 'عرض التسليم';
+
+  @override
+  String get deliveryDuplicateOther => 'إنه تسليم آخر';
+
+  @override
+  String get deliverySaved => 'تم حفظ التسليم. بانتظار الإرسال.';
+
+  @override
+  String get deliveryProductLocked => 'المادة هي مادة الطلب.';
+
+  @override
+  String get deliveryProductNeeded => 'اختر المادة.';
+
+  @override
+  String get photoAdd => 'تصوير وصل التسليم';
+
+  @override
+  String get photoRetake => 'إعادة التصوير';
+
+  @override
+  String get photoKeep => 'الاحتفاظ';
+
+  @override
+  String photoMax(String max) {
+    return '$max صور كحد أقصى.';
+  }
+
+  @override
+  String photoCountLabel(String count) {
+    return 'الصور: $count';
+  }
+
+  @override
+  String get photoErrorNotImage => 'هذا الملف ليس صورة JPEG.';
+
+  @override
+  String get photoErrorTooLarge => 'هذه الصورة ثقيلة جدًا. أعد تصويرها.';
+
+  @override
+  String get photoErrorUnreadable => 'الصورة غير مقروءة. أعد تصويرها.';
+
+  @override
+  String get photoErrorNoCamera => 'لا توجد كاميرا متاحة.';
+
+  @override
+  String get photoPendingSend => 'صورة بانتظار الإرسال';
+
+  @override
+  String photoPendingSendCount(String count) {
+    return 'صور بانتظار الإرسال ($count)';
+  }
+
+  @override
+  String get photoUploaded => 'تم إرسالها';
+
+  @override
+  String get photoShow => 'عرض الصورة';
+
+  @override
+  String get photoHide => 'إخفاء';
+
+  @override
+  String get photoNeedsNetwork => 'يلزم اتصال بالشبكة لعرض الصورة.';
+
+  @override
+  String get photoNotFound => 'الصورة غير موجودة.';
+
+  @override
+  String photoFileProblem(String reason) {
+    return 'ملف يحتاج إلى مراجعة: $reason';
+  }
+
+  @override
+  String get photoAbandon => 'التخلي عن الصورة';
+
+  @override
+  String get photoAbandonBody =>
+      'ستُحذف هذه الصورة من هذا الهاتف. هذا الإجراء نهائي.';
+
+  @override
+  String get deliveriesEmpty => 'لا توجد تسليمات هنا.';
+
+  @override
+  String get deliveriesSearchHint => 'بحث (LIV-006، إسمنت…)';
+
+  @override
+  String get deliveriesFilterAll => 'الكل';
+
+  @override
+  String get deliveriesFilterUnattached => 'غير مرتبطة';
+
+  @override
+  String get deliveriesFilterReserve => 'مع تحفظ';
+
+  @override
+  String get deliveriesFilterNoteMissing => 'الوصل مفقود';
+
+  @override
+  String get deliveryUnattachedBadge => 'غير مرتبطة';
+
+  @override
+  String get deliveryNoteMissingBadge => 'الوصل مفقود';
+
+  @override
+  String get deliveryDetailNotFound => 'لم يعد هذا التسليم على هذا الهاتف.';
+
+  @override
+  String get deliveryDetailQuantity => 'الكمية';
+
+  @override
+  String get deliveryDetailInRequest => 'ما يعادلها في الطلب';
+
+  @override
+  String get deliveryDetailSupplier => 'المورّد';
+
+  @override
+  String get deliveryDetailRequest => 'الطلب';
+
+  @override
+  String get deliveryDetailDate => 'تاريخ التسليم';
+
+  @override
+  String get deliveryDetailNote => 'وصل رقم';
+
+  @override
+  String get deliveryDetailReserve => 'التحفظ';
+
+  @override
+  String get deliveryDetailCancelReason => 'سبب الإلغاء';
+
+  @override
+  String get deliveryDetailUnattachedReason => 'سبب عدم الارتباط';
+
+  @override
+  String get deliveryDetailPhotos => 'صور الوصل';
+
+  @override
+  String get deliveryDetailNoPhotos => 'لا توجد صور.';
+
+  @override
+  String deliveryDetailSavedAt(String when) {
+    return 'أُدخل في $when';
+  }
+
+  @override
+  String get deliveryActionEdit => 'تصحيح';
+
+  @override
+  String get deliveryActionCancel => 'إلغاء التسليم';
+
+  @override
+  String get deliveryCancelTitle => 'هل تريد إلغاء هذا التسليم؟';
+
+  @override
+  String get deliveryCancelConfirm => 'إلغاء التسليم';
+
+  @override
+  String get deliveryAttachInfo =>
+      'لربط هذا التسليم بطلب يلزم اتصال بالشبكة: افعل ذلك من المكتب أو عند توفر الاتصال.';
+
+  @override
+  String get unattachedNoRequestChosen => 'لم يُختر أي طلب';
+
+  @override
+  String get unattachedRequestNotOpen => 'لم يعد الطلب مفتوحًا';
+
+  @override
+  String get unattachedRequestMissing => 'الطلب غير موجود';
+
+  @override
+  String get requestDetailDeliveries => 'التسليمات';
+
+  @override
+  String get requestDetailSupplier => 'المورّد';
+
+  @override
+  String requestDetailExpected(String date) {
+    return 'التسليم المتوقع في $date';
+  }
+
+  @override
+  String get requestActionReceive => 'استلام تسليم';
+
+  @override
+  String get requestActionReception => 'تأكيد الاستلام';
+
+  @override
+  String get supplierCall => 'الاتصال بالمورّد';
+
+  @override
+  String get supplierCallNeedsNetwork => 'يلزم اتصال بالشبكة لعرض الرقم.';
+
+  @override
+  String get supplierCallNoNumber => 'لا يوجد رقم مسجّل لهذا المورّد.';
+
+  @override
+  String supplierCallTitle(String name) {
+    return 'المورّد: $name';
+  }
+
+  @override
+  String get supplierCallDial => 'اتصال';
+
+  @override
+  String get supplierCallClose => 'إغلاق';
+
+  @override
+  String get supplierCallNoApp => 'تعذّر فتح تطبيق الهاتف.';
+
+  @override
+  String get historyDeliveryRegistered => 'تم تسجيل التسليم';
+
+  @override
+  String get historyDeliveryEdited => 'تم تصحيح التسليم';
+
+  @override
+  String get historyDeliveryCancelled => 'تم إلغاء التسليم';
+
+  @override
+  String get historyDeliveryAttached => 'تم ربط التسليم';
+
+  @override
+  String get historyStatusRecomputed => 'أُعيد حساب الحالة';
+
+  @override
+  String get historyPhotoAdded => 'أُضيفت صورة';
+
+  @override
+  String get historyOrdered => 'تم الطلب لدى المورّد';
+
+  @override
+  String get fieldDeliveryDate => 'تاريخ التسليم';
+
+  @override
+  String get fieldDeliveryNote => 'وصل رقم';
+
+  @override
+  String get fieldConformity => 'المطابقة';
+
+  @override
+  String get fieldReserveReason => 'سبب التحفظ';
+
+  @override
+  String get fieldReserveNote => 'ملاحظة التحفظ';
+
+  @override
+  String get pendingEntityDelivery => 'تسليم';
+
+  @override
+  String get pendingEntityPhoto => 'صورة الوصل';
+
+  @override
+  String get conflictRequestNotComplete =>
+      'لم يعد الطلب مكتملًا: لم تُسجَّل معاينتك وقبولك.';
+
+  @override
+  String get conflictDeliveryCancelled => 'أُلغي هذا التسليم في هذه الأثناء.';
+
+  @override
+  String get conflictDeliveryRequestClosed =>
+      'تم قبول استلام الطلب مسبقًا: لا يمكن تعديل تسليماته.';
+
+  @override
+  String conflictServerDeliveryStatus(String status) {
+    return 'حالة التسليم على الخادم: $status';
+  }
+
+  @override
+  String conflictYourPhoto(String when) {
+    return 'صورة وصل التُقطت في $when';
+  }
+
+  @override
+  String get pendingPhotosTitle => 'صور بانتظار الإرسال';
+
+  @override
+  String get pendingPhotosRefused => 'رفض الخادم هذه الصورة';
+
+  @override
+  String get errorErreurTemporaire =>
+      'الخادم مشغول لحظة. لم يُسجَّل شيء: أعد المحاولة.';
+
+  @override
+  String get historyUnavailableOffline => 'السجل غير متاح دون اتصال.';
 }

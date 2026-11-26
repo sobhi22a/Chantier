@@ -29,6 +29,10 @@ public class SyncArchitectureTests
             .Select(type => type.Name)
             .ToList();
 
-        Assert.That(sources, Is.EquivalentTo(new[] { nameof(SiteSyncSource), nameof(ZoneSyncSource), nameof(MemberSyncSource) }));
+        Assert.That(sources, Is.EquivalentTo(new[]
+        {
+            nameof(SiteSyncSource), nameof(ZoneSyncSource), nameof(MemberSyncSource),
+            nameof(ProductSyncSource), nameof(SupplierSyncSource), nameof(RequestSyncSource), nameof(DeliverySyncSource), nameof(PhotoSyncSource),
+        }));
     }
 }

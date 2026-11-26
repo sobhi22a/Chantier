@@ -20,9 +20,9 @@ metadata:
 - Le cookie est le schéma d'authentification PAR DÉFAUT (`AddIdentity`) : tout ce qui s'exécute avant `UseAuthorization` (limiteur global) ne voit PAS l'utilisateur d'un jeton Bearer. Penser à ce piège pour tout middleware placé avant l'autorisation.
 - Le ticket de cookie web est sans état : rejouable après déconnexion/changement de mot de passe ; seule la désactivation du compte le coupe.
 - Refresh : réponse perdue puis renvoi = réutilisation = chaîne révoquée (pas de fenêtre de grâce).
-- Mobile : `upsertIfNewer` ignore les versions égales, donc un rechargement après retrait de permission ne ré-efface pas le montant ; `allowBackup` non désactivé ; release signée avec la clé debug.
+- Mobile : `upsertIfNewer` ignore les versions égales (R1-03, corrigé depuis : purge du montant dans `sync_engine.dart`, à confirmer par la QA) ; `allowBackup` désactivé depuis (R2 : vérifié) ; release signée avec la clé debug (R1-19, à revoir avant diffusion).
 - `IdentityDbInitializer` n'AJOUTE que des permissions, ne retire jamais : un retrait dans la matrice du code ne se propage pas aux bases existantes.
-- Aucune compression des réponses : pull de 16,7 Ko → 1,9 Ko en gzip.
+- Compression gzip/brotli ajoutée depuis R1 ; `{"operations":[null]}` donne 400 ; corps limité à 64 Ko (R2 : constaté).
 - Entités futures : toute entité avec clé étrangère vers `Sites` doit suivre le schéma de verrouillage de `SyncTouch` (interblocages mesurés par backend-dotnet, ADR 0009).
 - À contrôler à chaque revue : `{"operations":[null]}` sur `/sync/push` (500 aujourd'hui), taille de corps (30 Mo par défaut), photos (lot suivant : octets magiques, EXIF, flux), SQLCipher avant tout téléphone/évaluation.
 
@@ -35,7 +35,7 @@ metadata:
 - Scripts de mesure en `node` (`fetch`, `zlib`) ; `python` absent de l'environnement isolé, `jq` absent.
 
 ## Pièges connus
-- Le dépôt n'a aucun commit : pas d'historique à fouiller, mais `git ls-files` ne dit rien ; vérifier `.gitignore` (`.env`, `**/Storage/`, `*.jks`) à la place.
+- Un seul commit (socle) sur `main` ; la fonctionnalité matériaux est dans l'arbre non commité de sa branche. Vérifier `.gitignore` (`.env`, `**/Storage/`, `*.jks`) plutôt que l'historique.
 - `.env` : lecture interdite aux agents ; pour parler à SQL Server, passer par `docker exec chantier-dev-db sh -c '... -P "$MSSQL_SA_PASSWORD" ...'` (le secret reste dans le conteneur).
 - Les plans SQL sur le jeu de démonstration (30 zones) ne sont pas significatifs : prévoir un jeu de 10 000 zones avant de conclure sur les index.
 

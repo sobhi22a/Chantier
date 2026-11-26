@@ -9,6 +9,9 @@ abstract interface class SyncRemote {
   /// confirme que le serveur est joignable (un reseau detecte ne garantit pas internet).
   Future<MeResponse> me();
 
+  /// `GET /settings/materials` : reglages et listes de motifs des demandes de materiaux.
+  Future<MaterialSettingsResponse> materialSettings();
+
   /// `GET /sync/changes` : une page de changements depuis le curseur serveur.
   Future<SyncPullResponse> pull({String? since, int? limit});
 

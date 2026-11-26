@@ -1,8 +1,9 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useApiErrorMessage, useAuthMeQuery, isApiError } from "@chantier-frontend/api-core";
+import { ApplicationApiService, useApiErrorMessage, useAuthMeQuery, isApiError } from "@chantier-frontend/api-core";
 import { isLanguage, toLanguage } from "@chantier-frontend/i18n";
+import { useAppChantierDispatch } from "@chantier-frontend/state-store";
 import { GenericErrorComponent, GenericLoaderComponent } from "@chantier-frontend/user-interface";
 
 /**
@@ -14,6 +15,24 @@ const AuthProviderComponent = ({ children }: { children: ReactNode }) => {
   const { i18n } = useTranslation();
   const { data: me, isLoading, isError, error, refetch } = useAuthMeQuery();
   const { describe } = useApiErrorMessage();
+  const dispatch = useAppChantierDispatch();
+
+  // Cache de données (prix, photos `blob:`) : vidé dès que la session se termine sans déconnexion volontaire (401 définitif, expiration)
+  // ou qu'un autre compte se connecte dans le même onglet (revue R3-03). On ne réagit qu'à une TRANSITION : vider le cache relit
+  // `GET /auth/me`, et réagir à l'état « sans profil » provoquerait une boucle.
+  const knownUser = useRef<string | null>(null);
+  const sessionEnded = isError && isApiError(error) && error.status === 401;
+  const currentId = isError ? undefined : me?.id;
+  useEffect(() => {
+    const previous = knownUser.current;
+    if (currentId) {
+      knownUser.current = currentId;
+      if (previous !== null && previous !== currentId) dispatch(ApplicationApiService.util.resetApiState());
+    } else if (sessionEnded && previous !== null) {
+      knownUser.current = null;
+      dispatch(ApplicationApiService.util.resetApiState());
+    }
+  }, [currentId, sessionEnded, dispatch]);
 
   // Synchronisation avec un système externe (i18next) : la langue enregistrée sur le compte s'applique UNE fois par
   // ouverture de session. Ensuite, le choix fait à l'écran l'emporte (il est mémorisé sur le compte par l'en-tête).

@@ -67,8 +67,35 @@ test/                                  # miroir de lib/ + support/ (faux serveur
 
 - `lib/core/api/generated/` : **genere** depuis `docs/api/openapi.json` (swagger_parser 1.46.0 + retrofit 4.4.2, ADR 0006) ; jamais modifie a la main.
   Enchainement : `dart run swagger_parser` -> `dart run build_runner build --delete-conflicting-outputs` -> `dart format lib`.
-- `SyncChange.data` est un objet libre : decode **selon `entity`** (`site`, `zone`, `member`) par `features/sites/data/sync_decoder.dart`.
-- Moteur : `core/sync/sync_engine.dart` (push par lots de 50 puis pull a curseur serveur) ; declencheurs : `sync_scheduler.dart`.
+- `SyncChange.data` est un objet libre : decode **selon `entity`** (`site`, `zone`, `member`, `product`, `supplier`, `request`, `delivery`, `photo`) par
+  `features/sites/data/sync_decoder.dart`. Les lignes `product`, `supplier`, `request`, `delivery` et `photo`
+  sont lues a la main (`features/materials/data/materials_sync_decoder.dart`) : l'historique d'une demande a des statuts absents, que les modeles generes refusent.
+- **Ordre du pull** : le serveur range une page parents d'abord, mais **entre deux pages aucun ordre n'est garanti** (ecart 26 du contrat). Le telephone suspend donc
+  les cles etrangeres le temps d'une page (`SitesRepository.applyPullPage`), applique tout le pull, puis retire les lignes dont le chantier n'est jamais arrive
+  (`AppDatabase.deleteOrphans`, a la derniere page). Les saisies en attente ne sont jamais touchees.
+- Moteur : `core/sync/sync_engine.dart` (push par lots de 50, pull a curseur serveur, puis **fichiers des photos de bons**) ; declencheurs : `sync_scheduler.dart`.
+  Un resultat `retry` (`ERREUR_TEMPORAIRE`) laisse l'operation en file : elle n'est pas renvoyee dans la meme execution, reprise avec delai exponentiel.
+  Ses **dependants** (operations qui la visent par `requestClientId`, `deliveryClientId` ou `zoneClientId`, transitivement) restent en file eux aussi : ni envoyes, ni rejetes (R3-01).
+- **Rechargement complet** (R3-05) : le serveur ne renvoie plus les demandes closes depuis plus de 60 jours et n'envoie aucune pierre tombale. Le pull repart de zero
+  (`AppDatabase.startWindowReload` : demandes, livraisons et photos **confirmees** effacees, saisies en attente, file d'envoi et fichiers de photos conserves) quand la reponse
+  porte `resetRequired` (ignore jusqu'a la fin du rechargement, drapeau `full_reload`) ou quand la derniere synchronisation reussie date de plus de
+  `--dart-define=FULL_RELOAD_AFTER_DAYS` jours (60 par defaut, `0` = jamais).
+
+## Livraisons et photos de bons (M6 a M8, ADR 0012 et 0013)
+
+- Ecrans (`features/materials/presentation/deliveries/`) : **A recevoir**, **Recevoir** (3 gestes, 6 avec la photo du bon), **A receptionner** (1 geste),
+  **Livraisons** (dont « Non rattachees »), detail et correction ; accueil du chantier : tuiles selon les permissions (absentes, jamais grisees).
+- **Photos** : `image_picker` (appareil photo seulement, 1 920 px, JPEG qualite 80, **aucune permission** : la prise passe par l'application photo du telephone),
+  fichier range dans `<dossier prive>/<ownerUserId>/pending_photos/` (`path_provider` : dossier de l'application, exclu de la sauvegarde Android), empreinte SHA-256
+  calculee dans un isolat (`core/utils/sha256.dart`, vecteurs NIST testes), 5 photos au plus par livraison. Envoi (`PhotoUploadService`) : **un fichier a la fois,
+  apres le push des metadonnees**, `PUT` direct `Content-Type: image/jpeg`, fichier supprime **apres** la confirmation du serveur, reprise apres coupure (renvoi complet
+  idempotent), `409 CONFLIT_VERSION` = rejouer (R2-04). Refus definitif (413, 415, 422, empreinte) : le fichier est garde et signale dans « Envois en attente ».
+- **Appeler le fournisseur** (`url_launcher`, composeur `tel:` sans `CALL_PHONE`) : le numero est lu **en ligne** (`GET /suppliers/{id}`), affiche dans une boite de dialogue,
+  jamais stocke (ni base, ni cache, ni journal).
+- **Historique** (R2-02) : la synchronisation envoie `history[]` vide ; le detail d'une demande ou d'une livraison le lit **a la demande, en ligne** (`GET /sites/{id}/requests|deliveries/{id}`, `HistorySection`), assaini (aucun prix) et jamais ecrit en base ; hors ligne : « Historique indisponible hors ligne » (ou la copie lue plus tot pendant la session, en memoire).
+- **Listes** (R2-07) : lecture legere (`watchBySiteLight` sans `history_json`) et emissions regroupees (`throttleLatest`, 300 ms) ; l'historique n'est lu qu'au detail.
+- Permissions Android : seulement `INTERNET` (`test/android/manifest_test.dart`) ; `<queries>` pour le composeur.
+
 - Essai reel : lancer l'API (`Seed__Demo=true`, port 8195, voir `docs/exploitation`) et ouvrir l'application sur l'emulateur ;
   comptes `*.dev`, mot de passe = `Seed:DemoPassword` de `appsettings.Development.json`.
 
@@ -76,6 +103,10 @@ test/                                  # miroir de lib/ + support/ (faux serveur
 
 - **Aucun texte en dur** : toute chaine passe par les ARB (`fr` et `ar`, memes cles ; test de parite). Les erreurs serveur sont traduites **par `code`** (`core/l10n/error_messages.dart`).
 - **Codes, dates, cotes, montants** : `LtrText` en interface arabe ; chiffres 0-9 (`core/l10n/formatters.dart`).
+- **Demandes de materiaux** (`features/materials/`, ADR 0011 a 0014) : **aucun prix, montant, n° de bon de commande ni telephone de fournisseur** dans la base du telephone, pour aucun role
+  (garde `database/converters/material_json_guard.dart`, test `test/database/materials_privacy_test.dart`). Le calcul d'affichage (`QuantityMirror`) est teste par
+  `docs/api/vecteurs-materiaux.json`, partage avec le serveur et le web : une regle de calcul change d'abord ce fichier. Le serveur fait foi, le telephone n'affiche
+  qu'un etat provisoire « a confirmer ».
 - **Jamais de `double`** pour une quantite, une cote ou un montant : texte decimal (`DecimalTextConverter`), aucune arithmetique cote mobile.
 - **Jetons** : `flutter_secure_storage` uniquement. Un echec de rafraichissement ne supprime que les jetons, jamais la base locale ni la file d'envoi.
 - **Journaux** : `package:logging`, jamais `print`, aucune donnee personnelle ni jeton.

@@ -1,4 +1,5 @@
 using Chantier.Core.Exceptions;
+using Chantier.Infrastructure.Persistence;
 using Chantier.WebApi.Errors;
 using Chantier.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,8 @@ public sealed class GlobalExceptionMiddleware(RequestDelegate next, ILogger<Glob
         NotFoundException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status404NotFound), null),
         ForbiddenException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status403Forbidden), null),
         PayloadTooLargeException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status413PayloadTooLarge), null),
+        FileTooLargeException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status413PayloadTooLarge), null),
+        UnsupportedFileTypeException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status415UnsupportedMediaType), null),
         ConflictException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status409Conflict, current: e.Current), null),
         InvalidCredentialsException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status401Unauthorized), null),
         AccessRevokedException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status401Unauthorized), null),
@@ -62,6 +65,9 @@ public sealed class GlobalExceptionMiddleware(RequestDelegate next, ILogger<Glob
         PasswordChangeRequiredException e => (ProblemResponses.Create(context, e.Code, StatusCodes.Status403Forbidden), null),
         DbUpdateConcurrencyException => (ProblemResponses.Create(context, ErrorCodes.ConflitVersion, StatusCodes.Status409Conflict), null),
         BadHttpRequestException e => (ProblemResponses.ForStatus(context, e.StatusCode), null),
+
+        // Interblocage reste sans solution apres les rejeux, delai SQL depasse : rien n'a ete ecrit, le client peut renvoyer (R2-01).
+        _ when SqlErrors.IsTransient(exception) => (ProblemResponses.Create(context, ErrorCodes.ErreurTemporaire, StatusCodes.Status503ServiceUnavailable), TimeSpan.FromSeconds(1)),
         _ => (ProblemResponses.Create(context, ErrorCodes.ErreurInterne, StatusCodes.Status500InternalServerError), null),
     };
 
@@ -79,6 +85,13 @@ public sealed class GlobalExceptionMiddleware(RequestDelegate next, ILogger<Glob
                 logger.LogInformation(
                     "Requête refusée {Status} {Code} {Method} {Path} utilisateur={UserId}",
                     status, code, context.Request.Method, context.Request.Path.Value, userId);
+                break;
+
+            case Exception when SqlErrors.IsTransient(exception):
+                // Pas de pile ni de message : le numero d'erreur SQL suffit (le message peut citer une valeur).
+                logger.LogWarning(
+                    "Échec momentané de la base de données {Status} {Method} {Path} utilisateur={UserId} sqlNumber={SqlNumber}",
+                    status, context.Request.Method, context.Request.Path.Value, userId, SqlErrors.Find(exception)?.Number);
                 break;
 
             case DbUpdateException dbException:

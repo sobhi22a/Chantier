@@ -133,3 +133,20 @@ export const formatTime = (value: string | null | undefined): string | null => {
   const parts = getInstantParts(value);
   return parts ? `${parts["hour"]}:${parts["minute"]}` : null;
 };
+
+let dateOnlyFormat: Intl.DateTimeFormat | undefined;
+
+/** Date du jour à l'heure d'Algérie (`2026-11-25`), pour les valeurs par défaut des formulaires. Le serveur reste juge des dates. */
+export const todayDateOnly = (now: Date = new Date()): string => {
+  dateOnlyFormat ??= new Intl.DateTimeFormat(INTL_LOCALE, { timeZone: TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" });
+  const parts: Record<string, string> = {};
+  for (const part of dateOnlyFormat.formatToParts(now)) parts[part.type] = part.value;
+  return `${parts["year"]}-${parts["month"]}-${parts["day"]}`;
+};
+
+/** Pourcentage calculé par le serveur, 2 décimales, signe explicite (`+2,00 %`, vrai signe moins en négatif). Le client ne recalcule rien. */
+export const formatPercent = (value: number): string => {
+  const digits = formatNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (digits === "") return "";
+  return `${value > 0 && Number(digits.replace(",", ".")) !== 0 ? "+" : ""}${digits}${NO_BREAK_SPACE}%`;
+};

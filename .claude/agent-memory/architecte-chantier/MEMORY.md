@@ -1,4 +1,5 @@
 - [Référence Kardinal](project_kardinal_reference.md) — chemins des deux versions, Drift/Freezed annoncés mais inutilisés, dossiers cibles
 - [Décider sans questions](feedback_decider_sans_questions.md) — trancher, ADR, hypothèses au plan, pas de questions
 - [Décisions du socle](project_decisions_socle.md) — SQL Server et curseur, siteId facultatif, affectation, risques à valider
+- [Décisions matériaux](project_decisions_materiaux.md) — sync update/transition, prix jamais sur mobile, catalogue global, ADR 0011-0014
 - [Poste et pièges](reference_poste_et_pieges.md) — versions d'outils vérifiées, pièges de shell, licences Android

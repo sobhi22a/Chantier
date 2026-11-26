@@ -1,18 +1,23 @@
 using Ardalis.Specification;
+using Chantier.Core.Abstractions;
 using Chantier.Core.Entities.Identity;
 using Chantier.Core.Identity;
+using Chantier.Core.Materials;
 using Chantier.Core.Sites;
 using Chantier.Core.Sync;
 using Chantier.Infrastructure.Persistence;
 using Chantier.Infrastructure.Repositories;
 using Chantier.Infrastructure.SeedData.Demo;
 using Chantier.Infrastructure.Services;
+using Chantier.Infrastructure.Services.Materials;
 using Chantier.Infrastructure.Services.Sites;
+using Chantier.Infrastructure.Storage;
 using Chantier.Infrastructure.Sync;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Chantier.Infrastructure;
 
@@ -68,6 +73,11 @@ public static class DependencyInjection
 
         services.AddMemoryCache();
         services.AddOptions<ZoneOptions>().BindConfiguration(ZoneOptions.SectionName);
+        services.AddOptions<MaterialsOptions>().BindConfiguration(MaterialsOptions.SectionName);
+        services.AddOptions<PhotoStorageOptions>().BindConfiguration(PhotoStorageOptions.SectionName).ValidateOnStart();
+        services.AddSingleton<IValidateOptions<PhotoStorageOptions>, PhotoStorageOptionsValidator>();
+        services.AddTransient<PhotoMaintenance>();
+        services.AddHostedService<PhotoMaintenanceWorker>();
         services.AddTransient<IUserDirectory, UserDirectory>();
         services.AddTransient<ISiteAccess, SiteAccess>();
         services.AddTransient<ISiteService, SiteService>();
@@ -75,20 +85,44 @@ public static class DependencyInjection
         services.AddTransient<ISiteMemberService, SiteMemberService>();
         services.AddTransient<IReferenceService, ReferenceService>();
         services.AddTransient<ISiteNumbering, SiteNumbering>();
+        services.AddTransient<IProductService, ProductService>();
+        services.AddTransient<ISupplierService, SupplierService>();
+        services.AddTransient<RequestProjector>();
+        services.AddTransient<IRequestService, RequestService>();
+        services.AddTransient<DeliveryProjector>();
+        services.AddTransient<IRequestEventWriter, RequestEventWriter>();
+        services.AddTransient<IRequestRecalculator, RequestRecalculator>();
+        services.AddTransient<IOrderService, OrderService>();
+        services.AddTransient<IDeliveryService, DeliveryService>();
+        services.AddTransient<IPhotoService, PhotoService>();
+        services.AddTransient<IFollowUpService, FollowUpService>();
+        services.AddSingleton<IPhotoStorage, FileSystemPhotoStorage>();
 
         // Synchronisation hors ligne (ADR 0009) : une source par entite lue, un handler par entite ecrite.
         services.AddTransient<ISyncClock, SqlServerSyncClock>();
+        services.AddOptions<SyncOptions>().BindConfiguration(SyncOptions.SectionName);
+        services.AddTransient<SyncWindow>();
         services.AddTransient<ISyncTouch, SyncTouch>();
         services.AddTransient<ISyncSource, SiteSyncSource>();
         services.AddTransient<ISyncSource, ZoneSyncSource>();
         services.AddTransient<ISyncSource, MemberSyncSource>();
+        services.AddTransient<ISyncSource, ProductSyncSource>();
+        services.AddTransient<ISyncSource, SupplierSyncSource>();
+        services.AddTransient<ISyncSource, RequestSyncSource>();
+        services.AddTransient<ISyncSource, DeliverySyncSource>();
+        services.AddTransient<ISyncSource, PhotoSyncSource>();
+        services.AddTransient<SyncOperationLogService>();
         services.AddTransient<ISyncPushHandler, ZoneSyncPushHandler>();
+        services.AddTransient<ISyncPushHandler, RequestSyncPushHandler>();
+        services.AddTransient<ISyncPushHandler, DeliverySyncPushHandler>();
+        services.AddTransient<ISyncPushHandler, PhotoSyncPushHandler>();
         services.AddTransient<ISyncPullService, SyncPullService>();
         services.AddTransient<ISyncPushService, SyncPushService>();
 
         services.AddScoped<IdentityDbInitializer>();
         services.AddScoped<ReferenceDataSeeder>();
         services.AddScoped<DemoDataSeeder>();
+        services.AddScoped<MaterialsDemoSeeder>();
         services.AddScoped<DatabaseHealthCheck>();
 
         return services;

@@ -1,5 +1,6 @@
 import 'package:chantier_mobile/core/api/generated/export.dart';
 import 'package:chantier_mobile/database/app_database.dart';
+import 'package:chantier_mobile/features/materials/data/materials_sync_decoder.dart';
 import 'package:decimal/decimal.dart';
 
 /// Une ligne de synchronisation decodee **selon `entity`** : le champ `data` du contrat est un
@@ -50,6 +51,72 @@ final class MemberChange extends DecodedChange {
   int get version => row.version;
 }
 
+/// Produit du catalogue (entite **globale** : `siteId` nul, ADR 0012).
+final class ProductChange extends DecodedChange {
+  const ProductChange(this.row);
+
+  final ProductRow row;
+
+  @override
+  String get id => row.id;
+
+  @override
+  int get version => row.version;
+}
+
+/// Fournisseur (entite **globale**, sans telephone, ADR 0012).
+final class SupplierChange extends DecodedChange {
+  const SupplierChange(this.row);
+
+  final SupplierRow row;
+
+  @override
+  String get id => row.id;
+
+  @override
+  int get version => row.version;
+}
+
+/// Demande de materiaux d'un chantier (sans champ commercial, ADR 0012).
+final class RequestChange extends DecodedChange {
+  const RequestChange(this.row);
+
+  final MaterialRequestRow row;
+
+  @override
+  String get id => row.id;
+
+  @override
+  int get version => row.version;
+}
+
+/// Livraison d'un chantier (sans montant, sans photos, sans « BL manquant », ADR 0012).
+final class DeliveryChange extends DecodedChange {
+  const DeliveryChange(this.row);
+
+  final DeliveryRow row;
+
+  @override
+  String get id => row.id;
+
+  @override
+  int get version => row.version;
+}
+
+/// Photo d'un bon de livraison : metadonnees seulement. Le serveur n'envoie aucune ligne a un
+/// role sans `DeliveryPhotos.View`.
+final class PhotoChange extends DecodedChange {
+  const PhotoChange(this.row);
+
+  final DeliveryPhotoRow row;
+
+  @override
+  String get id => row.id;
+
+  @override
+  int get version => row.version;
+}
+
 /// Entite que cette version de l'application ne connait pas (`wilaya`...) : ignoree, comme le
 /// demande le contrat (« un client ignore une entite qu'il ne connait pas »).
 final class UnknownEntityChange extends DecodedChange {
@@ -90,6 +157,24 @@ DecodedChange decodeChange(SyncChange change) {
       return ZoneChange(zoneRowFromJson(_asMap(data, 'zone'), version));
     case 'member':
       return MemberChange(memberRowFromJson(_asMap(data, 'member'), version));
+    case 'product':
+      return ProductChange(
+        productRowFromJson(_asMap(data, 'product'), version),
+      );
+    case 'supplier':
+      return SupplierChange(
+        supplierRowFromJson(_asMap(data, 'supplier'), version),
+      );
+    case 'request':
+      return RequestChange(
+        requestRowFromJson(_asMap(data, 'request'), version),
+      );
+    case 'delivery':
+      return DeliveryChange(
+        deliveryRowFromJson(_asMap(data, 'delivery'), version),
+      );
+    case 'photo':
+      return PhotoChange(photoRowFromJson(_asMap(data, 'photo'), version));
     default:
       return UnknownEntityChange(
         entity: change.entity,

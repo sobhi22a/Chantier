@@ -55,4 +55,63 @@ void main() {
       ], reason: 'pas de trou');
     },
   );
+
+  test(
+    'v1 -> v2 : la file d envoi et les chantiers sont conserves, les tables du lot sont creees',
+    () async {
+      final schema = await verifier.schemaAt(1);
+      // Donnees d'un telephone en service sous le schema 1 : une saisie en attente.
+      schema.rawDatabase.execute("""
+        INSERT INTO outbox_operations
+          (client_id, owner_user_id, entity, operation, site_id, label, payload_json,
+           base_version, status, attempts, last_error_code, created_at)
+        VALUES
+          ('c-1', 'user-a', 'zone', 'create', 'site-uv18', 'Zone Bloc 01', '{}',
+           NULL, 'rejected', 2, 'CHANTIER_ARCHIVE', 1795600000)
+      """);
+
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 2);
+
+      final kept = (await db.outboxDao.getByClientId('c-1'))!;
+      expect(kept.ownerUserId, 'user-a');
+      expect(kept.lastErrorCode, 'CHANTIER_ARCHIVE');
+      expect(kept.attempts, 2);
+      expect(kept.conflictJson, isNull);
+      expect(kept.conflictFields, isNull);
+
+      for (final table in [
+        'products',
+        'suppliers',
+        'material_requests',
+        'deliveries',
+        'delivery_photos',
+        'pending_photo_files',
+        'app_settings',
+      ]) {
+        final rows = await db
+            .customSelect('SELECT COUNT(*) AS n FROM $table')
+            .getSingle();
+        expect(rows.read<int>('n'), 0, reason: table);
+      }
+      // Les index du lot existent aussi (migrateAndValidate compare au schema attendu).
+      final indexes = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'index' AND name LIKE 'idx_%'",
+          )
+          .get();
+      expect(
+        indexes.map((r) => r.read<String>('name')),
+        containsAll([
+          'idx_material_requests_site_status',
+          'idx_material_requests_site_product',
+          'idx_deliveries_site_request',
+          'idx_delivery_photos_delivery',
+          'idx_pending_photo_files_owner',
+          'idx_products_active',
+        ]),
+      );
+    },
+  );
 }

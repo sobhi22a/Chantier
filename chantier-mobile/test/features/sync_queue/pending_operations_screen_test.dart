@@ -22,11 +22,12 @@ OutboxRow _row(
   String? code,
   String label = 'Bloc 01 · +3,40 m · Classe 07',
   DateTime? createdAt,
+  String entity = 'zone',
 }) => OutboxRow(
   id: id,
   clientId: clientId,
   ownerUserId: 'user-a',
-  entity: 'zone',
+  entity: entity,
   operation: 'create',
   siteId: 'site-uv18',
   label: label,
@@ -109,6 +110,30 @@ void main() {
       expect(find.byIcon(Icons.schedule), findsOneWidget);
     },
   );
+
+  testWidgets('demande de materiau : type traduit, « Voir » mene a A verifier', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      rows: [
+        _row(
+          7,
+          'r-1',
+          entity: 'request',
+          status: OutboxStatus.conflict,
+          code: 'DEMANDE_VERROUILLEE',
+          label: 'DEM-009 · Ciment CPJ 42,5 · 400 sac',
+        ),
+      ],
+    );
+    expect(find.text('Demande de matériau'), findsOneWidget);
+    expect(find.text('À vérifier'), findsOneWidget);
+    // Une demande se verifie sur son ecran (deux versions), pas par « Corriger ».
+    expect(find.text('Corriger'), findsNothing);
+    await tester.tap(find.widgetWithText(FilledButton, 'Voir'));
+    expect(corrected.single.entity, 'request');
+  });
 
   testWidgets('rien a envoyer', (tester) async {
     await pump(tester, rows: const []);

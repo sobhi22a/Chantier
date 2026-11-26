@@ -21,6 +21,11 @@
     <PackageReference Include="NUnit3TestAdapter" />
   </ItemGroup>
 
+  <!-- Vecteurs de calcul partages avec le web et le mobile (ADR 0014) : le meme fichier du depot, lu par lien, jamais copie dans le projet. -->
+  <ItemGroup>
+    <None Include="..\..\..\docs\api\vecteurs-materiaux.json" Link="Materials\vecteurs-materiaux.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>

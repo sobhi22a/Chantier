@@ -28,8 +28,26 @@ public static class ErrorCodes
     public const string TropDEssais = "TROP_D_ESSAIS";
     public const string TropDeRequetes = "TROP_DE_REQUETES";
     public const string ErreurInterne = "ERREUR_INTERNE";
+    public const string ErreurTemporaire = "ERREUR_TEMPORAIRE";
     public const string UniteObligatoire = "UNITE_OBLIGATOIRE";
     public const string UnitesIncompatibles = "UNITES_INCOMPATIBLES";
     public const string ExpressionInvalide = "EXPRESSION_INVALIDE";
     public const string TransitionInterdite = "TRANSITION_INTERDITE";
+    public const string DemandeVerrouillee = "DEMANDE_VERROUILLEE";
+    public const string DemandeNonOuverte = "DEMANDE_NON_OUVERTE";
+    public const string CommandeExistante = "COMMANDE_EXISTANTE";
+    public const string ProduitDifferent = "PRODUIT_DIFFERENT";
+    public const string QuantiteEntiereRequise = "QUANTITE_ENTIERE_REQUISE";
+    public const string UniteNonAutorisee = "UNITE_NON_AUTORISEE";
+    public const string MasseSacObligatoire = "MASSE_SAC_OBLIGATOIRE";
+    public const string ProduitExistant = "PRODUIT_EXISTANT";
+    public const string FournisseurExistant = "FOURNISSEUR_EXISTANT";
+    public const string ProduitInactif = "PRODUIT_INACTIF";
+    public const string FournisseurInactif = "FOURNISSEUR_INACTIF";
+    public const string ZoneHorsChantier = "ZONE_HORS_CHANTIER";
+    public const string LivraisonDejaRattachee = "LIVRAISON_DEJA_RATTACHEE";
+    public const string PhotosTropNombreuses = "PHOTOS_TROP_NOMBREUSES";
+    public const string PhotoDejaEnvoyee = "PHOTO_DEJA_ENVOYEE";
+    public const string FichierTropGros = "FICHIER_TROP_GROS";
+    public const string TypeFichierRefuse = "TYPE_FICHIER_REFUSE";
 }

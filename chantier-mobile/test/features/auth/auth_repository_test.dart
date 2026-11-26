@@ -53,6 +53,7 @@ class _Harness {
     Map<String, Object> prefs = const {},
     Duration logoutTimeout = const Duration(seconds: 5),
     DateTime? now,
+    void Function()? onLocalDataPurged,
   }) async {
     SharedPreferences.setMockInitialValues(prefs);
     return AuthRepositoryImpl(
@@ -63,6 +64,7 @@ class _Harness {
       config: const AppConfig(apiBaseUrl: 'https://api.exemple.test/api/v1'),
       now: () => now ?? clock,
       logoutTimeout: logoutTimeout,
+      onLocalDataPurged: onLocalDataPurged,
     );
   }
 
@@ -530,6 +532,18 @@ void main() {
         'refreshToken': 'REFRESH-NEW-SECRET',
       });
       expect(h.store.current, isNull);
+    });
+
+    test('videe les photos de bons gardees en memoire (ADR 0013)', () async {
+      h.serverFor(_userA);
+      var purged = 0;
+      final repository = await h.repository(onLocalDataPurged: () => purged++);
+      await repository.login(userName: 'chef.dev', password: 'x');
+      expect(purged, 0);
+
+      await repository.logout();
+
+      expect(purged, 1);
     });
 
     test('hors ligne : deconnexion locale quand meme', () async {

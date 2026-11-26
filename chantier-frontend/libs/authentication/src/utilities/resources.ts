@@ -18,6 +18,9 @@ export const PERMISSIONS_RESOURCES = {
   SITE_MEMBERS: "SiteMembers",
   ALL_SITES: "AllSites",
   CONTRACT_AMOUNT: "ContractAmount",
+  PRODUCTS: "Products",
+  SUPPLIERS: "Suppliers",
+  REQUESTS: "Requests",
 } as const;
 
 export type PermissionResourceKey = (typeof PERMISSIONS_RESOURCES)[keyof typeof PERMISSIONS_RESOURCES];

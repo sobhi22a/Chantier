@@ -80,3 +80,11 @@ Historique 2023 (fournisseur Sedik, destination Retba) : 5 × 400 sacs = 2 000 s
 
 Total de la situation de Gamma : 54 000,00 DA.
 Test négatif : une ligne `328+100+5+31` déclarée en m² avec la mention « App » doit être signalée comme suspecte (unités mélangées).
+
+## Demandes, commandes et livraisons (fictifs, prix compris)
+Détail complet et cas négatifs : `docs/metier/demandes-materiaux-livraisons.md` (section « Données de test »).
+- **Catalogue (13 produits)** : ciment CPJ 42,5 (sac 50 kg ; sac, T, kg) ; rond à béton HA Ø8, Ø10, Ø12, Ø14, Ø16 (T, kg) ; brique creuse 8 trous et 12 trous (u) ; sable de maçonnerie et gravier 8/15 (m³, T) ; adjuvant plastifiant (L) ; mortier monocouche (sac 25 kg ; sac, T, kg) ; fil d'attache (kg).
+- **Fournisseurs** : Cimenterie Sigma (fictive), Aciers Delta (fictifs), Briqueterie Epsilon (fictive), Sablière Zêta (fictive), Adjuvants Êta (fictifs) ; téléphones fictifs `0550 00 00 21` à `25`.
+- **12 demandes UV18 (DEM-001 à DEM-012)** couvrant tous les statuts : DEM-001 à 004 Réceptionnées, DEM-005 Livrée (à réceptionner), DEM-006 Demandée, DEM-007 Validée, DEM-008 Refusée, DEM-009 Commandée (300 sacs = 15 T, Bloquante, 234 000,00 DZD), DEM-010 Annulée, DEM-011 Livrée partiellement (2 T, reçu 1,2 T, reste 0,8 T), DEM-012 Demandée (monocouche, sac de 25 kg). Plus `DEM-001` de `CH-LOG-OL40` (même numéro, autre chantier).
+- **10 livraisons UV18 (LIV-001 à LIV-010)** : les 8 livraisons de ciment acceptées du tableau ci-dessus (**110 T = 2 200 sacs**) rattachées à DEM-001 à DEM-005, LIV-009 (rond HA Ø10, 1,2 T), LIV-010 (gravier 12 m³, non rattachée). Les 2 livraisons à date incomplète de l'école (30 T) restent des cas négatifs (`DATE_INVALIDE`).
+- Prix fictifs : ciment 780,00 DZD/sac ; rond HA 128 000,00 DZD/T ; brique 8 trous 27,50 DZD/u ; fil d'attache 245,25 DZD/kg.

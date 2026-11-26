@@ -6,6 +6,7 @@ import 'package:chantier_mobile/core/sync/sync_engine.dart';
 import 'package:chantier_mobile/core/sync/sync_status.dart';
 import 'package:chantier_mobile/core/sync/sync_status_cubit.dart';
 import 'package:chantier_mobile/database/app_database.dart';
+import 'package:chantier_mobile/features/materials/data/materials_repository.dart';
 import 'package:chantier_mobile/features/sites/data/sites_repository.dart';
 import 'package:chantier_mobile/features/zones/data/zones_repository.dart';
 import 'package:decimal/decimal.dart';
@@ -40,6 +41,7 @@ void main() {
     database: db,
     remote: server,
     sites: SitesRepository(db),
+    materials: MaterialsRepository(database: db, outbox: OutboxRepository(db)),
     currentUserId: () => _user,
     connectivity: monitor,
     backoff: Backoff(),

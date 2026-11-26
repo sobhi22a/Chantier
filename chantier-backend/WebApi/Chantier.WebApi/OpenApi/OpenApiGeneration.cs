@@ -21,6 +21,10 @@ public static class OpenApiGeneration
         ["JwtSettings:Key"] = Convert.ToBase64String(RandomNumberGenerator.GetBytes(48)),
         ["ConnectionStrings:ChantierDb"] = "Server=generation-openapi;Database=none;Integrated Security=true",
         ["Storage:DataProtectionKeys"] = Path.Combine(Path.GetTempPath(), "chantier-openapi-keys"),
+
+        // Racine des photos jetable et absolue (validee en production, R2-10) ; aucun fichier n'y est ecrit.
+        ["Storage:PhotosRoot"] = Path.Combine(Path.GetTempPath(), "chantier-openapi-photos"),
+        ["Storage:MaintenanceIntervalMinutes"] = "0",
         ["Database:MigrateOnStartup"] = "false",
         ["DataProtection:AllowUnencryptedKeys"] = "true",
     };

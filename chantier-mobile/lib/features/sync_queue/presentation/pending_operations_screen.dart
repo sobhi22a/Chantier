@@ -8,6 +8,7 @@ import 'package:chantier_mobile/core/sync/sync_status_cubit.dart';
 import 'package:chantier_mobile/core/theme/app_colors.dart';
 import 'package:chantier_mobile/core/theme/app_sizes.dart';
 import 'package:chantier_mobile/database/app_database.dart';
+import 'package:chantier_mobile/database/daos/delivery_photos_dao.dart';
 import 'package:chantier_mobile/database/tables/outbox_operations.dart';
 import 'package:chantier_mobile/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ class PendingOperationsScreen extends StatelessWidget {
     required this.userId,
     required this.outbox,
     required this.onCorrect,
+    this.pendingFiles,
+    this.onAbandonFile,
     super.key,
   });
 
@@ -31,6 +34,13 @@ class PendingOperationsScreen extends StatelessWidget {
 
   /// « Corriger » : ouvre le formulaire pre-rempli (remplace la saisie refusee).
   final void Function(OutboxRow row) onCorrect;
+
+  /// Fichiers de photos en attente d'envoi (« Photo en attente d'envoi (2) ») : la photo n'est
+  /// jamais perdue si l'envoi echoue, elle part des que le reseau le permet (CA-MAT-007.2).
+  final Stream<List<PendingPhotoFileRow>>? pendingFiles;
+
+  /// « Abandonner » un fichier refuse par le serveur (apres confirmation).
+  final Future<void> Function(PendingPhotoFileRow file)? onAbandonFile;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +53,14 @@ class PendingOperationsScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
+            if (pendingFiles != null)
+              StreamBuilder<List<PendingPhotoFileRow>>(
+                stream: pendingFiles,
+                builder: (context, snapshot) => _PendingPhotos(
+                  files: snapshot.data ?? const [],
+                  onAbandon: onAbandonFile,
+                ),
+              ),
             Expanded(
               child: StreamBuilder<List<OutboxRow>>(
                 stream: outbox.watch(userId),
@@ -170,7 +188,15 @@ class _OperationCard extends StatelessWidget {
         AppColors.error,
       ),
     };
-    final entity = row.entity == 'zone' ? l10n.pendingEntityZone : row.entity;
+    // Une demande, une livraison ou une photo se verifie sur son ecran « A verifier ».
+    final isRequest = row.entity != 'zone';
+    final entity = switch (row.entity) {
+      'zone' => l10n.pendingEntityZone,
+      'request' => l10n.pendingEntityRequest,
+      'delivery' => l10n.pendingEntityDelivery,
+      'photo' => l10n.pendingEntityPhoto,
+      _ => row.entity,
+    };
     final reason = toCheck
         ? (errorMessageForCode(l10n, row.lastErrorCode) ?? l10n.errorUnknown)
         : null;
@@ -224,7 +250,10 @@ class _OperationCard extends StatelessWidget {
                   Expanded(
                     child: FilledButton(
                       onPressed: onCorrect,
-                      child: Text(l10n.pendingCorrect),
+                      // Une demande se verifie sur son ecran « A verifier » (deux versions).
+                      child: Text(
+                        isRequest ? l10n.pendingView : l10n.pendingCorrect,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -255,4 +284,78 @@ class _OperationCard extends StatelessWidget {
             : part,
       )
       .join(' · ');
+}
+
+/// « Photo en attente d'envoi (2) » et les fichiers refuses par le serveur (a abandonner ou a
+/// laisser : le fichier est garde tant que l'utilisateur n'a pas decide).
+class _PendingPhotos extends StatelessWidget {
+  const _PendingPhotos({required this.files, this.onAbandon});
+
+  final List<PendingPhotoFileRow> files;
+  final Future<void> Function(PendingPhotoFileRow file)? onAbandon;
+
+  @override
+  Widget build(BuildContext context) {
+    if (files.isEmpty) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final refused = [
+      for (final file in files)
+        if (PhotoFileErrors.isPermanent(file.lastErrorCode)) file,
+    ];
+    final waiting = files.length - refused.length;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.screenPadding,
+        AppSizes.screenPadding,
+        AppSizes.screenPadding,
+        0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (waiting > 0)
+            Row(
+              children: [
+                const Icon(Icons.cloud_upload, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.photoPendingSendCount(waiting.toString()),
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ),
+              ],
+            ),
+          for (final file in refused)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.pendingPhotosRefused,
+                      style: theme.textTheme.titleSmall,
+                    ),
+                    Text(
+                      errorMessageForCode(l10n, file.lastErrorCode) ??
+                          l10n.errorUnknown,
+                    ),
+                    if (onAbandon != null)
+                      Align(
+                        alignment: AlignmentDirectional.centerEnd,
+                        child: TextButton(
+                          onPressed: () => onAbandon!(file),
+                          child: Text(l10n.photoAbandon),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 }

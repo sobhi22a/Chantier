@@ -27,7 +27,9 @@
     "back": "Retour",
     "previous": "Précédent",
     "next": "Suivant",
-    "reload": "Recharger"
+    "reload": "Recharger",
+    "activate": "Réactiver",
+    "deactivate": "Désactiver"
   },
   "state": {
     "loading": "Chargement en cours…",
@@ -44,7 +46,16 @@
     "sites": "Chantiers",
     "mySites": "Mes chantiers",
     "menu": "Menu principal",
-    "skipToContent": "Aller au contenu"
+    "skipToContent": "Aller au contenu",
+    "supply": "Approvisionnement",
+    "requests": "Demandes de matériaux",
+    "toApprove": "À valider",
+    "catalog": "Catalogue",
+    "products": "Produits",
+    "suppliers": "Fournisseurs",
+    "toOrder": "À commander",
+    "deliveries": "Livraisons",
+    "followUp": "Suivi"
   },
   "roles": {
     "Admin": "Administrateur",
@@ -76,5 +87,36 @@
     "message": "Une erreur inattendue est survenue. Rechargez l'application ; si le problème continue, contactez votre administrateur.",
     "reload": "Recharger l'application",
     "reference": "Type d'erreur"
+  },
+  "measureUnits": {
+    "u_one": "pièce",
+    "u_other": "pièces",
+    "ml": "ml",
+    "m2": "m²",
+    "m3": "m³",
+    "kg": "kg",
+    "t": "T",
+    "sac_one": "sac",
+    "sac_other": "sacs",
+    "l": "L",
+    "h": "h",
+    "j": "j",
+    "pj": "pers·j",
+    "ft_one": "forfait",
+    "ft_other": "forfaits"
+  },
+  "measureUnitNames": {
+    "u": "Pièce",
+    "ml": "Mètre linéaire (ml)",
+    "m2": "Mètre carré (m²)",
+    "m3": "Mètre cube (m³)",
+    "kg": "Kilogramme (kg)",
+    "t": "Tonne (T)",
+    "sac": "Sac",
+    "l": "Litre (L)",
+    "h": "Heure (h)",
+    "j": "Jour (j)",
+    "pj": "Homme-jour (pers·j)",
+    "ft": "Forfait"
   }
 }

@@ -4,6 +4,7 @@ import {
   formatDateTime,
   formatElevation,
   formatNumber,
+  formatPercent,
   formatTime,
 } from "./formatters";
 
@@ -115,5 +116,14 @@ describe("formatDateTime et formatTime (fuseau Africa/Algiers)", () => {
     expect(formatDateTime("n'importe quoi")).toBeNull();
     expect(formatDateTime(null)).toBeNull();
     expect(formatTime(undefined)).toBeNull();
+  });
+});
+
+describe("formatPercent", () => {
+  it("affiche le pourcentage du serveur avec 2 décimales et le signe, sans jamais le recalculer", () => {
+    expect(formatPercent(2)).toBe(`+2,00${NBSP}%`);
+    expect(formatPercent(-66.67)).toBe(`${MINUS}66,67${NBSP}%`);
+    expect(formatPercent(0)).toBe(`0,00${NBSP}%`);
+    expect(formatPercent(Number.NaN)).toBe("");
   });
 });

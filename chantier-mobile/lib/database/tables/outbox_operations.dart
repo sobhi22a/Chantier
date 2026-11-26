@@ -46,6 +46,13 @@ class OutboxOperations extends Table {
   IntColumn get attempts => integer().withDefault(const Constant(0))();
   TextColumn get lastErrorCode => text().nullable()();
 
+  /// Etat du serveur renvoye avec un `conflict` (`current`, forme de synchronisation, sans prix) :
+  /// l'ecran « A verifier » l'affiche a cote de la version de l'utilisateur (ADR 0011).
+  TextColumn get conflictJson => text().nullable()();
+
+  /// Champs en desaccord d'un `conflict` (`conflictFields`), liste JSON : `["neededBy"]`.
+  TextColumn get conflictFields => text().nullable()();
+
   /// Heure du telephone a la saisie : affichee (« saisi le »), jamais utilisee pour decider.
   DateTimeColumn get createdAt => dateTime()();
 }

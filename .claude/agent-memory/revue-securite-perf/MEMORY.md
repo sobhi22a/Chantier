@@ -1,1 +1,2 @@
 - [Risques, endroits sensibles et commandes d'audit du projet](revue_socle_risques_et_commandes.md) — limiteur global JWT, cookie rejouable, montant mobile, sauvegarde Android, npm/dotnet/flutter, API isolée pour mesurer
+- [Revues R2 et R2 bis matériaux : pièges, résultats, méthode base jetable](revue_materiaux_risques_et_commandes.md) — R2-01..11 vérifiés, R3-01 retry et dépendants, cache web, fenêtre 60 j, `env` pour le mot de passe SQL

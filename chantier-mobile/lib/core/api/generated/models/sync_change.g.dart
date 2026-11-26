@@ -9,7 +9,7 @@ part of 'sync_change.dart';
 _SyncChange _$SyncChangeFromJson(Map<String, dynamic> json) => _SyncChange(
   entity: json['entity'] as String,
   id: json['id'] as String,
-  siteId: json['siteId'] as String,
+  siteId: json['siteId'] as String?,
   version: json['version'] as String,
   data: json['data'],
 );

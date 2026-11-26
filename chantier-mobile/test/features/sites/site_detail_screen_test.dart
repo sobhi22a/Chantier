@@ -22,8 +22,12 @@ class _MockAuthBloc extends MockBloc<AuthEvent, AuthState>
 
 void main() {
   late List<SiteRow> addZoneRequests;
+  late List<String> opened;
 
-  setUp(() => addZoneRequests = []);
+  setUp(() {
+    addZoneRequests = [];
+    opened = [];
+  });
 
   Future<void> pumpDetail(
     WidgetTester tester, {
@@ -31,6 +35,7 @@ void main() {
     AuthUser? user,
     Locale locale = const Locale('fr'),
     Size viewport = const Size(800, 4000),
+    bool withMaterialActions = false,
   }) async {
     // Par defaut un ecran haut : `ListView` ne construit que ce qui est visible.
     tester.view.physicalSize = viewport;
@@ -51,7 +56,25 @@ void main() {
     await tester.pumpWidget(
       testApp(
         locale: locale,
-        home: SiteDetailScreen(onAddZone: addZoneRequests.add),
+        home: SiteDetailScreen(
+          onAddZone: addZoneRequests.add,
+          onOpenRequests: withMaterialActions
+              ? (_) => opened.add('list')
+              : null,
+          onNewRequest: withMaterialActions ? (_) => opened.add('new') : null,
+          onOpenApprovals: withMaterialActions
+              ? (_) => opened.add('approvals')
+              : null,
+          onOpenToReceive: withMaterialActions
+              ? (_) => opened.add('toReceive')
+              : null,
+          onOpenToReception: withMaterialActions
+              ? (_) => opened.add('toReception')
+              : null,
+          onOpenDeliveries: withMaterialActions
+              ? (_) => opened.add('deliveries')
+              : null,
+        ),
         wrap: (app) => MultiBlocProvider(
           providers: [
             BlocProvider<SiteDetailCubit>.value(value: cubit),
@@ -410,6 +433,153 @@ void main() {
       await pumpDetail(tester, locale: const Locale('ar'), state: full());
 
       expect(find.text('+ منطقة'), findsOneWidget);
+    });
+  });
+
+  group('Actions rapides des demandes de materiaux (US-MAT-001, 003)', () {
+    AuthUser userWith(List<String> permissions, {String role = 'ChefEquipe'}) =>
+        AuthUser(
+          id: 'u',
+          userName: 'u.dev',
+          fullName: 'Nadir S.',
+          role: role,
+          language: 'fr',
+          mustChangePassword: false,
+          permissions: permissions,
+          permissionsVersion: 'v',
+        );
+
+    testWidgets(
+      'chef d equipe : + Nouvelle demande et Demandes, pas de A valider',
+      (tester) async {
+        await pumpDetail(
+          tester,
+          state: full(),
+          withMaterialActions: true,
+          user: userWith(['Requests.View', 'Requests.Create']),
+        );
+        expect(find.text('Nouvelle demande'), findsOneWidget);
+        expect(find.text('Demandes'), findsOneWidget);
+        expect(find.text('À valider'), findsNothing);
+
+        await tester.tap(find.text('Nouvelle demande'));
+        await tester.tap(find.text('Demandes'));
+        expect(opened, ['new', 'list']);
+      },
+    );
+
+    testWidgets('conducteur : A valider en plus', (tester) async {
+      await pumpDetail(
+        tester,
+        state: full(),
+        withMaterialActions: true,
+        user: userWith([
+          'Requests.View',
+          'Requests.Create',
+          'Requests.Approve',
+        ], role: 'ConducteurTravaux'),
+      );
+      await tester.tap(find.text('À valider'));
+      expect(opened, ['approvals']);
+    });
+
+    testWidgets(
+      'direction : lecture seule, aucune creation (absente, pas grisee)',
+      (tester) async {
+        await pumpDetail(
+          tester,
+          state: full(),
+          withMaterialActions: true,
+          user: userWith(['Requests.View'], role: 'Direction'),
+        );
+        expect(find.text('Nouvelle demande'), findsNothing);
+        expect(find.text('Demandes'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'sans aucune permission : pas de section Demandes de materiaux',
+      (tester) async {
+        await pumpDetail(
+          tester,
+          state: full(),
+          withMaterialActions: true,
+          user: userWith(const []),
+        );
+        expect(find.text('Demandes de matériaux'), findsNothing);
+      },
+    );
+
+    testWidgets('chantier archive : plus de creation', (tester) async {
+      await pumpDetail(
+        tester,
+        state: full(site: siteRow(archivedAt: DateTime.utc(2026, 11, 20))),
+        withMaterialActions: true,
+        user: userWith(['Requests.View', 'Requests.Create']),
+      );
+      expect(find.text('Nouvelle demande'), findsNothing);
+    });
+
+    testWidgets('chef de chantier : A recevoir, A receptionner et Livraisons', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        state: full(),
+        withMaterialActions: true,
+        user: userWith([
+          'Requests.View',
+          'Requests.Receive',
+          'Deliveries.View',
+          'Deliveries.Create',
+        ]),
+      );
+      await tester.tap(find.text('À recevoir'));
+      await tester.tap(find.text('À réceptionner'));
+      await tester.tap(find.text('Livraisons'));
+      expect(opened, ['toReceive', 'toReception', 'deliveries']);
+    });
+
+    testWidgets(
+      'chef d equipe : ni A recevoir ni A receptionner (absents, pas grises)',
+      (tester) async {
+        await pumpDetail(
+          tester,
+          state: full(),
+          withMaterialActions: true,
+          user: userWith(['Requests.View', 'Deliveries.View']),
+        );
+        expect(find.text('À recevoir'), findsNothing);
+        expect(find.text('À réceptionner'), findsNothing);
+        expect(find.text('Livraisons'), findsOneWidget);
+      },
+    );
+
+    testWidgets('direction : Livraisons en lecture seule', (tester) async {
+      await pumpDetail(
+        tester,
+        state: full(),
+        withMaterialActions: true,
+        user: userWith(['Requests.View', 'Deliveries.View'], role: 'Direction'),
+      );
+      expect(find.text('À recevoir'), findsNothing);
+      expect(find.text('Livraisons'), findsOneWidget);
+    });
+
+    testWidgets('arabe : textes arabes, boutons de 56 dp', (tester) async {
+      await pumpDetail(
+        tester,
+        state: full(),
+        locale: const Locale('ar'),
+        withMaterialActions: true,
+        user: userWith(['Requests.View', 'Requests.Create']),
+      );
+      final button = find.ancestor(
+        of: find.text('طلب جديد'),
+        matching: find.byWidgetPredicate((w) => w is ButtonStyleButton),
+      );
+      expect(button, findsOneWidget);
+      expect(tester.getSize(button).height, greaterThanOrEqualTo(56));
     });
   });
 }

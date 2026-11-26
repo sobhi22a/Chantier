@@ -59,39 +59,41 @@ void main() {
     }
   });
 
-  test(
-    'chaque schema du contrat a son modele genere, avec tous ses champs',
-    () {
-      final schemas =
-          (spec['components'] as Map<String, dynamic>)['schemas']
-              as Map<String, dynamic>;
-      final problems = <String>[];
-      schemas.forEach((name, schema) {
-        final file = File('lib/core/api/generated/models/${snake(name)}.dart');
-        if (!file.existsSync()) {
-          problems.add('$name : modele absent');
-          return;
+  test('chaque schema du contrat a son modele genere, avec tous ses champs', () {
+    final schemas =
+        (spec['components'] as Map<String, dynamic>)['schemas']
+            as Map<String, dynamic>;
+    final problems = <String>[];
+    schemas.forEach((name, schema) {
+      final file = File('lib/core/api/generated/models/${snake(name)}.dart');
+      if (!file.existsSync()) {
+        problems.add('$name : modele absent');
+        return;
+      }
+      final source = file.readAsStringSync();
+      final properties =
+          (schema as Map<String, dynamic>)['properties']
+              as Map<String, dynamic>?;
+      for (final property in properties?.keys ?? const <String>[]) {
+        // Un mot reserve de Dart (`new` de l'historique) est renomme par le generateur
+        // (`newValue`) et garde son nom d'origine dans `@JsonKey(name: '...')`.
+        final present =
+            RegExp('\\b$property[,})]').hasMatch(source) ||
+            source.contains("@JsonKey(name: '$property')");
+        if (!present) {
+          problems.add('$name.$property : champ absent du modele');
         }
-        final source = file.readAsStringSync();
-        final properties =
-            (schema as Map<String, dynamic>)['properties']
-                as Map<String, dynamic>?;
-        for (final property in properties?.keys ?? const <String>[]) {
-          if (!RegExp('\\b$property[,})]').hasMatch(source)) {
-            problems.add('$name.$property : champ absent du modele');
-          }
+      }
+      final values = schema['enum'] as List<dynamic>?;
+      for (final value in values ?? const []) {
+        if (!source.contains("'$value'")) {
+          problems.add('$name : valeur $value');
         }
-        final values = schema['enum'] as List<dynamic>?;
-        for (final value in values ?? const []) {
-          if (!source.contains("'$value'")) {
-            problems.add('$name : valeur $value');
-          }
-        }
-      });
+      }
+    });
 
-      expect(problems, isEmpty);
-    },
-  );
+    expect(problems, isEmpty);
+  });
 
   test('schemas utilises par le mobile : champs requis du contrat', () {
     final schemas =

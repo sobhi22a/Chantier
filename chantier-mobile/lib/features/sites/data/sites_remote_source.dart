@@ -12,6 +12,10 @@ class SitesRemoteSource implements SyncRemote {
   Future<MeResponse> me() => ApiClients.guard(_clients.auth.authMe);
 
   @override
+  Future<MaterialSettingsResponse> materialSettings() =>
+      ApiClients.guard(_clients.materialSettings.materialSettingsGet);
+
+  @override
   Future<SyncPullResponse> pull({String? since, int? limit}) =>
       ApiClients.guard(
         () => _clients.sync.syncChanges(since: since, limit: limit ?? 200),

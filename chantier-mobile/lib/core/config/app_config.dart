@@ -11,6 +11,7 @@ class AppConfig extends Equatable {
     this.receiveTimeout = const Duration(seconds: 30),
     this.reachabilityTimeout = const Duration(seconds: 5),
     this.offlineSessionDays = defaultOfflineSessionDays,
+    this.fullReloadAfterDays = defaultFullReloadAfterDays,
   });
 
   /// Valeurs lues depuis `--dart-define` (defaut de developpement : emulateur Android).
@@ -24,7 +25,15 @@ class AppConfig extends Equatable {
           'OFFLINE_SESSION_DAYS',
           defaultValue: defaultOfflineSessionDays,
         ),
+        fullReloadAfterDays: const int.fromEnvironment(
+          'FULL_RELOAD_AFTER_DAYS',
+          defaultValue: defaultFullReloadAfterDays,
+        ),
       );
+
+  /// Fenetre de synchronisation du serveur (`Sync:ClosedRetentionDays`, 60 jours) : au-dela, les
+  /// demandes closes ne sont plus envoyees et aucune pierre tombale ne dit qu'elles ont change.
+  static const int defaultFullReloadAfterDays = 60;
 
   /// Hote de la machine de developpement vu depuis l'emulateur Android.
   static const String defaultDevApiBaseUrl = 'http://10.0.2.2:8195/api/v1';
@@ -42,6 +51,11 @@ class AppConfig extends Equatable {
 
   /// Duree de la session hors ligne, en jours (`--dart-define=OFFLINE_SESSION_DAYS`).
   final int offlineSessionDays;
+
+  /// Un telephone qui n'a pas synchronise avec succes depuis plus de ce nombre de jours recharge
+  /// **tout** (R3-05, `--dart-define=FULL_RELOAD_AFTER_DAYS`) ; ses saisies en attente sont gardees.
+  /// `0` : jamais (le signal `resetRequired` du serveur reste suivi).
+  final int fullReloadAfterDays;
 
   /// Delai de l'appel leger qui confirme que le serveur est joignable.
   final Duration reachabilityTimeout;
@@ -84,5 +98,6 @@ class AppConfig extends Equatable {
     receiveTimeout,
     reachabilityTimeout,
     offlineSessionDays,
+    fullReloadAfterDays,
   ];
 }

@@ -13,4 +13,7 @@ public sealed class ConflictException : DomainException
     }
 
     public object? Current { get; }
+
+    /// <summary>Champs en desaccord (modification hors ligne : la valeur de depart du telephone n'est plus celle du serveur) ; vide pour un simple conflit de version.</summary>
+    public IReadOnlyList<string> Fields { get; init; } = [];
 }

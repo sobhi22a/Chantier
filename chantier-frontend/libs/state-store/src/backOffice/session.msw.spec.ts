@@ -21,18 +21,24 @@ describe("tranche authentication alimentée par GET /auth/me (CT-1, CT-3)", () =
     expect(state.claims?.["Zones"]).toEqual({ View: true, Create: true, Update: true, Delete: false });
     expect(state.claims?.["Sites"]).toEqual({ View: true, Create: false, Update: false, Delete: false });
     expect(state.claims?.["ContractAmount"]).toBeUndefined();
+    // La liste brute garde aussi les permissions que le format { ressource: { View… } } ne porte pas.
+    expect(state.permissions).toContain("Requests.Create");
+    expect(state.permissions).not.toContain("Requests.Approve");
   });
 
-  it("n'accorde rien au ChefEquipe en écriture", async () => {
+  it("n'accorde rien au ChefEquipe en écriture sur les chantiers et les zones", async () => {
     server.use(http.get(apiUrl("/auth/me"), () => HttpResponse.json(makeMe("ChefEquipe"))));
     const store = createChantierStore();
 
     await store.dispatch(enhancedApi.endpoints.authMe.initiate());
 
+    // Le chef d'équipe signale ses besoins (Requests.Create) : seules les ressources du socle lui sont fermées en écriture.
     const claims = store.getState().authentication.claims ?? {};
-    for (const resource of Object.values(claims)) {
-      expect([resource.Create, resource.Update, resource.Delete]).toEqual([false, false, false]);
+    for (const name of ["Sites", "Zones", "SiteMembers", "ContractAmount"]) {
+      const resource = claims[name];
+      expect([resource?.Create ?? false, resource?.Update ?? false, resource?.Delete ?? false]).toEqual([false, false, false]);
     }
+    expect(claims["Requests"]?.Create).toBe(true);
   });
 
   it("retient le mot de passe provisoire (le serveur refuse tout le reste)", async () => {
@@ -51,7 +57,7 @@ describe("tranche authentication alimentée par GET /auth/me (CT-1, CT-3)", () =
     await store.dispatch(enhancedApi.endpoints.authMe.initiate());
 
     const state = store.getState().authentication;
-    expect(state).toMatchObject({ isAuthenticated: false, userId: null, claims: null, isAuthLoading: false });
+    expect(state).toMatchObject({ isAuthenticated: false, userId: null, claims: null, permissions: [], isAuthLoading: false });
   });
 
   it("efface la session après la déconnexion", async () => {

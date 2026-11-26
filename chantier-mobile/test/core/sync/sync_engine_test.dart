@@ -11,6 +11,7 @@ import 'package:chantier_mobile/core/sync/sync_status.dart';
 import 'package:chantier_mobile/database/app_database.dart';
 import 'package:chantier_mobile/database/tables/outbox_operations.dart';
 import 'package:chantier_mobile/database/tables/sync_state.dart';
+import 'package:chantier_mobile/features/materials/data/materials_repository.dart';
 import 'package:chantier_mobile/features/sites/data/sites_repository.dart';
 import 'package:decimal/decimal.dart';
 import 'package:drift/drift.dart' show Value;
@@ -40,6 +41,10 @@ class _Harness {
       database: db,
       remote: remote,
       sites: SitesRepository(db),
+      materials: MaterialsRepository(
+        database: db,
+        outbox: OutboxRepository(db),
+      ),
       currentUserId: () => userId,
       connectivity: monitor,
       backoff: Backoff(random: _FixedRandom()),

@@ -230,7 +230,7 @@ public class SyncPushTests
     public async Task An_unknown_entity_is_rejected_ENTITE_NON_SYNCHRONISABLE_and_does_not_stop_the_batch()
     {
         var (chef, site) = await ChefWithSiteAsync();
-        var stranger = ZoneOperation(Guid.NewGuid(), site.Id, entity: "delivery");
+        var stranger = ZoneOperation(Guid.NewGuid(), site.Id, entity: "task");
 
         var results = await chef.PushAsync(stranger, ZoneOperation(Guid.NewGuid(), site.Id, "Bloc 06"));
 

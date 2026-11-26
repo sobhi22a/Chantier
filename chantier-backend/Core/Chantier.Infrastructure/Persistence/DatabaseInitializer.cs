@@ -17,6 +17,32 @@ public static class DatabaseInitializer
 {
     public const string MigrateOnStartup = "Database:MigrateOnStartup";
 
+    /// <summary>
+    /// S-1 : sans <c>READ_COMMITTED_SNAPSHOT</c> (migration <c>EnableReadCommittedSnapshot</c>), les lectures attendent les ecritures et deux commandes simultanees peuvent s'interbloquer (R2-01).
+    /// Un avertissement au demarrage suffit : l'application fonctionne (les interblocages sont rejoues), mais l'exploitation doit appliquer la migration.
+    /// </summary>
+    public static async Task WarnIfRowVersioningIsOffAsync(IServiceProvider provider, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var db = provider.GetRequiredService<ApplicationDbContext>();
+            var enabled = await db.Database
+                .SqlQueryRaw<bool>("SELECT is_read_committed_snapshot_on AS [Value] FROM sys.databases WHERE name = DB_NAME()")
+                .SingleOrDefaultAsync(cancellationToken);
+            if (!enabled)
+            {
+                provider.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(DatabaseInitializer)).LogWarning(
+                    "READ_COMMITTED_SNAPSHOT est inactif sur la base : appliquer les migrations (EnableReadCommittedSnapshot), sinon les commandes simultanées peuvent s'interbloquer.");
+            }
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            // Un controle d'information ne doit jamais empecher le demarrage (droit de lecture de sys.databases, base absente a la generation OpenAPI...).
+            provider.GetRequiredService<ILoggerFactory>().CreateLogger(typeof(DatabaseInitializer))
+                .LogDebug("Contrôle READ_COMMITTED_SNAPSHOT impossible {ExceptionType}", exception.GetType().Name);
+        }
+    }
+
     public static async Task InitializeAsync(IServiceProvider services, CancellationToken cancellationToken = default)
     {
         await using var scope = services.CreateAsyncScope();
@@ -28,6 +54,8 @@ public static class DatabaseInitializer
             await provider.GetRequiredService<ApplicationDbContext>().Database.MigrateAsync(cancellationToken);
         }
 
+        await WarnIfRowVersioningIsOffAsync(provider, cancellationToken);
+
         await provider.GetRequiredService<IdentityDbInitializer>().InitializeAsync();
         await provider.GetRequiredService<ReferenceDataSeeder>().SeedAsync(cancellationToken: cancellationToken);
 
@@ -37,6 +65,7 @@ public static class DatabaseInitializer
             if (DemoDataSeeder.IsEnabled(configuration, environment))
             {
                 await provider.GetRequiredService<DemoDataSeeder>().SeedAsync(cancellationToken);
+                await provider.GetRequiredService<MaterialsDemoSeeder>().SeedAsync(cancellationToken);
             }
             else
             {

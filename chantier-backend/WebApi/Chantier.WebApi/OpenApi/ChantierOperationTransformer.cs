@@ -35,6 +35,7 @@ public sealed class ChantierOperationTransformer : IOpenApiOperationTransformer
 
         AddCommonErrors(operation, context, anonymous);
         KeepOnlyJsonContentTypes(operation);
+        DescribeJpegBodies(operation);
         return Task.CompletedTask;
     }
 
@@ -58,6 +59,7 @@ public sealed class ChantierOperationTransformer : IOpenApiOperationTransformer
 
         AddProblem(operation, schema, 429, "Limite de débit dépassée (`TROP_DE_REQUETES`) ; l'en-tête `Retry-After` donne l'attente en secondes.");
         AddProblem(operation, schema, 500, "Erreur inattendue (`ERREUR_INTERNE`) ; aucun détail technique, seulement `traceId`.");
+        AddProblem(operation, schema, 503, "Échec momentané de la base (`ERREUR_TEMPORAIRE`) : rien n'a été enregistré, la requête peut être renvoyée telle quelle (`Retry-After`).");
 
         // Les reponses « 400/404/409/413/422 » declarees par les controleurs recoivent la description du catalogue.
         foreach (var (status, response) in operation.Responses)
@@ -156,6 +158,29 @@ public sealed class ChantierOperationTransformer : IOpenApiOperationTransformer
                     response.Content = null;
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Photo de bon (ADR 0013) : le corps de l'envoi et la reponse de la lecture sont l'image JPEG elle-meme (binaire), pas du JSON : le controleur lit le flux brut,
+    /// le generateur ne peut pas le deduire.
+    /// </summary>
+    private static void DescribeJpegBodies(OpenApiOperation operation)
+    {
+        const string jpeg = "image/jpeg";
+        if (operation.OperationId == "Photos_Upload")
+        {
+            operation.RequestBody = new OpenApiRequestBody
+            {
+                Required = true,
+                Description = "Le fichier JPEG lui-même (5 Mo au plus) ; `Content-Type: image/jpeg`.",
+                Content = new Dictionary<string, OpenApiMediaType> { [jpeg] = new() { Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" } } },
+            };
+        }
+        else if (operation.OperationId == "Photos_Download" && operation.Responses?.TryGetValue("200", out var ok) == true && ok is OpenApiResponse response)
+        {
+            response.Description = "Le fichier JPEG (métadonnées EXIF retirées).";
+            response.Content = new Dictionary<string, OpenApiMediaType> { [jpeg] = new() { Schema = new OpenApiSchema { Type = JsonSchemaType.String, Format = "binary" } } };
         }
     }
 

@@ -1,1 +1,3 @@
 - [Socle : hypothèses et questions ouvertes](project_socle.md) — socle.md rédigé le 24/11/2026, hypothèses H-01..H-20 à valider
+- [Demandes de matériaux et livraisons](project_demandes_materiaux.md) — DEM/LIV rédigé le 25/11/2026, H-MAT-01..24, Q-MAT-01..10, 3 extensions de statuts
+- [Validation terrain DEM/LIV](project_validation_demandes_materiaux.md) — 26/11/2026 : Conforme avec réserves, écarts E-01..12, questions Q-V01..06

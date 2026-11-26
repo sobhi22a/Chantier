@@ -10,6 +10,7 @@ import 'package:chantier_mobile/core/sync/backoff.dart';
 import 'package:chantier_mobile/core/sync/outbox_repository.dart';
 import 'package:chantier_mobile/core/sync/sync_engine.dart';
 import 'package:chantier_mobile/features/auth/data/auth_repository_impl.dart';
+import 'package:chantier_mobile/features/materials/data/materials_repository.dart';
 import 'package:chantier_mobile/features/sites/data/sites_repository.dart';
 import 'package:chantier_mobile/features/zones/data/zones_repository.dart';
 import 'package:decimal/decimal.dart';
@@ -132,6 +133,10 @@ void main() {
         database: db,
         remote: server,
         sites: SitesRepository(db),
+        materials: MaterialsRepository(
+          database: db,
+          outbox: OutboxRepository(db),
+        ),
         currentUserId: () => _userA,
         connectivity: monitor,
         backoff: Backoff(),

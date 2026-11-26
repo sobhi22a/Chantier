@@ -77,3 +77,56 @@ jour de l'ODS non compté ; voir `docs/metier/socle.md`, question Q-04). Sans OD
 | 01/03/2027 | 366 j | **01/03/2028** | 29/02/2028 compté (année bissextile) |
 
 Affichage d'une cote (mètres, 2 décimales, virgule) : `+3,40` · `−1,90` · `±0,00` pour zéro. Plage acceptée : −20,00 à +60,00 (paramétrable).
+
+## 8. Demandes, commandes et livraisons
+Source : `docs/metier/demandes-materiaux-livraisons.md` (conventions à confirmer : Q-MAT-01, Q-MAT-04, Q-MAT-05). Chaque cas ci-dessous a été recalculé.
+
+**Conversions autorisées** : 1 sac = *m* kg (masse du sac du produit : 50 kg ciment CPJ 42,5, 25 kg monocouche) ; 1 T = 1 000 kg. Arrondi à 3 décimales, `AwayFromZero`.
+Interdites : m³ ↔ T, L ↔ kg, barre ↔ T (`UNITES_INCOMPATIBLES`). `sac` et `u` se saisissent en entiers.
+
+| Conversion | Calcul | Résultat |
+|---|---|---|
+| 300 sacs de ciment en T | 300 × 50 = 15 000 kg | **15 T** |
+| 15 sacs de ciment en kg | 15 × 50 | **750 kg** |
+| 17,5 T de ciment en sacs | 17 500 ÷ 50 | **350 sacs** |
+| 1,2 T de monocouche en sacs | 1 200 ÷ 25 | **48 sacs** |
+| 20,26 T de ciment en sacs | 20 260 ÷ 50 | **405,2 sacs** |
+| 2 T + 500 kg de rond HA | 2 000 + 500 = 2 500 kg | **2,5 T** |
+| 100 sacs + 5 T + 200 sacs de ciment | 100 + 100 + 200 | **400 sacs (= 20 T)** |
+| 24 m³ + 10 T de sable | non convertibles | deux lignes, jamais additionnés |
+
+**Reçu, reste, écart, statut** (Qc = quantité commandée, Qr = reçu cumulé des livraisons non annulées, converti dans l'unité de la commande) :
+reste = max(0, Qc − Qr) ; écart = Qr − Qc ; écart % = écart ÷ Qc × 100 (2 décimales) ; Qr = 0 → Commandée ; 0 < Qr < Qc → Livrée partiellement ; Qr ≥ Qc → Livrée.
+Tolérance paramétrable (défaut 0 %) : un écart négatif dont la valeur absolue en % est ≤ tolérance compte comme complet.
+
+| Cas | Calcul | Résultat |
+|---|---|---|
+| DEM-005 (600 sacs), après LIV-006 (10 T) | Qr = 200 ; reste 400 | Livrée partiellement |
+| idem, après LIV-007 (10 T) | Qr = 400 ; reste 200 | Livrée partiellement |
+| idem, après LIV-008 (10 T) | Qr = 600 ; reste 0 ; écart 0,00 % | **Livrée** |
+| Surplus : 20 T commandées, 20,4 T reçues | +0,4 T ; 0,4 ÷ 20 × 100 | **+2,00 %**, Livrée |
+| Manque : 400 sacs commandés, 19,5 T reçues | 19 500 ÷ 50 = 390 ; −10 ; −10 ÷ 400 × 100 | **−2,50 %**, reste 10 sacs |
+| Tolérance 1 % : 20 T commandées, 19,85 T reçues | −0,15 T ; −0,75 % | Livrée (avec tolérance 0 % : Livrée partiellement, reste 0,15 T) |
+| Annuler LIV-008 de DEM-005 | Qr repasse à 400 sacs | Livrée → Livrée partiellement |
+| Sable commandé en m³, livré en T | non convertible | refusé `UNITES_INCOMPATIBLES` |
+
+**Montant** = arrondi2(quantité × prix unitaire), dans l'unité de la commande, `AwayFromZero` ; **valeur reçue** = somme des valeurs arrondies de chaque livraison.
+
+| Cas | Calcul | Résultat |
+|---|---|---|
+| Commande de DEM-009 | 300 sacs × 780,00 DZD | **234 000,00 DZD** |
+| Commande de DEM-011 (rond HA Ø10) | 2 T × 128 000,00 DZD | **256 000,00 DZD** |
+| Valeur reçue LIV-009 | 1,2 T × 128 000,00 DZD | **153 600,00 DZD** (reste 0,8 T) |
+| Commande de DEM-007 | 12 000 u × 27,50 DZD | **330 000,00 DZD** |
+| LIV de 10 T pour une commande en sacs à 780,00 DZD/sac | 10 T = 200 sacs × 780,00 | **156 000,00 DZD** |
+| Arrondi au demi-centime | 2,5 kg × 245,25 DZD = 613,125 | **613,13 DZD** (bancaire : 613,12, interdit) |
+| Somme des arrondis | 3 livraisons de 0,5 kg × 245,25 = 122,625 → 122,63 chacune | **367,89** ; (1,5 kg × 245,25 = 367,875 → 367,88) : écart d'1 centime accepté |
+| Demandes de ciment DEM-001 à DEM-005 | (800 + 400 + 200 + 200 + 600) sacs × 780,00 | 2 200 sacs ; **1 716 000,00 DZD** |
+| Montant commandé UV18 (DEM-001 à 005, 009, 011) | 1 716 000,00 + 234 000,00 + 256 000,00 | **2 206 000,00 DZD** |
+
+**Retard** = max(0, aujourd'hui − date de besoin ou date prévue), jours calendaires, fuseau Africa/Algiers.
+Besoin au 26/11/2026, aujourd'hui 28/11/2026 → **2 j** ; besoin du jour → 0 ; besoin au 26/11/2026, aujourd'hui 01/12/2026 → **5 j** (4 j jusqu'au 30/11, +1).
+
+**Date de besoin par défaut** = aujourd'hui + 3 jours : 25/11/2026 → **28/11/2026** ; 30/12/2026 → **02/01/2027** ; 28/02/2028 → **02/03/2028** (29/02/2028 compté).
+
+**Ciment livré** (lien avec §3) : livraisons acceptées de l'école UV18 = 20 + 20 + 20 + 10 + 10 + 10 + 10 + 10 = **110 T = 2 200 sacs** (110 000 ÷ 50).

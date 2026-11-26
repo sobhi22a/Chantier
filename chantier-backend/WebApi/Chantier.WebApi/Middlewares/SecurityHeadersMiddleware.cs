@@ -29,7 +29,12 @@ public sealed class SecurityHeadersMiddleware(RequestDelegate next)
                 headers["X-Frame-Options"] = "DENY";
                 headers["Cross-Origin-Opener-Policy"] = "same-origin";
                 headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none'";
-                headers["Cache-Control"] = "no-store";
+
+                // Jamais de cache par defaut ; une route peut choisir « private » (photo de bon : <c>private, max-age=3600</c>, ADR 0013), jamais « public ».
+                if (!headers.ContainsKey("Cache-Control"))
+                {
+                    headers["Cache-Control"] = "no-store";
+                }
             }
 
             return Task.CompletedTask;

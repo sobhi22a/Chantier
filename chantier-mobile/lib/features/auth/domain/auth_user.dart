@@ -5,6 +5,25 @@ import 'package:equatable/equatable.dart';
 abstract final class Permissions {
   static const String zonesCreate = 'Zones.Create';
   static const String contractAmountView = 'ContractAmount.View';
+
+  // Demandes de materiaux (ADR 0012) : le serveur refuse de toute facon, l'interface masque.
+  static const String requestsView = 'Requests.View';
+  static const String requestsCreate = 'Requests.Create';
+  static const String requestsUpdate = 'Requests.Update';
+  static const String requestsUpdateAny = 'Requests.UpdateAny';
+  static const String requestsApprove = 'Requests.Approve';
+  static const String requestsCancel = 'Requests.Cancel';
+  static const String requestsCancelAny = 'Requests.CancelAny';
+  static const String requestsReceive = 'Requests.Receive';
+
+  // Livraisons, photos des bons et contact fournisseur (ADR 0012, 0013).
+  static const String deliveriesView = 'Deliveries.View';
+  static const String deliveriesCreate = 'Deliveries.Create';
+  static const String deliveriesUpdate = 'Deliveries.Update';
+  static const String deliveriesAttach = 'Deliveries.Attach';
+  static const String deliveryPhotosCreate = 'DeliveryPhotos.Create';
+  static const String deliveryPhotosView = 'DeliveryPhotos.View';
+  static const String supplierPhoneView = 'SupplierPhone.View';
 }
 
 /// Utilisateur connecte, tel que memorise sur le telephone pour la session hors ligne.

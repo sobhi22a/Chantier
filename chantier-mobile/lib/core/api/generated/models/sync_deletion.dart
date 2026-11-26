@@ -17,8 +17,8 @@ abstract class SyncDeletion with _$SyncDeletion {
     /// Identifiant de la ligne supprimée.
     required String id,
 
-    /// Chantier de la ligne.
-    required String siteId,
+    /// Chantier de la ligne ; `null` pour une entité globale.
+    required String? siteId,
 
     /// Version serveur de la suppression.
     required String version,

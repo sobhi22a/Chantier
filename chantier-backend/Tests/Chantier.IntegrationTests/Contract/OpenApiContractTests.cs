@@ -266,7 +266,7 @@ public class OpenApiContractTests
         Assert.Multiple(() =>
         {
             Assert.That(references.Where(name => !schemas.Contains(name)), Is.Empty, "Référence sans schéma.");
-            Assert.That(schemas.Where(name => !references.Contains(name)), Is.EquivalentTo(new[] { "SyncMemberData" }), "Seul SyncMemberData est décrit sans être référencé (champ `data` libre de la synchronisation).");
+            Assert.That(schemas.Where(name => !references.Contains(name)), Is.EquivalentTo(new[] { "SyncMemberData", "RequestSyncData", "SupplierSyncData", "DeliverySyncData" }), "Seuls les modèles de lignes de synchronisation sont décrits sans être référencés (champ `data` libre de la synchronisation).");
         });
 
         static void Collect(JsonNode? node, HashSet<string> found)
@@ -340,6 +340,52 @@ public class OpenApiContractTests
     }
 
     [Test]
+    public void A_quantity_always_has_its_value_and_its_unit_and_is_never_copied_inline()
+    {
+        var schemas = _committed["components"]!["schemas"]!;
+        var inlineCopies = new List<string>();
+        Scan(_committed, "#");
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(Strings(schemas["Quantity"]!["required"]), Is.EquivalentTo(new[] { "value", "unit" }));
+            Assert.That(schemas["Quantity"]!["properties"]!["value"]!["type"]!.GetValue<string>(), Is.EqualTo("number"), "Décimal exact : un nombre JSON, jamais une chaîne.");
+            Assert.That(inlineCopies, Is.Empty, "Chaque quantité référence le composant Quantity (sinon les clients génèrent des classes jumelles).");
+            Assert.That(schemas["RequestSyncData"]!["properties"]!["quantity"]!["$ref"]!.GetValue<string>(), Is.EqualTo(SchemaPrefix + "Quantity"));
+            Assert.That(schemas["DeliverySyncData"]!["properties"]!["quantity"]!["$ref"]!.GetValue<string>(), Is.EqualTo(SchemaPrefix + "Quantity"));
+            Assert.That(schemas["DeliverySyncData"]!["properties"]!["quantityInRequestUnit"]!["oneOf"]!.AsArray(), Has.Count.EqualTo(2), "Quantité facultative : null ou Quantity, sans élargissement.");
+        });
+
+        void Scan(JsonNode? node, string path)
+        {
+            switch (node)
+            {
+                case JsonObject obj:
+                    var properties = obj["properties"] as JsonObject;
+                    var isQuantityShape = properties is not null && properties.ContainsKey("value") && properties.ContainsKey("unit") && !properties.ContainsKey("percent");
+                    if (isQuantityShape && path != "#/components/schemas/Quantity" && path != "#/components/schemas/QuantityBody")
+                    {
+                        inlineCopies.Add(path);
+                    }
+
+                    foreach (var (key, child) in obj)
+                    {
+                        Scan(child, $"{path}/{key}");
+                    }
+
+                    break;
+                case JsonArray array:
+                    for (var index = 0; index < array.Count; index++)
+                    {
+                        Scan(array[index], $"{path}/{index}");
+                    }
+
+                    break;
+            }
+        }
+    }
+
+    [Test]
     public void Required_fields_are_exact()
     {
         var schemas = _committed["components"]!["schemas"]!;
@@ -366,7 +412,7 @@ public class OpenApiContractTests
         {
             Assert.That(queryParameters, Is.EquivalentTo(new[] { "since", "siteId", "limit" }));
             Assert.That(Strings(schemas["SyncPullResponse"]!["required"]), Is.EquivalentTo(new[] { "changes", "deleted", "cursor", "hasMore" }));
-            Assert.That(schemas["SyncPushResult"]!["properties"]!.AsObject().Select(entry => entry.Key), Is.EquivalentTo(new[] { "clientId", "status", "resource", "current", "code", "merged", "errors" }));
+            Assert.That(schemas["SyncPushResult"]!["properties"]!.AsObject().Select(entry => entry.Key), Is.EquivalentTo(new[] { "clientId", "status", "resource", "current", "code", "merged", "errors", "conflictFields" }));
             Assert.That(schemas["SyncMemberData"]!["properties"]!.AsObject().Select(entry => entry.Key), Is.EquivalentTo(new[] { "id", "siteId", "userId", "fullName", "role", "assignedAt" }), "Jamais de téléphone.");
             Assert.That(_committed["paths"]!["/api/v1/sync/push"]!["post"]!["responses"]!.AsObject().Select(entry => entry.Key), Does.Contain("413"));
         });
@@ -381,6 +427,8 @@ public class OpenApiContractTests
             .Where(entry => entry.Property.Contains("phone", StringComparison.OrdinalIgnoreCase))
             .Select(entry => $"{entry.Schema}.{entry.Property}");
 
-        Assert.That(offenders, Is.Empty, "Les téléphones sont des données personnelles : seul GET /auth/me les renvoie, à son titulaire.");
+        // Le téléphone d'un fournisseur (SupplierPhone.View, ADR 0012) est lu et saisi sur le web ; il n'existe dans aucun schéma de synchronisation (SupplierSyncData n'a pas ce champ).
+        var supplierPhone = new[] { "SupplierResponse.phone", "CreateSupplierRequest.phone", "UpdateSupplierRequest.phone" };
+        Assert.That(offenders, Is.EquivalentTo(supplierPhone), "Les téléphones sont des données personnelles : seul GET /auth/me les renvoie à son titulaire, et le fournisseur à qui a SupplierPhone.View.");
     }
 }

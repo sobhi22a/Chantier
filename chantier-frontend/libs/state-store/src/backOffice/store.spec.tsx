@@ -24,6 +24,7 @@ describe("tranche authentication", () => {
       isAuthenticated: false,
       mustChangePassword: false,
       claims: null,
+      permissions: [],
     });
   });
 

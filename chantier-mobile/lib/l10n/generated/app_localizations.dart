@@ -290,6 +290,108 @@ abstract class AppLocalizations {
   /// **'Ce changement de statut n\'est pas autorisé.'**
   String get errorTransitionInterdite;
 
+  /// No description provided for @errorDemandeVerrouillee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande validée : la quantité et le produit ne se modifient plus. Annulez-la et créez-en une nouvelle.'**
+  String get errorDemandeVerrouillee;
+
+  /// No description provided for @errorDemandeNonOuverte.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette demande n\'accepte plus de livraison.'**
+  String get errorDemandeNonOuverte;
+
+  /// No description provided for @errorCommandeExistante.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette demande est déjà commandée.'**
+  String get errorCommandeExistante;
+
+  /// No description provided for @errorProduitDifferent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le produit de la livraison n\'est pas celui de la demande.'**
+  String get errorProduitDifferent;
+
+  /// No description provided for @errorQuantiteEntiereRequise.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre entier requis.'**
+  String get errorQuantiteEntiereRequise;
+
+  /// No description provided for @errorUniteNonAutorisee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette unité n\'est pas autorisée pour ce produit.'**
+  String get errorUniteNonAutorisee;
+
+  /// No description provided for @errorMasseSacObligatoire.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indiquez la masse d\'un sac pour ce produit.'**
+  String get errorMasseSacObligatoire;
+
+  /// No description provided for @errorProduitExistant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce produit existe déjà.'**
+  String get errorProduitExistant;
+
+  /// No description provided for @errorFournisseurExistant.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce fournisseur existe déjà.'**
+  String get errorFournisseurExistant;
+
+  /// No description provided for @errorProduitInactif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce produit est désactivé : choisissez-en un autre.'**
+  String get errorProduitInactif;
+
+  /// No description provided for @errorFournisseurInactif.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce fournisseur est désactivé.'**
+  String get errorFournisseurInactif;
+
+  /// No description provided for @errorZoneHorsChantier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette zone n\'appartient pas à ce chantier.'**
+  String get errorZoneHorsChantier;
+
+  /// No description provided for @errorLivraisonDejaRattachee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette livraison est déjà rattachée à une autre demande.'**
+  String get errorLivraisonDejaRattachee;
+
+  /// No description provided for @errorPhotosTropNombreuses.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nombre maximal de photos atteint pour cette livraison.'**
+  String get errorPhotosTropNombreuses;
+
+  /// No description provided for @errorPhotoDejaEnvoyee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette photo a déjà été envoyée.'**
+  String get errorPhotoDejaEnvoyee;
+
+  /// No description provided for @errorFichierTropGros.
+  ///
+  /// In fr, this message translates to:
+  /// **'Image trop volumineuse.'**
+  String get errorFichierTropGros;
+
+  /// No description provided for @errorTypeFichierRefuse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seules les images JPEG sont acceptées.'**
+  String get errorTypeFichierRefuse;
+
   /// No description provided for @errorNetwork.
   ///
   /// In fr, this message translates to:
@@ -1159,6 +1261,1818 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'La synchronisation n\'a pas abouti. Vos saisies sont conservées.'**
   String get pendingSyncFailed;
+
+  /// No description provided for @requestStatusRequested.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandée'**
+  String get requestStatusRequested;
+
+  /// No description provided for @requestStatusValidated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validée'**
+  String get requestStatusValidated;
+
+  /// No description provided for @requestStatusRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusée'**
+  String get requestStatusRejected;
+
+  /// No description provided for @requestStatusOrdered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commandée'**
+  String get requestStatusOrdered;
+
+  /// No description provided for @requestStatusPartiallyDelivered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livrée partiellement'**
+  String get requestStatusPartiallyDelivered;
+
+  /// No description provided for @requestStatusDelivered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livrée'**
+  String get requestStatusDelivered;
+
+  /// No description provided for @requestStatusReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptionnée'**
+  String get requestStatusReceived;
+
+  /// No description provided for @requestStatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get requestStatusCancelled;
+
+  /// No description provided for @priorityNormal.
+  ///
+  /// In fr, this message translates to:
+  /// **'Normale'**
+  String get priorityNormal;
+
+  /// No description provided for @priorityUrgent.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgente'**
+  String get priorityUrgent;
+
+  /// No description provided for @priorityBlocking.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bloquante'**
+  String get priorityBlocking;
+
+  /// No description provided for @deliveryStatusRecorded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrée'**
+  String get deliveryStatusRecorded;
+
+  /// No description provided for @deliveryStatusCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get deliveryStatusCancelled;
+
+  /// No description provided for @conformityConform.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conforme'**
+  String get conformityConform;
+
+  /// No description provided for @conformityWithReserve.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec réserve'**
+  String get conformityWithReserve;
+
+  /// No description provided for @unitPiece.
+  ///
+  /// In fr, this message translates to:
+  /// **'u'**
+  String get unitPiece;
+
+  /// No description provided for @unitLinearMeter.
+  ///
+  /// In fr, this message translates to:
+  /// **'ml'**
+  String get unitLinearMeter;
+
+  /// No description provided for @unitSquareMeter.
+  ///
+  /// In fr, this message translates to:
+  /// **'m²'**
+  String get unitSquareMeter;
+
+  /// No description provided for @unitCubicMeter.
+  ///
+  /// In fr, this message translates to:
+  /// **'m³'**
+  String get unitCubicMeter;
+
+  /// No description provided for @unitKilogram.
+  ///
+  /// In fr, this message translates to:
+  /// **'kg'**
+  String get unitKilogram;
+
+  /// No description provided for @unitTonne.
+  ///
+  /// In fr, this message translates to:
+  /// **'T'**
+  String get unitTonne;
+
+  /// No description provided for @unitBag.
+  ///
+  /// In fr, this message translates to:
+  /// **'sac'**
+  String get unitBag;
+
+  /// No description provided for @unitLiter.
+  ///
+  /// In fr, this message translates to:
+  /// **'L'**
+  String get unitLiter;
+
+  /// No description provided for @unitHour.
+  ///
+  /// In fr, this message translates to:
+  /// **'h'**
+  String get unitHour;
+
+  /// No description provided for @unitDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'j'**
+  String get unitDay;
+
+  /// No description provided for @unitManDay.
+  ///
+  /// In fr, this message translates to:
+  /// **'pers·j'**
+  String get unitManDay;
+
+  /// No description provided for @unitLumpSum.
+  ///
+  /// In fr, this message translates to:
+  /// **'forfait'**
+  String get unitLumpSum;
+
+  /// No description provided for @productCategoryBinders.
+  ///
+  /// In fr, this message translates to:
+  /// **'Liants'**
+  String get productCategoryBinders;
+
+  /// No description provided for @productCategorySteel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Acier'**
+  String get productCategorySteel;
+
+  /// No description provided for @productCategoryMasonry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Maçonnerie'**
+  String get productCategoryMasonry;
+
+  /// No description provided for @productCategoryAggregates.
+  ///
+  /// In fr, this message translates to:
+  /// **'Granulats'**
+  String get productCategoryAggregates;
+
+  /// No description provided for @productCategoryAdmixtures.
+  ///
+  /// In fr, this message translates to:
+  /// **'Adjuvants'**
+  String get productCategoryAdmixtures;
+
+  /// No description provided for @productCategoryFinishingWorks.
+  ///
+  /// In fr, this message translates to:
+  /// **'Second œuvre'**
+  String get productCategoryFinishingWorks;
+
+  /// No description provided for @productCategoryOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get productCategoryOther;
+
+  /// No description provided for @reasonAlreadyOrdered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Déjà commandé'**
+  String get reasonAlreadyOrdered;
+
+  /// No description provided for @reasonStockSufficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Stock suffisant sur le chantier'**
+  String get reasonStockSufficient;
+
+  /// No description provided for @reasonQuantityToReview.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité à revoir'**
+  String get reasonQuantityToReview;
+
+  /// No description provided for @reasonOverBudget.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hors budget'**
+  String get reasonOverBudget;
+
+  /// No description provided for @reasonEntryError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de saisie'**
+  String get reasonEntryError;
+
+  /// No description provided for @reasonNoLongerNeeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus besoin'**
+  String get reasonNoLongerNeeded;
+
+  /// No description provided for @reasonDuplicate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Doublon'**
+  String get reasonDuplicate;
+
+  /// No description provided for @reasonSupplierUnavailable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur indisponible'**
+  String get reasonSupplierUnavailable;
+
+  /// No description provided for @reasonPriceRefused.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prix refusé'**
+  String get reasonPriceRefused;
+
+  /// No description provided for @reasonSupplierWillNotDeliver.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le fournisseur ne livrera pas le reste'**
+  String get reasonSupplierWillNotDeliver;
+
+  /// No description provided for @reasonQuantitySufficient.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité suffisante'**
+  String get reasonQuantitySufficient;
+
+  /// No description provided for @reasonDoubleEntry.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisie en double'**
+  String get reasonDoubleEntry;
+
+  /// No description provided for @reasonQuantityError.
+  ///
+  /// In fr, this message translates to:
+  /// **'Erreur de quantité'**
+  String get reasonQuantityError;
+
+  /// No description provided for @reasonRefusedAtReception.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusée à la réception'**
+  String get reasonRefusedAtReception;
+
+  /// No description provided for @reasonQuantityMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité manquante'**
+  String get reasonQuantityMissing;
+
+  /// No description provided for @reasonDamagedProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Produit abîmé'**
+  String get reasonDamagedProduct;
+
+  /// No description provided for @reasonWrongProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mauvais produit'**
+  String get reasonWrongProduct;
+
+  /// No description provided for @reasonOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre'**
+  String get reasonOther;
+
+  /// No description provided for @materialNumberPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Numéro en attente'**
+  String get materialNumberPending;
+
+  /// No description provided for @materialToConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'À confirmer'**
+  String get materialToConfirm;
+
+  /// No description provided for @materialOverdueDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'En retard de {days} j'**
+  String materialOverdueDays(String days);
+
+  /// No description provided for @requestsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes de matériaux'**
+  String get requestsTitle;
+
+  /// No description provided for @requestNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouvelle demande'**
+  String get requestNew;
+
+  /// No description provided for @requestNewShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'+ Demande'**
+  String get requestNewShort;
+
+  /// No description provided for @requestsOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandes'**
+  String get requestsOpen;
+
+  /// No description provided for @approvalsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À valider'**
+  String get approvalsTitle;
+
+  /// No description provided for @approvalsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune demande à valider.'**
+  String get approvalsEmpty;
+
+  /// No description provided for @requestsViewToFollow.
+  ///
+  /// In fr, this message translates to:
+  /// **'À suivre'**
+  String get requestsViewToFollow;
+
+  /// No description provided for @requestsViewReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terminées'**
+  String get requestsViewReceived;
+
+  /// No description provided for @requestsViewClosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusées et annulées'**
+  String get requestsViewClosed;
+
+  /// No description provided for @requestsViewArchived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Archivées'**
+  String get requestsViewArchived;
+
+  /// No description provided for @requestsMine.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mes demandes'**
+  String get requestsMine;
+
+  /// No description provided for @requestsAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes'**
+  String get requestsAll;
+
+  /// No description provided for @requestsEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune demande ici.'**
+  String get requestsEmpty;
+
+  /// No description provided for @requestsSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher (DEM-014, ciment…)'**
+  String get requestsSearchHint;
+
+  /// No description provided for @requestPendingSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente d\'envoi'**
+  String get requestPendingSend;
+
+  /// No description provided for @requestNeedsCheck.
+  ///
+  /// In fr, this message translates to:
+  /// **'À vérifier'**
+  String get requestNeedsCheck;
+
+  /// No description provided for @requestNeededBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour le {date}'**
+  String requestNeededBy(String date);
+
+  /// No description provided for @requestFormProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matériau'**
+  String get requestFormProduct;
+
+  /// No description provided for @requestFormSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chercher un matériau'**
+  String get requestFormSearchHint;
+
+  /// No description provided for @requestFormNoProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun matériau trouvé.'**
+  String get requestFormNoProduct;
+
+  /// No description provided for @requestFormTopProducts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les plus demandés'**
+  String get requestFormTopProducts;
+
+  /// No description provided for @requestFormOtherProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre produit'**
+  String get requestFormOtherProduct;
+
+  /// No description provided for @requestFormFreeName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du matériau'**
+  String get requestFormFreeName;
+
+  /// No description provided for @requestFormFreeNameInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez 3 à 100 caractères.'**
+  String get requestFormFreeNameInvalid;
+
+  /// No description provided for @requestFormQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get requestFormQuantity;
+
+  /// No description provided for @requestFormUnit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Unité'**
+  String get requestFormUnit;
+
+  /// No description provided for @requestFormZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zone'**
+  String get requestFormZone;
+
+  /// No description provided for @requestFormZoneOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre zone'**
+  String get requestFormZoneOther;
+
+  /// No description provided for @requestFormNeededBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour le'**
+  String get requestFormNeededBy;
+
+  /// No description provided for @requestFormTomorrow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demain'**
+  String get requestFormTomorrow;
+
+  /// No description provided for @requestFormInDays.
+  ///
+  /// In fr, this message translates to:
+  /// **'+ {days} jours'**
+  String requestFormInDays(String days);
+
+  /// No description provided for @requestFormNextWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Semaine prochaine'**
+  String get requestFormNextWeek;
+
+  /// No description provided for @requestFormOtherDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre date'**
+  String get requestFormOtherDate;
+
+  /// No description provided for @requestFormPriority.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgence'**
+  String get requestFormPriority;
+
+  /// No description provided for @requestFormNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remarque (facultatif)'**
+  String get requestFormNote;
+
+  /// No description provided for @requestFormSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer'**
+  String get requestFormSend;
+
+  /// No description provided for @requestFormSendAnother.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer et ajouter un autre matériau'**
+  String get requestFormSendAnother;
+
+  /// No description provided for @requestFormPastDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette date est déjà passée.'**
+  String get requestFormPastDate;
+
+  /// No description provided for @requestFormSendAnyway.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer quand même'**
+  String get requestFormSendAnyway;
+
+  /// No description provided for @requestFormDuplicate.
+  ///
+  /// In fr, this message translates to:
+  /// **'{number} est déjà ouverte pour ce matériau et cette zone.'**
+  String requestFormDuplicate(String number);
+
+  /// No description provided for @requestFormSeeDuplicate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir la demande'**
+  String get requestFormSeeDuplicate;
+
+  /// No description provided for @requestFormOtherRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est une autre demande'**
+  String get requestFormOtherRequest;
+
+  /// No description provided for @requestSaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande enregistrée. En attente d\'envoi.'**
+  String get requestSaved;
+
+  /// No description provided for @requestEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger la demande'**
+  String get requestEditTitle;
+
+  /// No description provided for @requestEditSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer'**
+  String get requestEditSave;
+
+  /// No description provided for @requestEditNothing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune modification.'**
+  String get requestEditNothing;
+
+  /// No description provided for @requestEditProductLocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le matériau ne se corrige pas : annulez la demande puis recréez-la.'**
+  String get requestEditProductLocked;
+
+  /// No description provided for @requestEditBusy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette saisie est en cours d\'envoi. Réessayez dans un instant.'**
+  String get requestEditBusy;
+
+  /// No description provided for @requestDetailHistory.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique'**
+  String get requestDetailHistory;
+
+  /// No description provided for @requestDetailRequestedBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demandée par {name}'**
+  String requestDetailRequestedBy(String name);
+
+  /// No description provided for @requestDetailZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zone'**
+  String get requestDetailZone;
+
+  /// No description provided for @requestDetailNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remarque'**
+  String get requestDetailNote;
+
+  /// No description provided for @requestDetailReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif'**
+  String get requestDetailReason;
+
+  /// No description provided for @requestDetailReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reçu'**
+  String get requestDetailReceived;
+
+  /// No description provided for @requestDetailRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reste'**
+  String get requestDetailRemaining;
+
+  /// No description provided for @requestDetailVariance.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écart'**
+  String get requestDetailVariance;
+
+  /// No description provided for @requestDetailDuplicate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Doublon possible de {number}'**
+  String requestDetailDuplicate(String number);
+
+  /// No description provided for @requestDetailNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette demande n\'est plus sur ce téléphone.'**
+  String get requestDetailNotFound;
+
+  /// No description provided for @requestDetailSavedAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisie le {when}'**
+  String requestDetailSavedAt(String when);
+
+  /// No description provided for @requestZoneNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non précisée'**
+  String get requestZoneNone;
+
+  /// No description provided for @requestActionEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger'**
+  String get requestActionEdit;
+
+  /// No description provided for @requestActionCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la demande'**
+  String get requestActionCancel;
+
+  /// No description provided for @requestCancelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler cette demande ?'**
+  String get requestCancelTitle;
+
+  /// No description provided for @requestCancelConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la demande'**
+  String get requestCancelConfirm;
+
+  /// No description provided for @requestCancelKeep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder la demande'**
+  String get requestCancelKeep;
+
+  /// No description provided for @requestReasonTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif'**
+  String get requestReasonTitle;
+
+  /// No description provided for @requestReasonNoteLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précisez le motif'**
+  String get requestReasonNoteLabel;
+
+  /// No description provided for @requestReasonNoteRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précisez le motif (Autre).'**
+  String get requestReasonNoteRequired;
+
+  /// No description provided for @requestReasonRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez un motif.'**
+  String get requestReasonRequired;
+
+  /// No description provided for @requestActionQueued.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistré. En attente d\'envoi.'**
+  String get requestActionQueued;
+
+  /// No description provided for @requestActionAlreadyQueued.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une action est déjà en attente d\'envoi pour cette demande.'**
+  String get requestActionAlreadyQueued;
+
+  /// No description provided for @approvalApprove.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider'**
+  String get approvalApprove;
+
+  /// No description provided for @approvalReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get approvalReject;
+
+  /// No description provided for @approvalAdjust.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre quantité'**
+  String get approvalAdjust;
+
+  /// No description provided for @approvalAdjustTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider avec une autre quantité'**
+  String get approvalAdjustTitle;
+
+  /// No description provided for @approvalAdjustConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Valider cette quantité'**
+  String get approvalAdjustConfirm;
+
+  /// No description provided for @approvalPending.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validation en attente d\'envoi'**
+  String get approvalPending;
+
+  /// No description provided for @approvalRejectTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser la demande'**
+  String get approvalRejectTitle;
+
+  /// No description provided for @approvalRejectConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refuser'**
+  String get approvalRejectConfirm;
+
+  /// No description provided for @historyCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande créée'**
+  String get historyCreated;
+
+  /// No description provided for @historyEdited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande modifiée'**
+  String get historyEdited;
+
+  /// No description provided for @historyApproved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Validée'**
+  String get historyApproved;
+
+  /// No description provided for @historyQuantityAdjusted.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité ajustée'**
+  String get historyQuantityAdjusted;
+
+  /// No description provided for @historyRejected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refusée'**
+  String get historyRejected;
+
+  /// No description provided for @historyCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annulée'**
+  String get historyCancelled;
+
+  /// No description provided for @historyReceived.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptionnée'**
+  String get historyReceived;
+
+  /// No description provided for @historyStatusChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'{fromStatus} → {toStatus}'**
+  String historyStatusChange(String fromStatus, String toStatus);
+
+  /// No description provided for @historyBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'par {name}'**
+  String historyBy(String name);
+
+  /// No description provided for @fieldQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get fieldQuantity;
+
+  /// No description provided for @fieldZone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Zone'**
+  String get fieldZone;
+
+  /// No description provided for @fieldNeededBy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour le'**
+  String get fieldNeededBy;
+
+  /// No description provided for @fieldPriority.
+  ///
+  /// In fr, this message translates to:
+  /// **'Urgence'**
+  String get fieldPriority;
+
+  /// No description provided for @fieldNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remarque'**
+  String get fieldNote;
+
+  /// No description provided for @fieldProduct.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matériau'**
+  String get fieldProduct;
+
+  /// No description provided for @fieldChange.
+  ///
+  /// In fr, this message translates to:
+  /// **'{field} : {oldValue} → {newValue}'**
+  String fieldChange(String field, String newValue, String oldValue);
+
+  /// No description provided for @fieldEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'vide'**
+  String get fieldEmpty;
+
+  /// No description provided for @pendingEntityRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande de matériau'**
+  String get pendingEntityRequest;
+
+  /// No description provided for @pendingView.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir'**
+  String get pendingView;
+
+  /// No description provided for @conflictTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À vérifier'**
+  String get conflictTitle;
+
+  /// No description provided for @conflictIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le serveur garde sa version. Rien n\'est supprimé tant que vous n\'avez pas choisi.'**
+  String get conflictIntro;
+
+  /// No description provided for @conflictYourVersion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre version'**
+  String get conflictYourVersion;
+
+  /// No description provided for @conflictServerVersion.
+  ///
+  /// In fr, this message translates to:
+  /// **'Version du serveur'**
+  String get conflictServerVersion;
+
+  /// No description provided for @conflictFieldsInDisagreement.
+  ///
+  /// In fr, this message translates to:
+  /// **'Champs en désaccord : {fields}'**
+  String conflictFieldsInDisagreement(String fields);
+
+  /// No description provided for @conflictYourAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre action : {action}'**
+  String conflictYourAction(String action);
+
+  /// No description provided for @conflictActionApprove.
+  ///
+  /// In fr, this message translates to:
+  /// **'valider'**
+  String get conflictActionApprove;
+
+  /// No description provided for @conflictActionReject.
+  ///
+  /// In fr, this message translates to:
+  /// **'refuser'**
+  String get conflictActionReject;
+
+  /// No description provided for @conflictActionCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'annuler'**
+  String get conflictActionCancel;
+
+  /// No description provided for @conflictActionReceive.
+  ///
+  /// In fr, this message translates to:
+  /// **'réceptionner'**
+  String get conflictActionReceive;
+
+  /// No description provided for @conflictServerStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut sur le serveur : {status}'**
+  String conflictServerStatus(String status);
+
+  /// No description provided for @conflictKeepServer.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder la version du serveur'**
+  String get conflictKeepServer;
+
+  /// No description provided for @conflictRedo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Refaire ma modification'**
+  String get conflictRedo;
+
+  /// No description provided for @conflictCreateNew.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer une nouvelle demande avec mes valeurs'**
+  String get conflictCreateNew;
+
+  /// No description provided for @conflictCorrect.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger ma saisie'**
+  String get conflictCorrect;
+
+  /// No description provided for @conflictKeepServerTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder la version du serveur ?'**
+  String get conflictKeepServerTitle;
+
+  /// No description provided for @conflictKeepServerBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre saisie sera supprimée de ce téléphone. Cette action est définitive.'**
+  String get conflictKeepServerBody;
+
+  /// No description provided for @conflictGone.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette saisie n\'est plus à vérifier.'**
+  String get conflictGone;
+
+  /// No description provided for @deliveriesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraisons'**
+  String get deliveriesTitle;
+
+  /// No description provided for @toReceiveTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À recevoir'**
+  String get toReceiveTitle;
+
+  /// No description provided for @toReceptionTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'À réceptionner'**
+  String get toReceptionTitle;
+
+  /// No description provided for @homeDeliveriesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraisons et réception'**
+  String get homeDeliveriesTitle;
+
+  /// No description provided for @toReceiveEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune commande à recevoir.'**
+  String get toReceiveEmpty;
+
+  /// No description provided for @toReceiveSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher (fournisseur, matériau, DEM-014)'**
+  String get toReceiveSearchHint;
+
+  /// No description provided for @toReceiveExpectedOn.
+  ///
+  /// In fr, this message translates to:
+  /// **'Prévue le {date}'**
+  String toReceiveExpectedOn(String date);
+
+  /// No description provided for @toReceiveNoDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date prévue non indiquée'**
+  String get toReceiveNoDate;
+
+  /// No description provided for @toReceiveRemaining.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reste : {quantity}'**
+  String toReceiveRemaining(String quantity);
+
+  /// No description provided for @toReceiveWithoutRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison sans demande'**
+  String get toReceiveWithoutRequest;
+
+  /// No description provided for @receiveFilterAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes'**
+  String get receiveFilterAll;
+
+  /// No description provided for @receiveFilterToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get receiveFilterToday;
+
+  /// No description provided for @receiveFilterWeek.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette semaine'**
+  String get receiveFilterWeek;
+
+  /// No description provided for @receiveFilterLate.
+  ///
+  /// In fr, this message translates to:
+  /// **'En retard'**
+  String get receiveFilterLate;
+
+  /// No description provided for @toReceptionEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune demande à réceptionner.'**
+  String get toReceptionEmpty;
+
+  /// No description provided for @toReceptionAction.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptionner'**
+  String get toReceptionAction;
+
+  /// No description provided for @receiveNowPrompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'{number} est livrée. Réceptionner maintenant ?'**
+  String receiveNowPrompt(String number);
+
+  /// No description provided for @receiveNowYes.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptionner'**
+  String get receiveNowYes;
+
+  /// No description provided for @receiveNowLater.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus tard'**
+  String get receiveNowLater;
+
+  /// No description provided for @deliveryNewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir une livraison'**
+  String get deliveryNewTitle;
+
+  /// No description provided for @deliveryNoRequestTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison sans demande'**
+  String get deliveryNoRequestTitle;
+
+  /// No description provided for @deliveryEditTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger la livraison'**
+  String get deliveryEditTitle;
+
+  /// No description provided for @deliveryFormSupplier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur'**
+  String get deliveryFormSupplier;
+
+  /// No description provided for @deliveryFormOtherSupplier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre fournisseur'**
+  String get deliveryFormOtherSupplier;
+
+  /// No description provided for @deliveryFormSupplierName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nom du fournisseur'**
+  String get deliveryFormSupplierName;
+
+  /// No description provided for @deliveryFormSupplierInvalid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entrez 3 à 100 caractères.'**
+  String get deliveryFormSupplierInvalid;
+
+  /// No description provided for @deliveryFormQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité reçue'**
+  String get deliveryFormQuantity;
+
+  /// No description provided for @deliveryFormDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de livraison'**
+  String get deliveryFormDate;
+
+  /// No description provided for @deliveryFormToday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aujourd\'hui'**
+  String get deliveryFormToday;
+
+  /// No description provided for @deliveryFormYesterday.
+  ///
+  /// In fr, this message translates to:
+  /// **'Hier'**
+  String get deliveryFormYesterday;
+
+  /// No description provided for @deliveryFormOtherDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autre date'**
+  String get deliveryFormOtherDate;
+
+  /// No description provided for @deliveryFormNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'N° du bon de livraison (facultatif)'**
+  String get deliveryFormNote;
+
+  /// No description provided for @deliveryFormConformity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conformité'**
+  String get deliveryFormConformity;
+
+  /// No description provided for @deliveryFormReserveReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif de la réserve'**
+  String get deliveryFormReserveReason;
+
+  /// No description provided for @deliveryFormReserveNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Précisez la réserve'**
+  String get deliveryFormReserveNote;
+
+  /// No description provided for @deliveryFormReserveRequired.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez le motif de la réserve.'**
+  String get deliveryFormReserveRequired;
+
+  /// No description provided for @deliveryFormPhotos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos du bon'**
+  String get deliveryFormPhotos;
+
+  /// No description provided for @deliveryFormSave.
+  ///
+  /// In fr, this message translates to:
+  /// **'Enregistrer la livraison'**
+  String get deliveryFormSave;
+
+  /// No description provided for @deliveryFormBeforeRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette date est antérieure à la demande.'**
+  String get deliveryFormBeforeRequest;
+
+  /// No description provided for @deliveryAnnouncePartial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison partielle : il restera {quantity}'**
+  String deliveryAnnouncePartial(String quantity);
+
+  /// No description provided for @deliveryAnnounceComplete.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison complète'**
+  String get deliveryAnnounceComplete;
+
+  /// No description provided for @deliveryAnnounceSurplus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surplus de +{quantity} (+{percent} %)'**
+  String deliveryAnnounceSurplus(String quantity, String percent);
+
+  /// No description provided for @deliveryDuplicateNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce bon est déjà saisi : {number}.'**
+  String deliveryDuplicateNote(String number);
+
+  /// No description provided for @deliveryDuplicateSee.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir la livraison'**
+  String get deliveryDuplicateSee;
+
+  /// No description provided for @deliveryDuplicateOther.
+  ///
+  /// In fr, this message translates to:
+  /// **'C\'est une autre livraison'**
+  String get deliveryDuplicateOther;
+
+  /// No description provided for @deliverySaved.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison enregistrée. En attente d\'envoi.'**
+  String get deliverySaved;
+
+  /// No description provided for @deliveryProductLocked.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le matériau est celui de la demande.'**
+  String get deliveryProductLocked;
+
+  /// No description provided for @deliveryProductNeeded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez le matériau.'**
+  String get deliveryProductNeeded;
+
+  /// No description provided for @photoAdd.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photographier le bon'**
+  String get photoAdd;
+
+  /// No description provided for @photoRetake.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre'**
+  String get photoRetake;
+
+  /// No description provided for @photoKeep.
+  ///
+  /// In fr, this message translates to:
+  /// **'Garder'**
+  String get photoKeep;
+
+  /// No description provided for @photoMax.
+  ///
+  /// In fr, this message translates to:
+  /// **'{max} photos au maximum.'**
+  String photoMax(String max);
+
+  /// No description provided for @photoCountLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos : {count}'**
+  String photoCountLabel(String count);
+
+  /// No description provided for @photoErrorNotImage.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ce fichier n\'est pas une image JPEG.'**
+  String get photoErrorNotImage;
+
+  /// No description provided for @photoErrorTooLarge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette photo est trop lourde. Reprenez-la.'**
+  String get photoErrorTooLarge;
+
+  /// No description provided for @photoErrorUnreadable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo illisible. Reprenez-la.'**
+  String get photoErrorUnreadable;
+
+  /// No description provided for @photoErrorNoCamera.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun appareil photo disponible.'**
+  String get photoErrorNoCamera;
+
+  /// No description provided for @photoPendingSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo en attente d\'envoi'**
+  String get photoPendingSend;
+
+  /// No description provided for @photoPendingSendCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo en attente d\'envoi ({count})'**
+  String photoPendingSendCount(String count);
+
+  /// No description provided for @photoUploaded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyée'**
+  String get photoUploaded;
+
+  /// No description provided for @photoShow.
+  ///
+  /// In fr, this message translates to:
+  /// **'Afficher la photo'**
+  String get photoShow;
+
+  /// No description provided for @photoHide.
+  ///
+  /// In fr, this message translates to:
+  /// **'Masquer'**
+  String get photoHide;
+
+  /// No description provided for @photoNeedsNetwork.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réseau nécessaire pour afficher la photo.'**
+  String get photoNeedsNetwork;
+
+  /// No description provided for @photoNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo introuvable.'**
+  String get photoNotFound;
+
+  /// No description provided for @photoFileProblem.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fichier à vérifier : {reason}'**
+  String photoFileProblem(String reason);
+
+  /// No description provided for @photoAbandon.
+  ///
+  /// In fr, this message translates to:
+  /// **'Abandonner la photo'**
+  String get photoAbandon;
+
+  /// No description provided for @photoAbandonBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette photo sera supprimée de ce téléphone. Cette action est définitive.'**
+  String get photoAbandonBody;
+
+  /// No description provided for @deliveriesEmpty.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune livraison ici.'**
+  String get deliveriesEmpty;
+
+  /// No description provided for @deliveriesSearchHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rechercher (LIV-006, ciment…)'**
+  String get deliveriesSearchHint;
+
+  /// No description provided for @deliveriesFilterAll.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toutes'**
+  String get deliveriesFilterAll;
+
+  /// No description provided for @deliveriesFilterUnattached.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non rattachées'**
+  String get deliveriesFilterUnattached;
+
+  /// No description provided for @deliveriesFilterReserve.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec réserve'**
+  String get deliveriesFilterReserve;
+
+  /// No description provided for @deliveriesFilterNoteMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'BL manquant'**
+  String get deliveriesFilterNoteMissing;
+
+  /// No description provided for @deliveryUnattachedBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'Non rattachée'**
+  String get deliveryUnattachedBadge;
+
+  /// No description provided for @deliveryNoteMissingBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'BL manquant'**
+  String get deliveryNoteMissingBadge;
+
+  /// No description provided for @deliveryDetailNotFound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette livraison n\'est plus sur ce téléphone.'**
+  String get deliveryDetailNotFound;
+
+  /// No description provided for @deliveryDetailQuantity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quantité'**
+  String get deliveryDetailQuantity;
+
+  /// No description provided for @deliveryDetailInRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Équivalent dans la demande'**
+  String get deliveryDetailInRequest;
+
+  /// No description provided for @deliveryDetailSupplier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur'**
+  String get deliveryDetailSupplier;
+
+  /// No description provided for @deliveryDetailRequest.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande'**
+  String get deliveryDetailRequest;
+
+  /// No description provided for @deliveryDetailDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de livraison'**
+  String get deliveryDetailDate;
+
+  /// No description provided for @deliveryDetailNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bon n°'**
+  String get deliveryDetailNote;
+
+  /// No description provided for @deliveryDetailReserve.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réserve'**
+  String get deliveryDetailReserve;
+
+  /// No description provided for @deliveryDetailCancelReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif d\'annulation'**
+  String get deliveryDetailCancelReason;
+
+  /// No description provided for @deliveryDetailUnattachedReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pourquoi non rattachée'**
+  String get deliveryDetailUnattachedReason;
+
+  /// No description provided for @deliveryDetailPhotos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos du bon'**
+  String get deliveryDetailPhotos;
+
+  /// No description provided for @deliveryDetailNoPhotos.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune photo.'**
+  String get deliveryDetailNoPhotos;
+
+  /// No description provided for @deliveryDetailSavedAt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisie le {when}'**
+  String deliveryDetailSavedAt(String when);
+
+  /// No description provided for @deliveryActionEdit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Corriger'**
+  String get deliveryActionEdit;
+
+  /// No description provided for @deliveryActionCancel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la livraison'**
+  String get deliveryActionCancel;
+
+  /// No description provided for @deliveryCancelTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler cette livraison ?'**
+  String get deliveryCancelTitle;
+
+  /// No description provided for @deliveryCancelConfirm.
+  ///
+  /// In fr, this message translates to:
+  /// **'Annuler la livraison'**
+  String get deliveryCancelConfirm;
+
+  /// No description provided for @deliveryAttachInfo.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pour rattacher cette livraison à une demande, il faut du réseau : faites-le depuis le bureau ou une fois connecté.'**
+  String get deliveryAttachInfo;
+
+  /// No description provided for @unattachedNoRequestChosen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucune demande choisie'**
+  String get unattachedNoRequestChosen;
+
+  /// No description provided for @unattachedRequestNotOpen.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande n\'était plus ouverte'**
+  String get unattachedRequestNotOpen;
+
+  /// No description provided for @unattachedRequestMissing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Demande introuvable'**
+  String get unattachedRequestMissing;
+
+  /// No description provided for @requestDetailDeliveries.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraisons'**
+  String get requestDetailDeliveries;
+
+  /// No description provided for @requestDetailSupplier.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur'**
+  String get requestDetailSupplier;
+
+  /// No description provided for @requestDetailExpected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison prévue le {date}'**
+  String requestDetailExpected(String date);
+
+  /// No description provided for @requestActionReceive.
+  ///
+  /// In fr, this message translates to:
+  /// **'Recevoir une livraison'**
+  String get requestActionReceive;
+
+  /// No description provided for @requestActionReception.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réceptionner'**
+  String get requestActionReception;
+
+  /// No description provided for @supplierCall.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appeler le fournisseur'**
+  String get supplierCall;
+
+  /// No description provided for @supplierCallNeedsNetwork.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réseau nécessaire pour afficher le numéro.'**
+  String get supplierCallNeedsNetwork;
+
+  /// No description provided for @supplierCallNoNumber.
+  ///
+  /// In fr, this message translates to:
+  /// **'Aucun numéro enregistré pour ce fournisseur.'**
+  String get supplierCallNoNumber;
+
+  /// No description provided for @supplierCallTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fournisseur : {name}'**
+  String supplierCallTitle(String name);
+
+  /// No description provided for @supplierCallDial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Appeler'**
+  String get supplierCallDial;
+
+  /// No description provided for @supplierCallClose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Fermer'**
+  String get supplierCallClose;
+
+  /// No description provided for @supplierCallNoApp.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible d\'ouvrir le téléphone.'**
+  String get supplierCallNoApp;
+
+  /// No description provided for @historyDeliveryRegistered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison enregistrée'**
+  String get historyDeliveryRegistered;
+
+  /// No description provided for @historyDeliveryEdited.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison corrigée'**
+  String get historyDeliveryEdited;
+
+  /// No description provided for @historyDeliveryCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison annulée'**
+  String get historyDeliveryCancelled;
+
+  /// No description provided for @historyDeliveryAttached.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison rattachée'**
+  String get historyDeliveryAttached;
+
+  /// No description provided for @historyStatusRecomputed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut recalculé'**
+  String get historyStatusRecomputed;
+
+  /// No description provided for @historyPhotoAdded.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo ajoutée'**
+  String get historyPhotoAdded;
+
+  /// No description provided for @historyOrdered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Commandée'**
+  String get historyOrdered;
+
+  /// No description provided for @fieldDeliveryDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date de livraison'**
+  String get fieldDeliveryDate;
+
+  /// No description provided for @fieldDeliveryNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Bon n°'**
+  String get fieldDeliveryNote;
+
+  /// No description provided for @fieldConformity.
+  ///
+  /// In fr, this message translates to:
+  /// **'Conformité'**
+  String get fieldConformity;
+
+  /// No description provided for @fieldReserveReason.
+  ///
+  /// In fr, this message translates to:
+  /// **'Motif de la réserve'**
+  String get fieldReserveReason;
+
+  /// No description provided for @fieldReserveNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remarque de réserve'**
+  String get fieldReserveNote;
+
+  /// No description provided for @pendingEntityDelivery.
+  ///
+  /// In fr, this message translates to:
+  /// **'Livraison'**
+  String get pendingEntityDelivery;
+
+  /// No description provided for @pendingEntityPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du bon'**
+  String get pendingEntityPhoto;
+
+  /// No description provided for @conflictRequestNotComplete.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande n\'est plus complète : votre réception n\'a pas été enregistrée.'**
+  String get conflictRequestNotComplete;
+
+  /// No description provided for @conflictDeliveryCancelled.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette livraison a été annulée entre-temps.'**
+  String get conflictDeliveryCancelled;
+
+  /// No description provided for @conflictDeliveryRequestClosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'La demande est déjà réceptionnée : ses livraisons ne se modifient plus.'**
+  String get conflictDeliveryRequestClosed;
+
+  /// No description provided for @conflictServerDeliveryStatus.
+  ///
+  /// In fr, this message translates to:
+  /// **'Statut de la livraison sur le serveur : {status}'**
+  String conflictServerDeliveryStatus(String status);
+
+  /// No description provided for @conflictYourPhoto.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo du bon prise le {when}'**
+  String conflictYourPhoto(String when);
+
+  /// No description provided for @pendingPhotosTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photos à envoyer'**
+  String get pendingPhotosTitle;
+
+  /// No description provided for @pendingPhotosRefused.
+  ///
+  /// In fr, this message translates to:
+  /// **'Photo refusée par le serveur'**
+  String get pendingPhotosRefused;
+
+  /// No description provided for @errorErreurTemporaire.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le serveur est occupé un instant. Rien n\'a été enregistré : réessayez.'**
+  String get errorErreurTemporaire;
+
+  /// No description provided for @historyUnavailableOffline.
+  ///
+  /// In fr, this message translates to:
+  /// **'Historique indisponible hors ligne.'**
+  String get historyUnavailableOffline;
 }
 
 class _AppLocalizationsDelegate

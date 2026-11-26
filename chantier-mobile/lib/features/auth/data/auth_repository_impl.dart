@@ -23,6 +23,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required AppConfig config,
     DateTime Function()? now,
     this.logoutTimeout = const Duration(seconds: 5),
+    this.onLocalDataPurged,
   }) : _api = api,
        _tokens = tokenStore,
        _db = database,
@@ -42,6 +43,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   /// La deconnexion ne doit pas bloquer l'ecran : revocation serveur au mieux, delai court.
   final Duration logoutTimeout;
+
+  /// Appele apres la purge des donnees locales (deconnexion, acces retire) : vide ce qui ne vit
+  /// qu'en memoire, comme le cache des photos de bons affichees (ADR 0013).
+  final void Function()? onLocalDataPurged;
 
   final StreamController<AuthUser> _profiles = StreamController.broadcast();
   AuthUser? _current;
@@ -113,6 +118,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (owner != null && owner != result.user.id) {
       _log.info('Autre compte sur ce telephone : donnees chantier effacees.');
       await _db.purgeSyncedData();
+      onLocalDataPurged?.call();
     }
 
     await _tokens.save(TokenPair(accessToken: access, refreshToken: refresh));
@@ -188,6 +194,7 @@ class AuthRepositoryImpl implements AuthRepository {
     await _tokens.clear();
     _current = null;
     await _db.purgeSyncedData();
+    onLocalDataPurged?.call();
   }
 
   @override
@@ -195,6 +202,7 @@ class AuthRepositoryImpl implements AuthRepository {
     await _tokens.clear();
     _current = null;
     await _db.purgeSyncedData();
+    onLocalDataPurged?.call();
   }
 
   @override

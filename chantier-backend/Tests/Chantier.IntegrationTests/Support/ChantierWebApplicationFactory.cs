@@ -30,6 +30,7 @@ public class ChantierWebApplicationFactory : WebApplicationFactory<Program>
         ["Database:MigrateOnStartup"] = "true",
         ["DataProtection:AllowUnencryptedKeys"] = "true",
         ["Storage:DataProtectionKeys"] = Path.Combine(Path.GetTempPath(), "chantier-tests-keys", Guid.NewGuid().ToString("N")),
+        ["Storage:PhotosRoot"] = Path.Combine(Path.GetTempPath(), "chantier-tests-photos", Guid.NewGuid().ToString("N")),
         ["RateLimiting:Global:PermitLimit"] = "100000",
         ["RateLimiting:Auth:PermitLimit"] = "100000",
     };

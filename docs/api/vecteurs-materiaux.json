@@ -1,0 +1,87 @@
+{
+  "$comment": "Vecteurs de calcul partages (ADR 0014) : lus par les tests .NET, Dart et TypeScript. Tires de .claude/skills/metier-chantier/calculs.md section 8 et recalcules. Nombres ecrits en chaines pour eviter toute erreur de virgule flottante. Toute regle de calcul modifiee change d'abord ce fichier.",
+  "version": 1,
+  "rounding": "AwayFromZero",
+  "conversions": [
+    { "name": "300 sacs de ciment en T", "from": { "value": "300", "unit": "sac" }, "to": "t", "bagMassKg": "50", "expected": { "value": "15", "unit": "t" } },
+    { "name": "15 sacs de ciment en kg", "from": { "value": "15", "unit": "sac" }, "to": "kg", "bagMassKg": "50", "expected": { "value": "750", "unit": "kg" } },
+    { "name": "17,5 T de ciment en sacs", "from": { "value": "17.5", "unit": "t" }, "to": "sac", "bagMassKg": "50", "expected": { "value": "350", "unit": "sac" } },
+    { "name": "1,2 T de monocouche en sacs", "from": { "value": "1.2", "unit": "t" }, "to": "sac", "bagMassKg": "25", "expected": { "value": "48", "unit": "sac" } },
+    { "name": "20,26 T de ciment en sacs", "from": { "value": "20.26", "unit": "t" }, "to": "sac", "bagMassKg": "50", "expected": { "value": "405.2", "unit": "sac" } },
+    { "name": "10 T de ciment en sacs", "from": { "value": "10", "unit": "t" }, "to": "sac", "bagMassKg": "50", "expected": { "value": "200", "unit": "sac" } },
+    { "name": "500 kg en T", "from": { "value": "500", "unit": "kg" }, "to": "t", "bagMassKg": null, "expected": { "value": "0.5", "unit": "t" } },
+    { "name": "meme unite", "from": { "value": "24", "unit": "m3" }, "to": "m3", "bagMassKg": null, "expected": { "value": "24", "unit": "m3" } },
+    { "name": "m3 vers T interdit", "from": { "value": "24", "unit": "m3" }, "to": "t", "bagMassKg": null, "error": "UNITES_INCOMPATIBLES" },
+    { "name": "T vers m3 interdit (sable commande en m3, livre en T)", "from": { "value": "30", "unit": "t" }, "to": "m3", "bagMassKg": null, "error": "UNITES_INCOMPATIBLES" },
+    { "name": "L vers kg interdit", "from": { "value": "200", "unit": "l" }, "to": "kg", "bagMassKg": null, "error": "UNITES_INCOMPATIBLES" },
+    { "name": "sac sans masse de sac", "from": { "value": "10", "unit": "sac" }, "to": "t", "bagMassKg": null, "error": "UNITES_INCOMPATIBLES" }
+  ],
+  "quantityRules": [
+    { "name": "quantite nulle", "quantity": { "value": "0", "unit": "kg" }, "error": "QUANTITE_INVALIDE" },
+    { "name": "quantite negative", "quantity": { "value": "-5", "unit": "kg" }, "error": "QUANTITE_INVALIDE" },
+    { "name": "quatre decimales", "quantity": { "value": "0.0004", "unit": "t" }, "error": "QUANTITE_INVALIDE" },
+    { "name": "sac avec decimale", "quantity": { "value": "2.5", "unit": "sac" }, "error": "QUANTITE_ENTIERE_REQUISE" },
+    { "name": "piece avec decimale", "quantity": { "value": "100.5", "unit": "u" }, "error": "QUANTITE_ENTIERE_REQUISE" },
+    { "name": "kg avec decimale", "quantity": { "value": "2.5", "unit": "kg" }, "valid": true },
+    { "name": "T avec trois decimales", "quantity": { "value": "0.125", "unit": "t" }, "valid": true }
+  ],
+  "status": [
+    { "name": "DEM-005 sans livraison", "ordered": { "value": "600", "unit": "sac" }, "bagMassKg": "50", "deliveries": [], "tolerancePercent": "0",
+      "expected": { "received": "0", "remaining": "600", "variance": "-600", "variancePercent": "-100.00", "status": "Ordered" } },
+    { "name": "DEM-005 apres LIV-006", "ordered": { "value": "600", "unit": "sac" }, "bagMassKg": "50", "deliveries": [{ "value": "10", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "200", "remaining": "400", "variance": "-400", "variancePercent": "-66.67", "status": "PartiallyDelivered" } },
+    { "name": "DEM-005 apres LIV-007", "ordered": { "value": "600", "unit": "sac" }, "bagMassKg": "50", "deliveries": [{ "value": "10", "unit": "t" }, { "value": "10", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "400", "remaining": "200", "variance": "-200", "variancePercent": "-33.33", "status": "PartiallyDelivered" } },
+    { "name": "DEM-005 apres LIV-008", "ordered": { "value": "600", "unit": "sac" }, "bagMassKg": "50", "deliveries": [{ "value": "10", "unit": "t" }, { "value": "10", "unit": "t" }, { "value": "10", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "600", "remaining": "0", "variance": "0", "variancePercent": "0.00", "status": "Delivered" } },
+    { "name": "surplus de 2 %", "ordered": { "value": "20", "unit": "t" }, "bagMassKg": null, "deliveries": [{ "value": "20.4", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "20.4", "remaining": "0", "variance": "0.4", "variancePercent": "2.00", "status": "Delivered" } },
+    { "name": "manque de 10 sacs", "ordered": { "value": "400", "unit": "sac" }, "bagMassKg": "50", "deliveries": [{ "value": "19.5", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "390", "remaining": "10", "variance": "-10", "variancePercent": "-2.50", "status": "PartiallyDelivered" } },
+    { "name": "tolerance 1 %", "ordered": { "value": "20", "unit": "t" }, "bagMassKg": null, "deliveries": [{ "value": "19.85", "unit": "t" }], "tolerancePercent": "1",
+      "expected": { "received": "19.85", "remaining": "0.15", "variance": "-0.15", "variancePercent": "-0.75", "status": "Delivered" } },
+    { "name": "tolerance 0 % (defaut)", "ordered": { "value": "20", "unit": "t" }, "bagMassKg": null, "deliveries": [{ "value": "19.85", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "19.85", "remaining": "0.15", "variance": "-0.15", "variancePercent": "-0.75", "status": "PartiallyDelivered" } },
+    { "name": "DEM-011 rond HA, reste 0,8 T", "ordered": { "value": "2", "unit": "t" }, "bagMassKg": null, "deliveries": [{ "value": "1.2", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "1.2", "remaining": "0.8", "variance": "-0.8", "variancePercent": "-40.00", "status": "PartiallyDelivered" } },
+    { "name": "livraison annulee = absente (annuler LIV-008)", "ordered": { "value": "600", "unit": "sac" }, "bagMassKg": "50", "deliveries": [{ "value": "10", "unit": "t" }, { "value": "10", "unit": "t" }], "tolerancePercent": "0",
+      "expected": { "received": "400", "remaining": "200", "variance": "-200", "variancePercent": "-33.33", "status": "PartiallyDelivered" } },
+    { "name": "livraison en unite non convertible", "ordered": { "value": "24", "unit": "m3" }, "bagMassKg": null, "deliveries": [{ "value": "30", "unit": "t" }], "tolerancePercent": "0",
+      "error": "UNITES_INCOMPATIBLES" }
+  ],
+  "amounts": [
+    { "name": "commande DEM-009", "quantity": "300", "unitPrice": "780.00", "expected": "234000.00" },
+    { "name": "commande DEM-011", "quantity": "2", "unitPrice": "128000.00", "expected": "256000.00" },
+    { "name": "valeur recue LIV-009", "quantity": "1.2", "unitPrice": "128000.00", "expected": "153600.00" },
+    { "name": "commande DEM-007", "quantity": "12000", "unitPrice": "27.50", "expected": "330000.00" },
+    { "name": "10 T livrees pour une commande en sacs (200 sacs)", "quantity": "200", "unitPrice": "780.00", "expected": "156000.00" },
+    { "name": "arrondi au demi-centime (bancaire : 613,12, interdit)", "quantity": "2.5", "unitPrice": "245.25", "expected": "613.13" },
+    { "name": "une livraison de 0,5 kg", "quantity": "0.5", "unitPrice": "245.25", "expected": "122.63" },
+    { "name": "1,5 kg d'un coup", "quantity": "1.5", "unitPrice": "245.25", "expected": "367.88" }
+  ],
+  "receivedValue": [
+    { "name": "somme des arrondis de 3 livraisons de 0,5 kg", "unitPrice": "245.25", "deliveries": ["0.5", "0.5", "0.5"], "expected": "367.89" }
+  ],
+  "overdue": [
+    { "name": "2 jours", "due": "2026-11-26", "today": "2026-11-28", "expected": 2 },
+    { "name": "echeance du jour", "due": "2026-11-28", "today": "2026-11-28", "expected": 0 },
+    { "name": "5 jours (4 jusqu'au 30/11, +1)", "due": "2026-11-26", "today": "2026-12-01", "expected": 5 },
+    { "name": "echeance a venir", "due": "2026-12-03", "today": "2026-11-28", "expected": 0 }
+  ],
+  "defaultNeededBy": [
+    { "today": "2026-11-25", "days": 3, "expected": "2026-11-28" },
+    { "today": "2026-12-30", "days": 3, "expected": "2027-01-02" },
+    { "today": "2028-02-28", "days": 3, "expected": "2028-03-02" }
+  ],
+  "aggregates": [
+    { "name": "ciment : 100 sacs + 5 T + 200 sacs", "product": "Ciment CPJ 42,5", "defaultUnit": "sac", "bagMassKg": "50",
+      "items": [{ "value": "100", "unit": "sac" }, { "value": "5", "unit": "t" }, { "value": "200", "unit": "sac" }],
+      "expected": [{ "total": { "value": "400", "unit": "sac" }, "massEquivalent": { "value": "20", "unit": "t" } }] },
+    { "name": "rond HA Ø12 : 2 T + 500 kg", "product": "Rond HA Ø12", "defaultUnit": "t", "bagMassKg": null,
+      "items": [{ "value": "2", "unit": "t" }, { "value": "500", "unit": "kg" }],
+      "expected": [{ "total": { "value": "2.5", "unit": "t" }, "massEquivalent": null }] },
+    { "name": "sable : 24 m3 et 10 T ne s'additionnent jamais", "product": "Sable de maconnerie", "defaultUnit": "m3", "bagMassKg": null,
+      "items": [{ "value": "24", "unit": "m3" }, { "value": "10", "unit": "t" }],
+      "expected": [{ "total": { "value": "24", "unit": "m3" }, "massEquivalent": null }, { "total": { "value": "10", "unit": "t" }, "massEquivalent": null }] }
+  ]
+}

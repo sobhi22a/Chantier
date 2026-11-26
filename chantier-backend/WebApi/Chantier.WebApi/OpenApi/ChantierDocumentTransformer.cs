@@ -1,3 +1,5 @@
+using System.Text.Json;
+using Chantier.Core.Materials;
 using Chantier.Core.Sync;
 using Chantier.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +54,15 @@ public sealed class ChantierDocumentTransformer : IOpenApiDocumentTransformer
         // Modeles que le contrat decrit mais qu'aucune route ne renvoie directement (le champ `data` de la synchronisation est libre).
         document.Components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
         await AddSchemaAsync<SyncMemberData>(document, context, cancellationToken);
+        await AddSchemaAsync<RequestSyncData>(document, context, cancellationToken);
+        await AddSchemaAsync<DeliverySyncData>(document, context, cancellationToken);
+        await AddSchemaAsync<PhotoResponse>(document, context, cancellationToken);
+        await AddSchemaAsync<SupplierSyncData>(document, context, cancellationToken);
+        await AddSchemaAsync<ProductResponse>(document, context, cancellationToken);
         await AddSchemaAsync<ProblemDetails>(document, context, cancellationToken);
+        RequireQuantityMembers(document);
+        ReferenceSharedQuantity(document, typeof(RequestSyncData));
+        ReferenceSharedQuantity(document, typeof(DeliverySyncData));
 
         SortForStability(document);
         NormalizeLineEndings(document);
@@ -62,6 +72,59 @@ public sealed class ChantierDocumentTransformer : IOpenApiDocumentTransformer
     {
         var schema = await context.GetOrCreateSchemaAsync(typeof(T), cancellationToken: cancellationToken);
         document.Components!.Schemas![typeof(T).Name] = schema;
+    }
+
+    /// <summary>Une quantite n'existe jamais sans unite (regle 1) : <c>value</c> et <c>unit</c> sont toujours presents et jamais nuls (clients : champs obligatoires).</summary>
+    private static void RequireQuantityMembers(OpenApiDocument document)
+    {
+        if (document.Components?.Schemas?[nameof(Quantity)] is OpenApiSchema quantity)
+        {
+            quantity.Required = new HashSet<string> { "value", "unit" };
+        }
+    }
+
+    /// <summary>
+    /// Un schema produit « a la main » (ci-dessus) recopie en ligne chaque type imbrique, <c>Quantity</c> compris, au lieu de le referencer :
+    /// les generateurs de clients en tireraient des classes jumelles (<c>Quantity2</c>, <c>Quantity3</c>) et un <c>value</c> « nombre ou chaine ».
+    /// On remet la reference au composant <c>Quantity</c> (nullable ou non, selon le type C#), comme dans les reponses des routes.
+    /// </summary>
+    private static void ReferenceSharedQuantity(OpenApiDocument document, Type type)
+    {
+        if (document.Components?.Schemas?[type.Name] is OpenApiSchema schema)
+        {
+            ReferenceQuantities(document, schema, type);
+        }
+    }
+
+    private static void ReferenceQuantities(OpenApiDocument document, OpenApiSchema schema, Type type)
+    {
+        if (schema.Properties is not { Count: > 0 } properties)
+        {
+            return;
+        }
+
+        foreach (var member in type.GetProperties())
+        {
+            var name = JsonNamingPolicy.CamelCase.ConvertName(member.Name);
+            if (!properties.TryGetValue(name, out var property))
+            {
+                continue;
+            }
+
+            var nullableUnderlying = Nullable.GetUnderlyingType(member.PropertyType);
+            var memberType = nullableUnderlying ?? member.PropertyType;
+            if (memberType == typeof(Quantity))
+            {
+                IOpenApiSchema reference = new OpenApiSchemaReference(nameof(Quantity), document);
+                properties[name] = nullableUnderlying is null
+                    ? reference
+                    : new OpenApiSchema { OneOf = [new OpenApiSchema { Type = JsonSchemaType.Null }, reference] };
+            }
+            else if (memberType.IsGenericType && memberType.GetGenericTypeDefinition() == typeof(IReadOnlyList<>) && property is OpenApiSchema { Items: OpenApiSchema items })
+            {
+                ReferenceQuantities(document, items, memberType.GetGenericArguments()[0]);
+            }
+        }
     }
 
     /// <summary>

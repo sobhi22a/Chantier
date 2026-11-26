@@ -12,6 +12,12 @@ namespace Chantier.UnitTests.Architecture;
 [TestFixture]
 public class ControllerArchitectureTests
 {
+    /// <summary>
+    /// Lecture d'une photo : le droit <c>DeliveryPhotos.View</c> est controle dans le service pour rendre un 404 indiscernable d'une photo inexistante ou d'un autre chantier
+    /// (un 403 distinguerait les cas). Seule exception, declaree ici.
+    /// </summary>
+    private const string PhotoDownload = "PhotosController.Download";
+
     private static readonly Assembly WebApi = typeof(AuthController).Assembly;
 
     private sealed record ActionInfo(Type Controller, MethodInfo Method, string Template)
@@ -88,11 +94,12 @@ public class ControllerArchitectureTests
         // Les routes qui n'exigent que d'etre connecte (profil, referentiel, synchronisation) sont listees explicitement ; toute autre route
         // doit porter [HasPermission] : on ne compte jamais sur la seule politique de repli pour une action metier.
         // La synchronisation controle ensuite le role et l'affectation entite par entite (handlers et sources).
-        var authenticatedOnly = new[] { "AuthController", "ReferenceController", "SyncController" };
+        var authenticatedOnly = new[] { "AuthController", "ReferenceController", "SyncController", "MaterialSettingsController" };
 
         var offenders = Actions()
             .Where(action => !authenticatedOnly.Contains(action.Controller.Name))
             .Where(action => !HasAttribute<HasPermissionAttribute>(action) && !HasAttribute<AllowAnonymousAttribute>(action))
+            .Where(action => action.Name != PhotoDownload)
             .Select(action => action.Name)
             .ToList();
 
@@ -135,6 +142,35 @@ public class ControllerArchitectureTests
             .ToList();
 
         Assert.That(offenders, Is.Empty);
+    }
+
+    [Test]
+    public void The_routes_of_the_materials_feature_without_a_site_id_are_exactly_the_declared_ones()
+    {
+        // Liste blanche (plan demandes-materiaux-livraisons, B4) : le catalogue et les reglages sont globaux, la liste transversale est filtree par chantiers visibles.
+        // Toute autre route du lot doit porter {siteId} et [SiteScoped] (verifie plus haut) : une nouvelle route sans chantier est une decision a declarer ici.
+        var declared = new[] { "api/v1/requests/", "api/v1/products/", "api/v1/products/{productId:guid}", "api/v1/suppliers/", "api/v1/suppliers/{supplierId:guid}", "api/v1/settings/materials/" };
+
+        var found = Actions()
+            .Where(action => action.Controller.Namespace == "Chantier.WebApi.Controllers.Materials" && !action.Template.Contains("{siteId", StringComparison.Ordinal))
+            .Select(action => action.Template)
+            .Where(template => !template.StartsWith("api/v1/products/{productId:guid}/", StringComparison.Ordinal) && !template.StartsWith("api/v1/suppliers/{supplierId:guid}/", StringComparison.Ordinal))
+            .Distinct()
+            .ToList();
+
+        Assert.That(found, Is.SubsetOf(declared));
+    }
+
+    [Test]
+    public void The_cross_site_list_is_the_only_action_of_its_controller_and_only_reads()
+    {
+        var actions = Actions().Where(action => action.Controller.Name == "CrossSiteRequestsController").ToList();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(actions, Has.Count.EqualTo(1));
+            Assert.That(actions[0].Method.GetCustomAttributes<HttpGetAttribute>(), Is.Not.Empty);
+        });
     }
 
     private static bool HasAttribute<T>(ActionInfo action) where T : Attribute

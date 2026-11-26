@@ -80,3 +80,22 @@ suivre le nommage déjà en place dans le projet.
 | Maître d'œuvre, BET | Bureau d'études qui conçoit et suit | `Engineer` |
 | Pointage | Présence journalière | `Attendance` |
 | Journal de chantier | Rapport du jour | `DailyLog` |
+
+## Demandes, commandes et livraisons
+| Terme | Sens | Code (proposition) |
+|---|---|---|
+| Demande (DEM) | Besoin d'un matériau signalé sur le terrain : un produit, une quantité, une unité, une date de besoin | `Request` |
+| Pour le | Date à laquelle le matériau doit être sur le chantier | `NeededBy` |
+| Urgence | Normale · Urgente · Bloquante (le chantier s'arrête) | `Priority` |
+| Commande | Achat auprès d'un fournisseur pour une demande validée ; même quantité et même unité ; pas de numéro propre | `Order` |
+| Livraison (LIV) | Camion reçu sur le chantier : fait de terrain, jamais refusé, rattaché à une demande ou « non rattachée » | `Delivery` |
+| BL | Bon de livraison : n° et photo, facultatifs à la saisie ; badge « BL manquant » s'il n'y a ni l'un ni l'autre | `Delivery.DeliveryNoteNumber` |
+| À recevoir | Commandes attendues, par date de livraison prévue | vue |
+| Reste à livrer | Quantité commandée − reçu cumulé (jamais négatif) | calculé |
+| Écart | Reçu cumulé − commandé : négatif = manque, positif = surplus | calculé |
+| Réceptionner | Le chef de chantier clôt une demande Livrée (Livrée → Réceptionnée) | transition |
+| Solder | Clore une demande en manque définitif, avec motif (extension à valider) | transition |
+| Non rattachée | Livraison sans demande liée, à rattacher plus tard | état |
+| CPJ 42,5 | Ciment portland composé, classe de résistance 42,5 ; sac de 50 kg | produit |
+| HA, Ø12 | Acier à haute adhérence (rond à béton), diamètre en mm | produit |
+| Brique 8 trous, 12 trous | Briques creuses de maçonnerie ; comptées en pièces (`u`) | produit |

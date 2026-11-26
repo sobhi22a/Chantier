@@ -25,7 +25,9 @@ export {
   formatDateTime,
   formatElevation,
   formatNumber,
+  formatPercent,
   formatTime,
+  todayDateOnly,
 } from "./formatters";
 export type { NumberFormatOptions } from "./formatters";
 export { pickLocalizedName } from "./localizedName";
@@ -37,3 +39,5 @@ export { ZoneLabel } from "./ZoneLabel";
 export { LanguageSwitcher } from "./LanguageSwitcher";
 export type { LanguageSwitcherProps } from "./LanguageSwitcher";
 export { LanguageDirectionProvider } from "./LanguageDirectionProvider";
+export { MEASURE_UNITS, QuantityText, isMeasureUnit, useQuantityFormatter } from "./quantity";
+export type { MeasureUnitCode, QuantityValue } from "./quantity";

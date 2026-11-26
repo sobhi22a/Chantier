@@ -91,4 +91,30 @@ void main() {
       }
     },
   );
+
+  test(
+    'photos du bon et appel : seulement ce que l appareil photo et le composeur exigent',
+    () {
+      // L'appareil photo passe par l'application photo du telephone (image_picker) : aucune
+      // permission CAMERA, aucun stockage large, aucun appel direct (CALL_PHONE), aucune
+      // localisation (R2-16 : rien d'autre que le necessaire).
+      for (final permission in [
+        'CALL_PHONE',
+        'READ_MEDIA_IMAGES',
+        'MANAGE_EXTERNAL_STORAGE',
+        'ACCESS_COARSE_LOCATION',
+        'RECORD_AUDIO',
+      ]) {
+        expect(manifest, isNot(contains(permission)), reason: permission);
+      }
+      // Android 11+ : le composeur (`tel:`) doit etre declare pour url_launcher.
+      expect(manifest, contains('android.intent.action.DIAL'));
+      expect(manifest, contains('android:scheme="tel"'));
+      // Les seules permissions declarees : le reseau.
+      final permissions = RegExp(
+        r'<uses-permission android:name="([^"]+)"',
+      ).allMatches(manifest).map((m) => m.group(1)).toList();
+      expect(permissions, ['android.permission.INTERNET']);
+    },
+  );
 }

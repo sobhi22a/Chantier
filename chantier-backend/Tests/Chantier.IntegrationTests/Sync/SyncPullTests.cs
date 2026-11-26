@@ -2,7 +2,10 @@ using System.Globalization;
 using System.Net;
 using Chantier.Core.Entities.Identity;
 using Chantier.Core.Entities.Sites;
+using Chantier.Infrastructure.Persistence;
 using Chantier.IntegrationTests.Support;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using static Chantier.IntegrationTests.Support.AuthTestHelpers;
 using static Chantier.IntegrationTests.Support.SitesTestKit;
 using static Chantier.IntegrationTests.Support.SyncTestKit;
@@ -118,6 +121,30 @@ public class SyncPullTests
             Assert.That(ids, Has.Count.EqualTo(9));
             Assert.That(ids, Is.Unique);
             Assert.That(hasMoreFlags, Is.EqualTo(new[] { true, true, false }));
+        });
+    }
+
+    [Test]
+    public async Task A_page_lists_the_parents_before_their_children_even_when_the_site_changed_after_its_zones()
+    {
+        var (chef, site) = await ChefWithSiteAsync(zones: 3);
+        await using (var scope = _factory.Services.CreateAsyncScope())
+        {
+            // Le chantier est modifie apres ses zones : sa version depasse celle de ses enfants.
+            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            await db.Sites.Where(row => row.Id == site.Id).ExecuteUpdateAsync(set => set.SetProperty(row => row.UpdatedAt, row => row.UpdatedAt));
+        }
+
+        var page = await chef.PullAsync();
+        var rows = page.GetProperty("changes").EnumerateArray().ToList();
+        var versions = rows.ToDictionary(row => row.GetProperty("id").GetGuid(), row => ulong.Parse(row.GetProperty("version").GetString()!, CultureInfo.InvariantCulture));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(rows.First().GetProperty("entity").GetString(), Is.EqualTo("site"));
+            Assert.That(versions[site.Id], Is.GreaterThan(rows.Of("zone").Max(zone => versions[zone.GetProperty("id").GetGuid()])), "Le chantier a bien la version la plus haute.");
+            Assert.That(rows.Of("zone").Select(zone => versions[zone.GetProperty("id").GetGuid()]), Is.Ordered, "À rang égal, l'ordre des versions est conservé.");
+            Assert.That(ulong.Parse(page.GetProperty("cursor").GetString()!, CultureInfo.InvariantCulture), Is.EqualTo(versions.Values.Max()));
         });
     }
 

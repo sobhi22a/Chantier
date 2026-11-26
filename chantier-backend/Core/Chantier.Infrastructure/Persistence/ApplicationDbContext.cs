@@ -1,8 +1,10 @@
 using System.Linq.Expressions;
 using Chantier.Core.Entities.Common;
 using Chantier.Core.Entities.Identity;
+using Chantier.Core.Entities.Materials;
 using Chantier.Core.Entities.Reference;
 using Chantier.Core.Entities.Sites;
+using Chantier.Core.Entities.Sync;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Wilaya> Wilayas => Set<Wilaya>();
 
     public DbSet<Commune> Communes => Set<Commune>();
+
+    public DbSet<Product> Products => Set<Product>();
+
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+
+    public DbSet<MaterialRequest> MaterialRequests => Set<MaterialRequest>();
+
+    public DbSet<MaterialEvent> MaterialEvents => Set<MaterialEvent>();
+
+    public DbSet<MaterialOrder> MaterialOrders => Set<MaterialOrder>();
+
+    public DbSet<Delivery> Deliveries => Set<Delivery>();
+
+    public DbSet<Photo> Photos => Set<Photo>();
+
+    public DbSet<SyncOperationLog> SyncOperationLogs => Set<SyncOperationLog>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

@@ -1,1 +1,1 @@
-- [Commandes, pièges et zones fragiles de la QA](qa_commandes_et_pieges.md) — commandes des 3 parties, Playwright réel, interblocage SQL, pièges flutter_test (Q1 socle)
+- [Commandes, pièges et zones fragiles de la QA](qa_commandes_et_pieges.md) — commandes des 3 parties, API réelle sur base temporaire, Playwright, pièges flutter_test et `127.0.0.1` (Q1 socle, Q1-Q3 matériaux)

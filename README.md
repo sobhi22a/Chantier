@@ -23,9 +23,9 @@ Les trois dossiers d'application sont créés par leurs agents (les générateur
 .\scripts\dev.ps1 -Down    # arrête (données conservées)
 .\scripts\dev.ps1 -Reset   # supprime aussi le volume (confirmation demandée)
 ```
-- Base : `localhost,14335`, utilisateur `sa`, mot de passe dans `.env` (jamais committé ; modèle : `.env.example`).
+- Base : `127.0.0.1,14335`, utilisateur `sa`, mot de passe dans `.env` (jamais committé ; modèle : `.env.example`).
 - Chaîne de connexion de l'API : `ConnectionStrings__ChantierDb` en variable d'environnement ou `dotnet user-secrets` (jamais dans `appsettings*.json`), par exemple :
-  `Server=localhost,14335;Database=ChantierDev;User Id=sa;Password=<.env>;TrustServerCertificate=True`
+  `Server=127.0.0.1,14335;Database=ChantierDev;User Id=sa;Password=<.env>;TrustServerCertificate=True`
 - Repli sans Docker : `MSSQLLocalDB` (`Server=(localdb)\MSSQLLocalDB;Database=ChantierDev;Trusted_Connection=True`).
 
 ## Ports

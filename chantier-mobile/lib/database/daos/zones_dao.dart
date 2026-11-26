@@ -1,11 +1,12 @@
 import 'package:chantier_mobile/database/app_database.dart';
+import 'package:chantier_mobile/database/tables/material_requests.dart';
 import 'package:chantier_mobile/database/tables/zones.dart';
 import 'package:drift/drift.dart';
 
 part 'zones_dao.g.dart';
 
 /// Acces aux zones (bloc, cote, local), y compris celles creees hors ligne.
-@DriftAccessor(tables: [Zones])
+@DriftAccessor(tables: [Zones, MaterialRequests])
 class ZonesDao extends DatabaseAccessor<AppDatabase> with _$ZonesDaoMixin {
   ZonesDao(super.attachedDatabase);
 
@@ -78,12 +79,24 @@ class ZonesDao extends DatabaseAccessor<AppDatabase> with _$ZonesDaoMixin {
     if (clientId != null) {
       final local = await findByClientId(row.siteId, clientId);
       if (local != null) {
+        // Les demandes saisies hors ligne pour cette zone la designaient par son `clientId` :
+        // elles pointent maintenant vers l'identifiant du serveur (aucune zone « inconnue »).
+        await (update(materialRequests)
+              ..where((t) => t.zoneId.equals(local.id)))
+            .write(MaterialRequestsCompanion(zoneId: Value(row.id)));
         await deleteZone(local.id);
       }
     }
     await into(zones).insert(row);
     return true;
   });
+
+  /// Les demandes saisies pour la zone locale [from] designent maintenant la zone [to] du serveur
+  /// (zone fusionnee avec une zone identique creee par un autre telephone).
+  Future<void> reattachRequests({required String from, required String to}) =>
+      (update(materialRequests)..where((t) => t.zoneId.equals(from))).write(
+        MaterialRequestsCompanion(zoneId: Value(to)),
+      );
 
   /// Pierre tombale `deleted: zone`, ou abandon d'une zone locale en attente.
   Future<int> deleteZone(String id) =>

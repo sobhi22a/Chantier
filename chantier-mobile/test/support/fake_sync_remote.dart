@@ -5,6 +5,8 @@ import 'package:chantier_mobile/core/network/api_exception.dart';
 import 'package:chantier_mobile/core/sync/sync_remote.dart';
 
 import 'api_json.dart';
+import 'fake_deliveries_server.dart';
+import 'fake_materials_server.dart';
 
 typedef PushHandler =
     FutureOr<SyncPushResponse> Function(List<SyncPushOperation> operations);
@@ -31,6 +33,19 @@ class FakeSyncRemote implements SyncRemote {
   /// (le telephone ne saura jamais que l'envoi a reussi).
   bool loseNextPushResponse = false;
 
+  /// Serveur des demandes de materiaux : traite les operations `request` du lot.
+  final FakeMaterialsServer materials = FakeMaterialsServer();
+
+  /// Serveur des livraisons et de leurs photos : traite les operations `delivery` et `photo`.
+  late final FakeDeliveriesServer deliveries = FakeDeliveriesServer(materials);
+
+  /// Reponse de `GET /settings/materials` (ou [settingsError]).
+  MaterialSettingsResponse settingsResponse = MaterialSettingsResponse.fromJson(
+    materialSettingsJson(),
+  );
+  ApiException? settingsError;
+  int settingsCalls = 0;
+
   /// Version attribuee aux zones creees par le faux serveur.
   int nextVersion = 50000;
 
@@ -53,6 +68,14 @@ class FakeSyncRemote implements SyncRemote {
     final error = meError;
     if (error != null) throw error;
     return meResponse;
+  }
+
+  @override
+  Future<MaterialSettingsResponse> materialSettings() async {
+    settingsCalls++;
+    final error = settingsError;
+    if (error != null) throw error;
+    return settingsResponse;
   }
 
   @override
@@ -81,7 +104,14 @@ class FakeSyncRemote implements SyncRemote {
     );
   }
 
+  /// Resultat du faux serveur pour [op] (le meme que sans `pushHandler`).
+  SyncPushResult handle(SyncPushOperation op) => _defaultResult(op);
+
   SyncPushResult _defaultResult(SyncPushOperation op) {
+    if (op.entity == 'request') return materials.handle(op);
+    if (op.entity == 'delivery' || op.entity == 'photo') {
+      return deliveries.handle(op);
+    }
     final known = _zonesByClientId[op.clientId];
     if (known != null) {
       return SyncPushResult(

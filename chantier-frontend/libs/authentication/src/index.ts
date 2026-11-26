@@ -8,9 +8,11 @@ export { default as PermissionsGuardComponent } from "./components/PermissionsGu
 export { default as DefaultRedirectComponent } from "./components/DefaultRedirect.component";
 
 export { usePermissions } from "./hooks/usePermissions";
-export type { PermissionAction } from "./hooks/usePermissions";
+export type { CanCheck, PermissionAction } from "./hooks/usePermissions";
 export { useSignOut } from "./hooks/useSignOut";
 
 export { PASSWORD_MIN_LENGTH } from "./types/changePassword.zod";
 export { AUTHENTICATION_ROUTES, PERMISSIONS_RESOURCES } from "./utilities/resources";
 export type { AuthRouteKeysTypes, PermissionResourceKey } from "./utilities/resources";
+export { FOLLOW_UP_PERMISSIONS, MATERIAL_PERMISSIONS } from "./utilities/permissions";
+export type { MaterialPermission } from "./utilities/permissions";

@@ -39,9 +39,26 @@ public sealed class ApiSession(HttpClient client, string accessToken, TestAccoun
 
     public Task<HttpResponseMessage> GetAsync(string url) => client.SendAsync(Build(HttpMethod.Get, url, null));
 
+    /// <summary>Lecture avec un en-tete de plus (revalidation <c>If-None-Match</c>).</summary>
+    public Task<HttpResponseMessage> GetAsync(string url, string headerName, string headerValue)
+    {
+        var request = Build(HttpMethod.Get, url, null);
+        request.Headers.TryAddWithoutValidation(headerName, headerValue);
+        return client.SendAsync(request);
+    }
+
     public Task<HttpResponseMessage> PostAsync(string url, object? body = null) => client.SendAsync(Build(HttpMethod.Post, url, body ?? new { }));
 
     public Task<HttpResponseMessage> PutAsync(string url, object? body = null) => client.SendAsync(Build(HttpMethod.Put, url, body));
+
+    /// <summary>Corps binaire brut (envoi d'une photo : le corps est le fichier lui-meme).</summary>
+    public Task<HttpResponseMessage> PutBytesAsync(string url, byte[] bytes, string contentType = "image/jpeg")
+    {
+        var request = Build(HttpMethod.Put, url, null);
+        request.Content = new ByteArrayContent(bytes);
+        request.Content.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+        return client.SendAsync(request);
+    }
 
     public Task<HttpResponseMessage> DeleteAsync(string url) => client.SendAsync(Build(HttpMethod.Delete, url, null));
 

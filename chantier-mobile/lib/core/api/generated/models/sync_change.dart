@@ -17,13 +17,13 @@ abstract class SyncChange with _$SyncChange {
     /// Identifiant de la ligne.
     required String id,
 
-    /// Chantier de la ligne (pour un chantier : son propre identifiant).
-    required String siteId,
+    /// Chantier de la ligne (pour un chantier : son propre identifiant) ; `null` pour une entité globale (`product`, `supplier`).
+    required String? siteId,
 
     /// Version serveur (entier décimal en chaîne) : n'appliquer la ligne que si elle est plus grande que celle déjà connue.
     required String version,
 
-    /// Ressource telle que renvoyée par l'API REST : `SiteResponse` (site), `ZoneResponse` (zone) ou `SyncMemberData` (member).
+    /// Ressource de la ligne, selon `entity` : `SiteResponse` (site), `ZoneResponse` (zone), `SyncMemberData` (member), `ProductResponse` (product), `SupplierSyncData` (supplier, sans téléphone), `RequestSyncData` (request, sans champ commercial), `DeliverySyncData` (delivery, sans montant ni photos) ou `PhotoResponse` (photo, métadonnées seulement).
     required dynamic data,
   }) = _SyncChange;
 

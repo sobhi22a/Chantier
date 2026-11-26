@@ -7,6 +7,7 @@ import 'package:chantier_mobile/core/widgets/ltr_text.dart';
 import 'package:chantier_mobile/database/app_database.dart';
 import 'package:chantier_mobile/features/auth/domain/auth_user.dart';
 import 'package:chantier_mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chantier_mobile/features/materials/domain/delivery_form_rules.dart';
 import 'package:chantier_mobile/features/sites/domain/site_format.dart';
 import 'package:chantier_mobile/features/sites/presentation/site_detail_cubit.dart';
 import 'package:chantier_mobile/features/zones/domain/zone_format.dart';
@@ -17,10 +18,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 /// Fiche d'un chantier (US-SOCLE-007) : informations, zones groupees par bloc, personnes
 /// affectees. Entierement lue dans la base locale : complete hors ligne (CA-007.5).
 class SiteDetailScreen extends StatelessWidget {
-  const SiteDetailScreen({required this.onAddZone, super.key});
+  const SiteDetailScreen({
+    required this.onAddZone,
+    this.onOpenRequests,
+    this.onNewRequest,
+    this.onOpenApprovals,
+    this.onOpenToReceive,
+    this.onOpenToReception,
+    this.onOpenDeliveries,
+    super.key,
+  });
 
   /// Ouvre l'ajout de zone (visible seulement avec la permission `Zones.Create`).
   final void Function(SiteRow site) onAddZone;
+
+  /// Actions rapides des demandes de materiaux (US-MAT) : chacune n'apparait **que** si
+  /// l'utilisateur en a la permission (jamais grisee).
+  final void Function(SiteRow site)? onOpenRequests;
+  final void Function(SiteRow site)? onNewRequest;
+  final void Function(SiteRow site)? onOpenApprovals;
+
+  /// Livraisons : « A recevoir », « A receptionner », « Livraisons » (chacune seulement avec sa
+  /// permission, jamais grisee).
+  final void Function(SiteRow site)? onOpenToReceive;
+  final void Function(SiteRow site)? onOpenToReception;
+  final void Function(SiteRow site)? onOpenDeliveries;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +76,40 @@ class SiteDetailScreen extends StatelessWidget {
               canAdd:
                   site.archivedAt == null &&
                   (user?.can(Permissions.zonesCreate) ?? false),
+              user: user,
             ),
     );
   }
+
+  bool _canCreateRequest(SiteRow site, AuthUser? user) =>
+      onNewRequest != null &&
+      site.archivedAt == null &&
+      (user?.can(Permissions.requestsCreate) ?? false);
+
+  bool _canViewRequests(AuthUser? user) =>
+      onOpenRequests != null && (user?.can(Permissions.requestsView) ?? false);
+
+  bool _canApprove(AuthUser? user) =>
+      onOpenApprovals != null &&
+      (user?.can(Permissions.requestsApprove) ?? false);
+
+  bool _canToReceive(AuthUser? user) =>
+      onOpenToReceive != null && (user?.canRecordDelivery ?? false);
+
+  bool _canToReception(AuthUser? user) =>
+      onOpenToReception != null && (user?.canReceiveRequests ?? false);
+
+  bool _canDeliveries(AuthUser? user) =>
+      onOpenDeliveries != null &&
+      (user?.can(Permissions.deliveriesView) ?? false);
+
+  bool _hasMaterialActions(SiteRow site, AuthUser? user) =>
+      _canCreateRequest(site, user) ||
+      _canViewRequests(user) ||
+      _canApprove(user) ||
+      _canToReceive(user) ||
+      _canToReception(user) ||
+      _canDeliveries(user);
 
   /// Fiche **paresseuse** (R1-15) : blocs, zones et personnes sont aplatis en une seule liste
   /// d'elements construits a la demande par `ListView.builder`. Une centaine de zones (ecoles,
@@ -68,6 +121,7 @@ class SiteDetailScreen extends StatelessWidget {
     required SiteRow site,
     required String languageCode,
     required bool canAdd,
+    required AuthUser? user,
   }) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
@@ -75,6 +129,24 @@ class SiteDetailScreen extends StatelessWidget {
     final items = <Widget Function(BuildContext)>[
       (_) => _InfoCard(site: site, languageCode: languageCode),
       (_) => gap,
+      if (_hasMaterialActions(site, user))
+        (_) => _MaterialActions(
+          onNew: _canCreateRequest(site, user)
+              ? () => onNewRequest!(site)
+              : null,
+          onOpen: _canViewRequests(user) ? () => onOpenRequests!(site) : null,
+          onApprove: _canApprove(user) ? () => onOpenApprovals!(site) : null,
+          onToReceive: _canToReceive(user)
+              ? () => onOpenToReceive!(site)
+              : null,
+          onToReception: _canToReception(user)
+              ? () => onOpenToReception!(site)
+              : null,
+          onDeliveries: _canDeliveries(user)
+              ? () => onOpenDeliveries!(site)
+              : null,
+        ),
+      if (_hasMaterialActions(site, user)) (_) => gap,
       (_) => _ZonesHeader(canAdd: canAdd, onAdd: () => onAddZone(site)),
       (_) => const SizedBox(height: 8),
     ];
@@ -119,6 +191,80 @@ class SiteDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.all(AppSizes.screenPadding),
       itemCount: items.length,
       itemBuilder: (context, index) => items[index](context),
+    );
+  }
+}
+
+/// Actions rapides des demandes de materiaux : « + Demande » (56 dp), « Demandes », « A valider ».
+class _MaterialActions extends StatelessWidget {
+  const _MaterialActions({
+    this.onNew,
+    this.onOpen,
+    this.onApprove,
+    this.onToReceive,
+    this.onToReception,
+    this.onDeliveries,
+  });
+
+  final VoidCallback? onNew;
+  final VoidCallback? onOpen;
+  final VoidCallback? onApprove;
+  final VoidCallback? onToReceive;
+  final VoidCallback? onToReception;
+  final VoidCallback? onDeliveries;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(l10n.requestsTitle, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8),
+        if (onNew != null)
+          FilledButton.icon(
+            onPressed: onNew,
+            icon: const Icon(Icons.add),
+            label: Text(l10n.requestNew),
+          ),
+        if (onOpen != null) ...[
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: onOpen,
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(AppSizes.primaryButtonHeight),
+            ),
+            child: Text(l10n.requestsOpen),
+          ),
+        ],
+        if (onApprove != null) ...[
+          const SizedBox(height: 8),
+          OutlinedButton(
+            onPressed: onApprove,
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(AppSizes.primaryButtonHeight),
+            ),
+            child: Text(l10n.approvalsTitle),
+          ),
+        ],
+        for (final (action, label) in [
+          (onToReceive, l10n.toReceiveTitle),
+          (onToReception, l10n.toReceptionTitle),
+          (onDeliveries, l10n.deliveriesTitle),
+        ])
+          if (action != null) ...[
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: action,
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(
+                  AppSizes.primaryButtonHeight,
+                ),
+              ),
+              child: Text(label),
+            ),
+          ],
+      ],
     );
   }
 }

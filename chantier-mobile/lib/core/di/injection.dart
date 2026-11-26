@@ -14,11 +14,20 @@ import 'package:chantier_mobile/database/app_database.dart';
 import 'package:chantier_mobile/features/auth/data/auth_repository_impl.dart';
 import 'package:chantier_mobile/features/auth/domain/auth_repository.dart';
 import 'package:chantier_mobile/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:chantier_mobile/features/materials/data/deliveries_repository.dart';
+import 'package:chantier_mobile/features/materials/data/history_remote.dart';
+import 'package:chantier_mobile/features/materials/data/materials_repository.dart';
+import 'package:chantier_mobile/features/materials/data/photo_capture.dart';
+import 'package:chantier_mobile/features/materials/data/photo_files.dart';
+import 'package:chantier_mobile/features/materials/data/photo_remote.dart';
+import 'package:chantier_mobile/features/materials/data/photo_upload_service.dart';
+import 'package:chantier_mobile/features/materials/data/supplier_contact.dart';
 import 'package:chantier_mobile/features/sites/data/sites_remote_source.dart';
 import 'package:chantier_mobile/features/sites/data/sites_repository.dart';
 import 'package:chantier_mobile/features/zones/data/zones_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:get_it/get_it.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Localisateur de services (GetIt), comme Kardinal.
@@ -71,6 +80,40 @@ Future<void> initializeDependencies({
         onLocalWrite: () => sl<SyncScheduler>().notifyLocalWrite(),
       ),
     )
+    ..registerLazySingleton<MaterialsRepository>(
+      () => MaterialsRepository(
+        database: sl(),
+        outbox: sl(),
+        onLocalWrite: () => sl<SyncScheduler>().notifyLocalWrite(),
+        listThrottle: const Duration(milliseconds: 300),
+      ),
+    )
+    ..registerLazySingleton<DeliveriesRepository>(
+      () => DeliveriesRepository(
+        database: sl(),
+        outbox: sl(),
+        onLocalWrite: () => sl<SyncScheduler>().notifyLocalWrite(),
+        listThrottle: const Duration(milliseconds: 300),
+      ),
+    )
+    // Photos des bons de livraison (ADR 0013) : fichiers dans le dossier prive de l'application
+    // (jamais de stockage large), appareil photo sans permission, envoi un fichier a la fois.
+    ..registerLazySingleton<PhotoFiles>(
+      () => PhotoFiles(rootProvider: getApplicationSupportDirectory),
+    )
+    ..registerLazySingleton<PhotoCapture>(ImagePickerCapture.new)
+    ..registerLazySingleton<PhotoRemote>(() => PhotoRemoteSource(sl()))
+    ..registerLazySingleton<PhotoViewer>(() => PhotoViewer(sl()))
+    // Historique lu a la demande, en ligne (R2-02) : copie en memoire seulement.
+    ..registerLazySingleton<HistorySource>(() => HistoryRemoteSource(sl()))
+    ..registerLazySingleton<PhotoUploadService>(
+      () => PhotoUploadService(database: sl(), remote: sl(), files: sl()),
+    )
+    // Contact fournisseur : numero lu en ligne, jamais stocke (ADR 0012).
+    ..registerLazySingleton<SupplierContactSource>(
+      () => SupplierContactRemote(sl()),
+    )
+    ..registerLazySingleton<PhoneDialer>(UrlLauncherDialer.new)
     // Authentification
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(
@@ -79,6 +122,10 @@ Future<void> initializeDependencies({
         database: sl(),
         preferences: sl(),
         config: sl(),
+        onLocalDataPurged: () {
+          sl<PhotoViewer>().clear();
+          sl<HistorySource>().clear();
+        },
       ),
     )
     ..registerLazySingleton<AuthBloc>(
@@ -91,9 +138,12 @@ Future<void> initializeDependencies({
         database: sl(),
         remote: sl(),
         sites: sl(),
+        materials: sl(),
+        photoUploads: sl(),
         currentUserId: () => sl<AuthRepository>().currentUser?.id,
         connectivity: sl(),
         onProfile: sl<AuthRepository>().applyProfile,
+        fullReloadAfterDays: sl<AppConfig>().fullReloadAfterDays,
       ),
     )
     ..registerLazySingleton<SyncScheduler>(
